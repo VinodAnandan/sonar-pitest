@@ -25,7 +25,6 @@ import java.util.List;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleRepository;
 
-
 public class PitestRuleRepository extends RuleRepository {
 
   public PitestRuleRepository() {
@@ -35,9 +34,9 @@ public class PitestRuleRepository extends RuleRepository {
 
   @Override
   public List<Rule> createRules() {
-    return Collections.singletonList(
-        Rule.create(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY, "Survived mutant")
-    );
+    Rule survivedMutantRule = Rule.create(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY, "Survived mutant");
+    survivedMutantRule.setDescription("Survived mutant");
+    return Collections.singletonList(survivedMutantRule);
   }
 
 }
