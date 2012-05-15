@@ -42,4 +42,116 @@ public final class PitestConstants {
   public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reportsDirectory";
   
   public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
+  
+  /**
+   * Classpath that contains either JUnit or TestNG as well as your code, tests and any dependencies
+   */
+  public static final String CLASSPATH = "sonar.pit.classpath";
+  
+  /**
+   * Classes to include in mutation test
+   * 
+   */
+  public static final String TARGET_CLASSES = "sonar.pit.target.classes";
+
+  /**
+   * Tests to run
+   * 
+   */
+  public static final String TARGET_TESTS = "sonar.pit.target.tests";
+
+  /**
+   * Methods not to mutate
+   * 
+   */
+  public static final String EXCLUDED_METHODS = "sonar.pit.excluded.methods";
+
+  /**
+   * Classes not to mutate or run tests from
+   * 
+   * 
+   */
+  public static final String EXCLUDED_CLASSES = "sonar.pit.excluded.classes";
+
+  /**
+   * 
+   * 
+   */
+  public static final String AVOID_CALLS_TO = "sonar.pit.avoid.calls.to";
+
+
+  /**
+   * Base directory where all reports are written to.
+   * 
+   */
+  public static final String REPORTS_DIRECTORY = "sonar.pit.reports.directory";
+
+  /**
+   * Maximum distance to look from test to class. Relevant when mutating static
+   * initializers
+   * 
+   */
+  public static final String MAX_DEPENDENCY_DISTANCE = "sonar.pit.max.dependency.distance";
+
+  /**
+   * Number of threads to use
+   * 
+   */
+  public static final String THREADS = "sonar.pit.threads";
+
+  /**
+   * Mutate static initializers
+   * 
+   */
+  public static final String MUTATE_STATIC_INITIALIZERS = "sonar.pit.mutate.static.initializers";
+
+  /**
+   * Mutation operators to apply
+   * 
+   */
+  public static final String MUTATORS = "sonar.pit.mutators";
+
+  /**
+   * Weighting to allow for timeouts
+   * 
+   */
+  public static final String TIMEOUT_FACTOR = "sonar.pit.timeout.factor";
+
+  /**
+   * Constant factor to allow for timeouts
+   * 
+   */
+  public static final String TIMEOUT_CONSTANT = "sonar.pit.timeout.constant";
+
+  /**
+   * Maximum number of mutations to allow per class
+   * 
+   */
+  public static final String MAX_MUTATIONS_PER_CLASS = "sonar.pit.max.mutations.per.class";
+
+  /**
+   * Arguments to pass to child processes
+   * 
+   */
+  public static final String JVM_ARGS = "sonar.pit.jvm.args";
+
+
+  /**
+   * Throw error if no mutations found
+   * 
+   */
+  public static final String FAIL_WHEN_NO_MUTATIONS = "sonar.pit.fail.when.no.mutations";
+
+  /**
+   * TestNG Groups to exclude
+   * 
+   */
+  public static final String EXCLUDED_TESTNG_GROUPS = "sonar.pit.excluded.testng.groups";
+
+  /**
+   * TestNG Groups to include
+   * 
+   */
+  public static final String INCLUDED_TESTNG_GROUPS = "sonar.pit.included.testng.groups";
+
 }

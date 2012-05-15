@@ -46,11 +46,13 @@ public class PitestSensor implements Sensor {
   private final ResultParser parser;
   private final String executionMode;
   private final RuleFinder ruleFinder;
+  private final PitestExecutor executor;
   
-  public PitestSensor(Configuration configuration, ResultParser parser, RuleFinder ruleFinder) {
+  public PitestSensor(Configuration configuration, ResultParser parser, RuleFinder ruleFinder, PitestExecutor executor) {
     this.configuration = configuration;
     this.parser = parser;
     this.ruleFinder = ruleFinder;
+    this.executor = executor;
     this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
   }
 
@@ -63,7 +65,7 @@ public class PitestSensor implements Sensor {
   public void analyse(Project project, SensorContext context) {
     
     if (MODE_ACTIVE.equals(executionMode)) {
-      throw new SonarException("Not implemented yet");
+      executor.execute();
     }
     
     File projectDirectory = project.getFileSystem().getBasedir();

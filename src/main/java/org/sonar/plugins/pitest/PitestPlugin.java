@@ -19,10 +19,11 @@
  */
 package org.sonar.plugins.pitest;
 
-
+import org.sonar.api.Extension;
 import org.sonar.api.SonarPlugin;
 
-import java.util.Arrays;
+import com.google.common.collect.Lists;
+
 import java.util.List;
 
 /**
@@ -31,7 +32,14 @@ import java.util.List;
 public final class PitestPlugin extends SonarPlugin {
 
   // This is where you're going to declare all your Sonar extensions
-  public List getExtensions() {
-    return Arrays.asList(ResultParser.class, PitestRuleRepository.class, PitestSensor.class);
+  public List<Class<? extends Extension>> getExtensions() {
+    return Lists.newArrayList(
+        ResultParser.class, 
+        PitestRuleRepository.class, 
+        PitestSensor.class,
+        PitestConfigurationBuilder.class,
+        PitestExecutor.class,
+        ReportOptionsBuilder.class
+    );
   }
 }

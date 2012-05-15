@@ -21,6 +21,7 @@
     <sonar.buildVersion>2.10</sonar.buildVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.min.version>1.5</jdk.min.version>
+    <powermock.version>1.4.10</powermock.version>
   </properties>
 
   <dependencies>
@@ -31,9 +32,23 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>2.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>11.0.2</version>
+	</dependency>
+
+	<dependency>
+	  <groupId>org.pitest</groupId>
+      <artifactId>pitest</artifactId>
+      <version>0.27</version>
 	</dependency>
 
     <!-- unit tests -->
@@ -55,6 +70,18 @@
 	  <version>1.4</version>
 	  <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+   </dependency>
+   <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+   </dependency>
   </dependencies>
 
   <build>
