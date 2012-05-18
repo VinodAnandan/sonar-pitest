@@ -35,7 +35,7 @@ public class PitestRuleRepository extends RuleRepository {
   @Override
   public List<Rule> createRules() {
     Rule survivedMutantRule = Rule.create(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY, "Survived mutant");
-    survivedMutantRule.setDescription("Survived mutant");
+    survivedMutantRule.setDescription("Survived mutant. For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>");
     return Collections.singletonList(survivedMutantRule);
   }
 

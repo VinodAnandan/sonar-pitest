@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.Violation;
-import org.sonar.api.utils.SonarException;
 
 public class PitestSensor implements Sensor {
   
@@ -47,13 +47,15 @@ public class PitestSensor implements Sensor {
   private final String executionMode;
   private final RuleFinder ruleFinder;
   private final PitestExecutor executor;
+  private final RulesProfile rulesProfile;
   
-  public PitestSensor(Configuration configuration, ResultParser parser, RuleFinder ruleFinder, PitestExecutor executor) {
+  public PitestSensor(Configuration configuration, ResultParser parser, RuleFinder ruleFinder, PitestExecutor executor, RulesProfile rulesProfile) {
     this.configuration = configuration;
     this.parser = parser;
     this.ruleFinder = ruleFinder;
     this.executor = executor;
     this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+    this.rulesProfile = rulesProfile;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
@@ -63,6 +65,12 @@ public class PitestSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
+    
+    if (rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY).isEmpty()) {
+      LOG.warn("/!\\ SKIP PIT mutation tests: PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
+      return;
+    }
+    
     
     if (MODE_ACTIVE.equals(executionMode)) {
       executor.execute();
@@ -83,7 +91,7 @@ public class PitestSensor implements Sensor {
           JavaFile resource = new JavaFile(mutant.getSonarJavaFileKey());
           if (context.getResource(resource) != null) {
             Violation violation 
-              = Violation.create(rule, resource).setLineId(mutant.getLineNumber()).setMessage(mutant.getMutator());
+              = Violation.create(rule, resource).setLineId(mutant.getLineNumber()).setMessage(mutant.getMutatorDescription());
             context.saveViolation(violation);
           }
         }

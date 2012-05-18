@@ -219,7 +219,9 @@ public class ReportOptionsBuilder implements BatchExtension {
   private Collection<Predicate<String>> determineTargetClasses() {
     final Collection<String> filters = getConfigurationValues(TARGET_CLASSES);
     if (filters.isEmpty()) {
-      Preconditions.checkNotNull(mvnProject, "Incomplete configuration");
+      if (mvnProject==null) {
+        throw new SonarException("Incomplete configuration");
+      }
       return Collections.<Predicate<String>> singleton(new Glob(mvnProject.getGroupId() + "*"));
     } else {
       return FCollection.map(filters, Glob.toGlobPredicate());

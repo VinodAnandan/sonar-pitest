@@ -19,8 +19,65 @@
  */
 package org.sonar.plugins.pitest;
 
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 
 public class Mutant {
+  
+  private final static Map<String, String> descriptions = Maps.newHashMap();
+  
+  static {
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#conditionals-boundary-mutator-conditionals_boundary\">Conditionals Boundary Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#negate-conditionals-mutator-negate_conditionals\">Negate Conditionals Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.MathMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#math-mutator-math\">Math Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#increments-mutator-increments\">Increments Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#invert-negatives-mutator-invert_negs\">Invert Negatives Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#inline-constant-mutator-inline_consts\">Inline Constant Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#return-values-mutator-return_vals\">Return Values Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#void-method-call-mutator-void_method_calls\">Void Method Calls Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#non-void-method-call-mutator-non_void_method_calls\">Non Void Method Calls Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#constructor-call-mutator-constructor_calls\">Constructor Calls Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.experimental.InlineConstantMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#experimental-inline-constant-mutator-experimental_inline_consts\">Experimental Inline Constant Mutator</a>"
+    );
+    descriptions.put(
+        "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator", 
+        "<a href=\"http://pitest.org/quickstart/mutators/#experimental-member-variable-mutator-experimental_member_variable\">Experimental Member Variable Mutator</a>"
+    );
+  }
 
   private final String className;
   
@@ -51,8 +108,8 @@ public class Mutant {
   }
 
   
-  public String getMutator() {
-    return mutator;
+  public String getMutatorDescription() {
+    return descriptions.get(mutator);
   }
   
 }

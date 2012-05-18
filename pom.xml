@@ -21,7 +21,16 @@
     <sonar.buildVersion>2.10</sonar.buildVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.min.version>1.5</jdk.min.version>
+    <junit.version>4.10</junit.version>
     <powermock.version>1.4.10</powermock.version>
+    <pitest.version>0.27</pitest.version>
+    <fest.version>1.4</fest.version>
+    <guava.version>11.0.2</guava.version>
+    
+    <!--  eat your own dog food -->
+    <sonar.pitest.mode>active</sonar.pitest.mode>
+    <sonar.pit.target.classes>org.sonar.plugins.pitest*</sonar.pit.target.classes>
+    <sonar.pit.target.tests>org.sonar.plugins.pitest*</sonar.pit.target.tests>
   </properties>
 
   <dependencies>
@@ -42,13 +51,13 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>11.0.2</version>
+      <version>${guava.version}</version>
 	</dependency>
 
 	<dependency>
 	  <groupId>org.pitest</groupId>
       <artifactId>pitest</artifactId>
-      <version>0.27</version>
+      <version>${pitest.version}</version>
 	</dependency>
 
     <!-- unit tests -->
@@ -61,12 +70,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.10</version>
+      <version>${junit.version}</version>
     </dependency>
     <dependency>
 	  <groupId>org.easytesting</groupId>
 	  <artifactId>fest-assert</artifactId>
-	  <version>1.4</version>
+	  <version>${fest.version}</version>
 	  <scope>test</scope>
     </dependency>
     <dependency>
