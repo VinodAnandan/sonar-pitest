@@ -88,7 +88,7 @@ public class ReportOptionsBuilderTest {
     assertThat(options).isNotNull();
    
     assertThat(options.getDependencyAnalysisMaxDistance()).isEqualTo(-1);
-    assertThat(options.getClassPathElements()).hasSize(4);
+    assertThat(options.getClassPathElements()).hasSize(5);
     assertThat(options.getReportDir()).endsWith("target" + File.separator + "pit-reports");
     assertThat(options.getSourceDirs()).hasSize(1);
     File configuredSrcDir = options.getSourceDirs().iterator().next();

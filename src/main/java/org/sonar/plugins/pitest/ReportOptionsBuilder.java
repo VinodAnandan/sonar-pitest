@@ -152,11 +152,10 @@ public class ReportOptionsBuilder implements BatchExtension {
 
     return data;
   }
-  
+
   private void addOwnDependenciesToClassPath(Collection<String> classPath) {
-    for (final Artifact dependency : filteredDependencies()) {
-      classPath.add(dependency.getFile().getAbsolutePath());
-    }
+    File pitestJar = new File(fileSystem.getSonarWorkingDirectory(), PITEST_JAR_NAME);
+    classPath.add(pitestJar.getAbsolutePath());
   }
   
   private Collection<Artifact> filteredDependencies() {

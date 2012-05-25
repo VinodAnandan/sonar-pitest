@@ -26,6 +26,8 @@ public final class PitestConstants {
     
   }
   
+  public static final String PITEST_JAR_NAME = "pitest-0.27.jar";
+  
   public static final String REPOSITORY_KEY = "pitest";
   public static final String REPOSITORY_NAME = "Pitest";
   

@@ -27,7 +27,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * This class is the entry point for all extensions
+ * This class is the entry point for all PIT rextensions
+ * TODO : add annotation for all the configuration keys
  */
 public final class PitestPlugin extends SonarPlugin {
 
@@ -39,7 +40,8 @@ public final class PitestPlugin extends SonarPlugin {
         PitestSensor.class,
         PitestConfigurationBuilder.class,
         PitestExecutor.class,
-        ReportOptionsBuilder.class
+        ReportOptionsBuilder.class,
+        JarExtractor.class
     );
   }
 }

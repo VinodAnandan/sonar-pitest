@@ -19,6 +19,10 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestConstants.PITEST_JAR_NAME;
+
+import java.net.URL;
+
 import org.pitest.coverage.execute.CoverageOptions;
 import org.pitest.coverage.execute.LaunchOptions;
 import org.pitest.functional.FCollection;
@@ -51,19 +55,26 @@ public class PitestExecutor implements BatchExtension {
   private static final Logger LOG = LoggerFactory.getLogger(PitestExecutor.class);
 
   private final ReportOptionsBuilder builder;
+  private final JarExtractor jarExtractor;
   
   
-  public PitestExecutor(ReportOptionsBuilder builder) {
+  public PitestExecutor(ReportOptionsBuilder builder, JarExtractor jarExtractor) {
     this.builder = builder;
+    this.jarExtractor = jarExtractor;
   }
 
+  private void extractPitJar() {
+    URL jarURL = getClass().getResource("/META-INF/lib/"+PITEST_JAR_NAME);
+    jarExtractor.extractJar(jarURL, PITEST_JAR_NAME);
+  }
 
   public void execute() {
+    extractPitJar();
     ReportOptions data = builder.build();
-    LOG.warn("Running report with " + data);
+    LOG.debug("Running report with {}", data);
     final ClassPath cp = data.getClassPath();
 
- // workaround for apparent java 1.5 JVM bug . . . might not play nicely
+    // workaround for apparent java 1.5 JVM bug . . . might not play nicely
     // with distributed testing
     final JavaAgent jac = new JarCreatingJarFinder(new ClassPathByteArraySource(cp));
     final KnownLocationJavaAgentFinder ja = new KnownLocationJavaAgentFinder(
