@@ -25,7 +25,14 @@ import org.pitest.mutationtest.ReportOptions;
 import org.pitest.mutationtest.config.ConfigurationFactory;
 import org.sonar.api.BatchExtension;
 
-
+/**
+ * Builder/Factory for PIT configuration objects.
+ * The job done in the create method does scan the classpath and hence
+ * the testability is not very good. 
+ * 
+ * @author Alexandre Victoor
+ *
+ */
 public class PitestConfigurationBuilder implements BatchExtension {
 
   public Configuration build(ReportOptions data) {

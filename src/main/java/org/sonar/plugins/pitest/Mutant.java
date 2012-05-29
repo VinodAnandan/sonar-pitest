@@ -31,51 +31,51 @@ public class Mutant {
   static {
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#conditionals-boundary-mutator-conditionals_boundary\">Conditionals Boundary Mutator</a>"
+        "Conditionals Boundary Mutator\nA relational operator has been replaced by a boundary counterpart"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#negate-conditionals-mutator-negate_conditionals\">Negate Conditionals Mutator</a>"
+        "Negate Conditionals Mutator\nA conditional expression has been negated"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.MathMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#math-mutator-math\">Math Mutator</a>"
+        "Math Mutator\nA binary arithmetic operation has been replaced by another one"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#increments-mutator-increments\">Increments Mutator</a>"
+        "Increments Mutator\nA local variable increment/decrement has been replaced"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#invert-negatives-mutator-invert_negs\">Invert Negatives Mutator</a>"
+        "Invert Negatives Mutator\nA number has been replaced by its opposite"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#inline-constant-mutator-inline_consts\">Inline Constant Mutator</a>"
+        "Inline Constant Mutator\nAn inline constant has been changed"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#return-values-mutator-return_vals\">Return Values Mutator</a>"
+        "Return Values Mutator\nThe return value of a method call has been replaced"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#void-method-call-mutator-void_method_calls\">Void Method Calls Mutator</a>"
+        "Void Method Calls Mutator\nA method call has been removed"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#non-void-method-call-mutator-non_void_method_calls\">Non Void Method Calls Mutator</a>"
+        "Non Void Method Calls Mutator\nA method call has been removed"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#constructor-call-mutator-constructor_calls\">Constructor Calls Mutator</a>"
+        "Constructor Calls Mutator\nA constructor call has been removed"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.experimental.InlineConstantMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#experimental-inline-constant-mutator-experimental_inline_consts\">Experimental Inline Constant Mutator</a>"
+        "Experimental Inline Constant Mutator\nAn inline constant has been changed"
     );
     descriptions.put(
         "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator", 
-        "<a href=\"http://pitest.org/quickstart/mutators/#experimental-member-variable-mutator-experimental_member_variable\">Experimental Member Variable Mutator</a>"
+        "Experimental Member Variable Mutator\nA member variable assignment has been replaced"
     );
   }
 
