@@ -109,7 +109,7 @@ public class Mutant {
 
   
   public String getMutatorDescription() {
-    return descriptions.get(mutator);
+    return descriptions.get(mutator)+ " without breaking the tests";
   }
   
 }

@@ -19,7 +19,11 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestConstants.*;
+
 import org.sonar.api.Extension;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
 
 import com.google.common.collect.Lists;
@@ -27,12 +31,72 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * This class is the entry point for all PIT rextensions
- * TODO : add annotation for all the configuration keys
+ * This class is the entry point for all PIT extensions
  */
+@Properties({
+  @Property(key = MODE_KEY, defaultValue = MODE_SKIP,
+    name = "PIT activation mode", description = "Possible values:  empty (means skip), 'enable' and 'reuseReport'", global = true,
+    project = true),
+  @Property(key = REPORT_DIRECTORY_KEY, defaultValue = REPORT_DIRECTORY_DEF,
+    name = "Output directory for the PIT reports", description = "This property is needed only when the 'reuseReport' mode is activated", global = true,
+    project = true),
+  @Property(key = CLASSPATH, defaultValue = "",
+    name = "PIT classpath", description = "Comma seperated list of classpath entries to use when looking for tests and mutable code. Not useful with maven bith only with the sonar java runner", global = false,
+    project = true),
+  @Property(key = TARGET_CLASSES, defaultValue = "",
+    name = "Target classes", description = "The classes to be mutated. This is expressed as a comma seperated list of globs. For example com.mycompany.* or com.mycompany.package.*, com.mycompany.packageB.Foo, com.partner.*. When maven is used, the default value is 'groupId*'", global = false,
+    project = true),
+  @Property(key = TARGET_TESTS, defaultValue = "",
+    name = "Tests to run", description = "A comma seperated list of globs can be supplied to this parameter to limit the tests available to be run. If not specified, the value of " + TARGET_CLASSES + " is used (not recommended)", global = false,
+    project = true),
+  @Property(key = EXCLUDED_METHODS, defaultValue = "",
+    name = "Methods not to mutate", description = "", global = false,
+    project = true),
+  @Property(key = EXCLUDED_CLASSES, defaultValue = "",
+    name = "Classes not to mutate or run tests from", description = "", global = false,
+    project = true),
+  @Property(key = AVOID_CALLS_TO, defaultValue = "(major logging framework APIs)",
+    name = "List of packages and classes which are to be considered outside the scope of mutation", description = "", global = true,
+    project = true),
+  @Property(key = MAX_DEPENDENCY_DISTANCE, defaultValue = "-1",
+    name = "Maximum distance to look from test to class. Relevant when mutating static initializers", 
+    description = "", global = false,
+    project = true),
+  @Property(key = THREADS, defaultValue = "1",
+    name = "Number of threads to use", description = "", global = true,
+    project = true),
+  @Property(key = MUTATE_STATIC_INITIALIZERS, defaultValue = "false",
+    name = "Mutate static initializers", description = "", global = true,
+    project = true),
+  @Property(key = MUTATORS, defaultValue = "INVERT_NEGS, RETURN_VALS, MATH, VOID_METHOD_CALLS, NEGATE_CONDITIONALS, CONDITIONALS_BOUNDARY, INCREMENTS",
+    name = "Mutation operators to apply", description = "See official PIT documentation for the list of available mutators (http://pitest.org/quickstart/mutators/)", global = true,
+    project = true),
+  @Property(key = TIMEOUT_FACTOR, defaultValue = "1.25",
+    name = "Weighting to allow for timeouts", description = "", global = true,
+    project = true),  
+  @Property(key = TIMEOUT_CONSTANT, defaultValue = "3000",
+    name = "Constant factor to allow for timeouts", description = "", global = true,
+    project = true),
+  @Property(key = MAX_MUTATIONS_PER_CLASS, defaultValue = "-1",
+    name = "Maximum number of mutations to allow per class", description = "", global = true,
+    project = true),
+  @Property(key = JVM_ARGS, defaultValue = "",
+    name = "Arguments to pass to child processes", description = "", global = true,
+    project = true),
+  @Property(key = FAIL_WHEN_NO_MUTATIONS, defaultValue = "true",
+    name = "Throw error if no mutations found", description = "", global = true,
+    project = true),
+  @Property(key = EXCLUDED_TESTNG_GROUPS, defaultValue = "",
+    name = "TestNG Groups to exclude", description = "", global = true,
+    project = true),
+  @Property(key = INCLUDED_TESTNG_GROUPS, defaultValue = "",
+    name = "TestNG Groups to include", description = "", global = true,
+    project = true)
+})
 public final class PitestPlugin extends SonarPlugin {
 
   // This is where you're going to declare all your Sonar extensions
+  @SuppressWarnings("unchecked")
   public List<Class<? extends Extension>> getExtensions() {
     return Lists.newArrayList(
         ResultParser.class, 

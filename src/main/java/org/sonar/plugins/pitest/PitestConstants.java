@@ -76,17 +76,10 @@ public final class PitestConstants {
   public static final String EXCLUDED_CLASSES = "sonar.pit.excluded.classes";
 
   /**
-   * 
+   * List of packages and classes which are to be considered outside the scope of mutation
    * 
    */
   public static final String AVOID_CALLS_TO = "sonar.pit.avoid.calls.to";
-
-
-  /**
-   * Base directory where all reports are written to.
-   * 
-   */
-  public static final String REPORTS_DIRECTORY = "sonar.pit.reports.directory";
 
   /**
    * Maximum distance to look from test to class. Relevant when mutating static
