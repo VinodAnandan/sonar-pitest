@@ -95,6 +95,12 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <testNGArtifactName>none:none</testNGArtifactName>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.sonar</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <version>1.1</version>
