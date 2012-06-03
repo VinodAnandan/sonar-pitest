@@ -158,12 +158,6 @@ public class ReportOptionsBuilder implements BatchExtension {
     classPath.add(pitestJar.getAbsolutePath());
   }
   
-  private Collection<Artifact> filteredDependencies() {
-    final DependencyFilter filter = new DependencyFilter("org.pitest");
-    return FCollection
-        .filter(mvnProject.getPluginArtifactMap().values(), filter);
-  }
-  
   private void setTestType(ReportOptions data) {
     List<String> excludedTestNGGroups 
       = getConfigurationValues(EXCLUDED_TESTNG_GROUPS);

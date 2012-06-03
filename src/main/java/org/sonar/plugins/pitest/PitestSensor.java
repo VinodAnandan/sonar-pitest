@@ -23,6 +23,7 @@ import static org.sonar.plugins.pitest.PitestConstants.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -34,73 +35,69 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.Violation;
 
 public class PitestSensor implements Sensor {
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
-  
+
   private final Configuration configuration;
   private final ResultParser parser;
   private final String executionMode;
-  private final RuleFinder ruleFinder;
   private final PitestExecutor executor;
   private final RulesProfile rulesProfile;
-  
-  public PitestSensor(Configuration configuration, ResultParser parser, RuleFinder ruleFinder, PitestExecutor executor, RulesProfile rulesProfile) {
+
+  public PitestSensor(Configuration configuration, ResultParser parser, PitestExecutor executor,
+      RulesProfile rulesProfile) {
     this.configuration = configuration;
     this.parser = parser;
-    this.ruleFinder = ruleFinder;
     this.executor = executor;
     this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
     this.rulesProfile = rulesProfile;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return project.getAnalysisType().isDynamic(true) 
-      && Java.KEY.equals(project.getLanguageKey())
-      && !MODE_SKIP.equals(executionMode);
+    return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey()) && !MODE_SKIP.equals(executionMode);
   }
 
   public void analyse(Project project, SensorContext context) {
-    
-    if (rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY).isEmpty()) {
+    List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
+    if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
       LOG.warn("/!\\ SKIP PIT mutation tests: PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
       return;
     }
-    
-    
+
     if (MODE_ACTIVE.equals(executionMode)) {
       executor.execute();
     }
-    
+
     File projectDirectory = project.getFileSystem().getBasedir();
     String reportDirectoryPath = configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
-    
+
     File reportDirectory = new File(projectDirectory, reportDirectoryPath);
     File xmlReport = findReport(reportDirectory);
     if (xmlReport == null) {
       LOG.warn("No pitest report found !");
     } else {
-      Rule rule = ruleFinder.findByKey(REPOSITORY_KEY, RULE_KEY);
-      if (rule != null) { // ignore violations from report, if rule not activated in Sonar
-        Collection<Mutant> mutants = parser.parse(xmlReport);
-        for (Mutant mutant : mutants) {
-          JavaFile resource = new JavaFile(mutant.getSonarJavaFileKey());
-          if (context.getResource(resource) != null) {
-            Violation violation 
-              = Violation.create(rule, resource).setLineId(mutant.getLineNumber()).setMessage(mutant.getMutatorDescription());
-            context.saveViolation(violation);
-          }
+      Rule rule = activeRules.get(0).getRule();
+
+      Collection<Mutant> mutants = parser.parse(xmlReport);
+      for (Mutant mutant : mutants) {
+        JavaFile resource = new JavaFile(mutant.getSonarJavaFileKey());
+        if (context.getResource(resource) != null) {
+          Violation violation = Violation.create(rule, resource).setLineId(mutant.getLineNumber())
+              .setMessage(mutant.getMutatorDescription());
+          context.saveViolation(violation);
         }
       }
+
     }
   }
 
   private File findReport(File reportDirectory) {
-    Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[]{"xml"}, true);
+    Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[] { "xml" }, true);
     File latestReport = null;
     for (File report : reports) {
       if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
