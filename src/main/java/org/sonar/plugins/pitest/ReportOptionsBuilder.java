@@ -19,7 +19,25 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.AVOID_CALLS_TO;
+import static org.sonar.plugins.pitest.PitestConstants.CLASSPATH;
+import static org.sonar.plugins.pitest.PitestConstants.EXCLUDED_CLASSES;
+import static org.sonar.plugins.pitest.PitestConstants.EXCLUDED_METHODS;
+import static org.sonar.plugins.pitest.PitestConstants.EXCLUDED_TESTNG_GROUPS;
+import static org.sonar.plugins.pitest.PitestConstants.FAIL_WHEN_NO_MUTATIONS;
+import static org.sonar.plugins.pitest.PitestConstants.INCLUDED_TESTNG_GROUPS;
+import static org.sonar.plugins.pitest.PitestConstants.JVM_ARGS;
+import static org.sonar.plugins.pitest.PitestConstants.MAX_DEPENDENCY_DISTANCE;
+import static org.sonar.plugins.pitest.PitestConstants.MAX_MUTATIONS_PER_CLASS;
+import static org.sonar.plugins.pitest.PitestConstants.MUTATE_STATIC_INITIALIZERS;
+import static org.sonar.plugins.pitest.PitestConstants.MUTATORS;
+import static org.sonar.plugins.pitest.PitestConstants.PITEST_JAR_NAME;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.TARGET_CLASSES;
+import static org.sonar.plugins.pitest.PitestConstants.TARGET_TESTS;
+import static org.sonar.plugins.pitest.PitestConstants.THREADS;
+import static org.sonar.plugins.pitest.PitestConstants.TIMEOUT_CONSTANT;
+import static org.sonar.plugins.pitest.PitestConstants.TIMEOUT_FACTOR;
 
 import java.io.File;
 import java.util.Arrays;
@@ -29,34 +47,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.pitest.functional.F;
-import org.pitest.functional.FCollection;
-import org.pitest.functional.predicate.Predicate;
-import org.pitest.internal.ClassPathByteArraySource;
-import org.pitest.mutationtest.Mutator;
-import org.pitest.mutationtest.ReportOptions;
-import org.pitest.mutationtest.config.ConfigurationFactory;
-import org.pitest.mutationtest.engine.gregor.MethodMutatorFactory;
-import org.pitest.mutationtest.report.OutputFormat;
-import org.pitest.testng.TestGroupConfig;
-import org.pitest.util.Functions;
-import org.pitest.util.Glob;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.project.MavenProject;
+import org.pitest.functional.F;
+import org.pitest.functional.FCollection;
+import org.pitest.functional.predicate.Predicate;
+import org.pitest.mutationtest.Mutator;
+import org.pitest.mutationtest.ReportOptions;
+import org.pitest.mutationtest.engine.gregor.MethodMutatorFactory;
+import org.pitest.mutationtest.report.OutputFormat;
+import org.pitest.testng.TestGroupConfig;
+import org.pitest.util.Glob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.utils.SonarException;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-
+/**
+ * Build PIT report options using sonar & maven configurations.
+ * Most of the code here is strongly inspired by the maven PIT plugin.
+ * 
+ * @author Alexandre Victoor
+ */
 public class ReportOptionsBuilder implements BatchExtension {
   
   private static final Logger LOG = LoggerFactory.getLogger(ReportOptionsBuilder.class);

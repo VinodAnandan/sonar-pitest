@@ -29,6 +29,7 @@ import java.util.Collections;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
@@ -37,7 +38,7 @@ import org.sonar.api.resources.Project.AnalysisType;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.rules.Rule;
+import org.sonar.api.rules.Violation;
 import org.sonar.test.TestUtils;
 
 public class PitestSensorTest {
@@ -124,15 +125,53 @@ public class PitestSensorTest {
     when(project.getFileSystem()).thenReturn(fileSystem);
     when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn(".");
 
-    when(parser.parse(any(File.class))).thenReturn(
-        Collections.singleton(new Mutant("whatever", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator")));
-
+    Mutant mutant = new Mutant("whatever", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
+    when(parser.parse(any(File.class))).thenReturn(Collections.singleton(mutant));
+    
+    
     createSensor();
 
     SensorContext context = mock(SensorContext.class);
+    when(context.getResource(any(Resource.class))).thenReturn(project);
     sensor.analyse(project, context);
 
     verify(executor, times(1)).execute();
-    verify(context, atLeastOnce()).getResource(any(Resource.class));
+    
+    ArgumentCaptor<Violation> violationCaptor = ArgumentCaptor.forClass(Violation.class);
+    verify(context, times(1)).saveViolation(violationCaptor.capture());
+    Violation violation = violationCaptor.getValue();
+    assertThat(violation.getLineId()).isEqualTo(42);
+    assertThat(violation.getMessage()).isEqualTo(mutant.getMutatorDescription());
+  }
+  
+  @Test
+  public void should_parse_reports_in_reuse_mode() throws Exception {
+    when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
+    when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
+    ActiveRule fakeActiveRule = mock(ActiveRule.class);
+    when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.singletonList(fakeActiveRule));
+    when(rulesProfile.getName()).thenReturn("fake pit profile");
+
+    ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
+    when(fileSystem.getBasedir()).thenReturn(TestUtils.getResource("."));
+    when(project.getFileSystem()).thenReturn(fileSystem);
+    when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn(".");
+
+    Mutant mutant = new Mutant("whatever", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
+    when(parser.parse(any(File.class))).thenReturn(Collections.singleton(mutant));
+    
+    createSensor();
+
+    SensorContext context = mock(SensorContext.class);
+    when(context.getResource(any(Resource.class))).thenReturn(project);
+    sensor.analyse(project, context);
+
+    verify(executor, never()).execute();
+    
+    ArgumentCaptor<Violation> violationCaptor = ArgumentCaptor.forClass(Violation.class);
+    verify(context, times(1)).saveViolation(violationCaptor.capture());
+    Violation violation = violationCaptor.getValue();
+    assertThat(violation.getLineId()).isEqualTo(42);
+    assertThat(violation.getMessage()).isEqualTo(mutant.getMutatorDescription());
   }
 }

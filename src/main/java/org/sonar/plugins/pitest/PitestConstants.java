@@ -19,7 +19,14 @@
  */
 package org.sonar.plugins.pitest;
 
-
+/**
+ * Constants for the PIT plugins
+ * There is a constant for each configuration key. 
+ * Most of thoses configuration keys, and the javadoc comments are
+ * strongly inspired by the maven PIT plugin
+ * 
+ * @author Alexandre Victoor
+ */
 public final class PitestConstants {
 
   private PitestConstants() {
