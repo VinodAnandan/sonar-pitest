@@ -15,6 +15,12 @@
   <version>0.1-SNAPSHOT</version>
   <name>Sonar Pitest Plugin</name>
   <description>Plugin for the mutation testing tool Pitest</description>
+  
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/pitest</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/pitest</developerConnection>
+    <url>http://svn.sonar-plugins.codehaus.org</url>
+  </scm>
 
   <properties>
   	<license.owner>Alexandre Victoor</license.owner>
