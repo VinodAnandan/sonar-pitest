@@ -72,11 +72,11 @@ import com.google.common.collect.Lists;
 /**
  * Build PIT report options using sonar & maven configurations.
  * Most of the code here is strongly inspired by the maven PIT plugin.
- * 
+ *
  * @author Alexandre Victoor
  */
 public class ReportOptionsBuilder implements BatchExtension {
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(ReportOptionsBuilder.class);
 
   private final Configuration configuration;
@@ -85,16 +85,25 @@ public class ReportOptionsBuilder implements BatchExtension {
   private final PitestConfigurationBuilder configurationBuilder;
 
   public ReportOptionsBuilder(ProjectFileSystem fileSystem, MavenProject mvnProject, Configuration configuration, PitestConfigurationBuilder configurationBuilder) {
+    LOG.debug("Creating a ReportOptionsBuilder in a maven ctx");
     this.fileSystem = fileSystem;
     this.mvnProject = mvnProject;
     this.configuration = configuration;
     this.configurationBuilder = configurationBuilder;
   }
-  
-  
+
+  public ReportOptionsBuilder(ProjectFileSystem fileSystem, Configuration configuration, PitestConfigurationBuilder configurationBuilder) {
+    LOG.debug("Creating a ReportOptionsBuilder in a java runner ctx");
+    this.fileSystem = fileSystem;
+    this.mvnProject = null;
+    this.configuration = configuration;
+    this.configurationBuilder = configurationBuilder;
+  }
+
+
   public ReportOptions build() {
     final ReportOptions data = new ReportOptions();
-    
+
     String codePath = fileSystem.getBuildOutputDir().getAbsolutePath();
     LOG.info("Mutating from {}", codePath);
     data.setCodePaths(Collections.singleton(codePath));
@@ -115,13 +124,13 @@ public class ReportOptionsBuilder implements BatchExtension {
       addOwnDependenciesToClassPath(classPathElements);
     }
     data.setClassPathElements(classPathElements);
-    
+
     data.setDependencyAnalysisMaxDistance(configuration.getInt(MAX_DEPENDENCY_DISTANCE, -1));  //this.mojo.getMaxDependencyDistance());
     data.setFailWhenNoMutations(configuration.getBoolean(FAIL_WHEN_NO_MUTATIONS, true)); // this.mojo.isFailWhenNoMutations());
 
     data.setTargetClasses(determineTargetClasses());
     data.setTargetTests(determineTargetTests());
-   
+
     data.setMutateStaticInitializers(configuration.getBoolean(MUTATE_STATIC_INITIALIZERS, false));
     data.setExcludedMethods(globStringsToPredicates(getConfigurationValues(EXCLUDED_METHODS)));
     data.setExcludedClasses(globStringsToPredicates(getConfigurationValues(EXCLUDED_CLASSES)));
@@ -129,41 +138,41 @@ public class ReportOptionsBuilder implements BatchExtension {
     data.setMaxMutationsPerClass(configuration.getInt(MAX_MUTATIONS_PER_CLASS, -1));
 
     final File reportDirectory;
-    String reportDirectoryPath =  configuration.getString(REPORT_DIRECTORY_KEY); 
+    String reportDirectoryPath =  configuration.getString(REPORT_DIRECTORY_KEY);
     if (Strings.isNullOrEmpty(reportDirectoryPath)) {
       // ${project.build.directory}/pit-reports
       reportDirectory = new File(fileSystem.getBuildDir(), "pit-reports");
     } else {
       reportDirectory = new File(reportDirectoryPath);
     }
-    
+
     // TODO do we need to check the existence of this directory?
     data.setReportDir(reportDirectory.getAbsolutePath());
-    
+
     if (LOG.isDebugEnabled()) {
       data.setVerbose(true);
     }
-    
+
     List<String> jvmArgs = getConfigurationValues(JVM_ARGS);
     if (!jvmArgs.isEmpty()) {
       data.addChildJVMArgs(jvmArgs);
     }
 
     data.setMutators(determineMutators());
-    
+
     data.setTimeoutConstant(configuration.getLong(TIMEOUT_CONSTANT, 3000));
     data.setTimeoutFactor(configuration.getFloat(TIMEOUT_FACTOR, 1.25f));
-    
+
     List<String> avoidCallsTo = getConfigurationValues(AVOID_CALLS_TO);
     if (!avoidCallsTo.isEmpty()) {
       data.setLoggingClasses(avoidCallsTo);
     }
 
-    
+
     List<File> sourceDirectories = Lists.newArrayList(fileSystem.getSourceDirs());
     sourceDirectories.addAll(fileSystem.getTestDirs());
     data.setSourceDirs(sourceDirectories);
-    
+
     data.addOutputFormats(Lists.newArrayList(OutputFormat.XML));
 
     setTestType(data);
@@ -175,28 +184,28 @@ public class ReportOptionsBuilder implements BatchExtension {
     File pitestJar = new File(fileSystem.getSonarWorkingDirectory(), PITEST_JAR_NAME);
     classPath.add(pitestJar.getAbsolutePath());
   }
-  
+
   private void setTestType(ReportOptions data) {
-    List<String> excludedTestNGGroups 
+    List<String> excludedTestNGGroups
       = getConfigurationValues(EXCLUDED_TESTNG_GROUPS);
-    List<String> includedTestNGGroups 
+    List<String> includedTestNGGroups
       = getConfigurationValues(INCLUDED_TESTNG_GROUPS);
-    TestGroupConfig conf 
+    TestGroupConfig conf
       = new TestGroupConfig(excludedTestNGGroups, includedTestNGGroups);
     data.setGroupConfig(conf);
-    
+
     data.setConfiguration(configurationBuilder.build(data));
   }
-  
+
   private Collection<Predicate<String>> globStringsToPredicates(
       final Collection<String> excludedMethods) {
     return FCollection.map(excludedMethods, Glob.toGlobPredicate());
   }
- 
+
   private Collection<Predicate<String>> determineTargetTests() {
     return FCollection.map(getConfigurationValues(TARGET_TESTS), Glob.toGlobPredicate());
   }
-  
+
   private Collection<MethodMutatorFactory> determineMutators() {
     List<String> mutators = getConfigurationValues(MUTATORS);
     final Collection<MethodMutatorFactory> result;
@@ -216,7 +225,7 @@ public class ReportOptionsBuilder implements BatchExtension {
 
     };
   }
-  
+
   private List<String> getConfigurationValues(String key) {
     final List<String> values;
     if (configuration.getStringArray(key) == null) {
@@ -226,7 +235,7 @@ public class ReportOptionsBuilder implements BatchExtension {
     }
     return values;
   }
-  
+
   private Collection<Predicate<String>> determineTargetClasses() {
     final Collection<String> filters = getConfigurationValues(TARGET_CLASSES);
     if (filters.isEmpty()) {
@@ -238,7 +247,7 @@ public class ReportOptionsBuilder implements BatchExtension {
       return FCollection.map(filters, Glob.toGlobPredicate());
     }
   }
-  
+
   public static class DependencyFilter implements Predicate<Artifact> {
 
     private final Set<String> allowedGroups = new HashSet<String>();
