@@ -1,0 +1,46 @@
+div.mutations {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    border-top: 1px solid #DDDDDD;
+    padding: 10px;
+}
+
+div.mutation {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    margin: 0;
+}
+
+span.mutationname {
+    color: #4183C4;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+span.mutationkilled {
+    color: #00BB00;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+span.mutationsurvived {
+    color: #BB0000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+span.mutationnocoverage {
+    color: #FFA500;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+div.mutationDescription {
+    background-color: #F4F4F4;
+    border-top: 1px solid #DDDDDD;
+    line-height: 1.5em;
+    margin: 0;
+    padding: 5px 10px;
+    border-top: medium none;
+}

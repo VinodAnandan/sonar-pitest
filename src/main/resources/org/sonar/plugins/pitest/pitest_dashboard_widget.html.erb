@@ -1,0 +1,28 @@
+<%	if measure('pitest_mutations_total') and measure('pitest_mutations_total').value > 0 %>
+<div class="yui-gd">
+  <div class="yui-u first">
+    <div class="dashbox">
+		<h3><%= metric('pitest_mutations_coverage').short_name -%></h3>
+		<p><span class="big"><%= format_measure('pitest_mutations_coverage', :suffix => '', :url => url_for_drilldown('pitest_mutations_coverage')) -%></span></p>
+		<p><%= format_measure('pitest_mutations_total', :suffix => ' total mutations', :url => url_for_drilldown('pitest_mutations_total')) -%></p>
+		<p><%= format_measure('pitest_mutations_detected', :suffix => ' detected mutations', :url => url_for_drilldown('pitest_mutations_detected')) -%></p>
+    </div>
+  </div>
+  <div class="yui-u">
+    <div class="dashbox">
+		<h3>Killed mutations</h3>
+		<p><%= format_measure('pitest_mutations_killed', :suffix => ' mutations killed by tests ', :url => url_for_drilldown('pitest_mutations_killed')) -%><%= tendency_icon(measure('pitest_mutations_killed')) %></p>
+		<p><%= format_measure('pitest_mutations_memoryError', :suffix => ' mutations killed by memory errors ', :url => url_for_drilldown('pitest_mutations_memoryError')) -%><%= tendency_icon(measure('pitest_mutations_memoryError')) %></p>
+		<p><%= format_measure('pitest_mutations_timedOut', :suffix => ' mutations killed by time outs ', :url => url_for_drilldown('pitest_mutations_timedOut')) -%><%= tendency_icon(measure('pitest_mutations_timedOut')) %></p>
+    </div>
+  </div>
+  <div class="yui-u">
+    <div class="dashbox">
+		<h3>Non killed mutations</h3>
+  		 <p><%= format_measure('pitest_mutations_survived', :suffix => ' survived mutations ', :url => url_for_drilldown('pitest_mutations_survived')) -%><%= tendency_icon(measure('pitest_mutations_survived')) %></p>
+  		 <p><%= format_measure('pitest_mutations_noCoverage', :suffix => ' non covered mutations ', :url => url_for_drilldown('pitest_mutations_noCoverage')) -%><%= tendency_icon(measure('pitest_mutations_noCoverage')) %></p>
+  		 <p><%= format_measure('pitest_mutations_unknown', :suffix => ' mutations with unknown status ', :url => url_for_drilldown('pitest_mutations_unknown')) -%><%= tendency_icon(measure('pitest_mutations_unknown')) %></p>
+    </div>
+  </div>
+</div>  
+<% end %>

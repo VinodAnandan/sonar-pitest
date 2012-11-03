@@ -19,7 +19,12 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_ACTIVE;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 
 import java.io.File;
 import java.util.Collection;
@@ -33,37 +38,39 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.Violation;
+import org.sonar.plugins.pitest.viewer.client.Mutant;
 
+/**
+ * Sonar sensor for pitest mutation coverage analysis.
+ *
+ * @version Added pitest metrics even when the survived mutant rule is not active. By <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
+ */
 public class PitestSensor implements Sensor {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-  private final Configuration configuration;
-  private final ResultParser parser;
-  private final String executionMode;
-  private final PitestExecutor executor;
-  private final RulesProfile rulesProfile;
+	private final Configuration configuration;
+	private final ResultParser parser;
+	private final String executionMode;
+	private final PitestExecutor executor;
+	private final RulesProfile rulesProfile;
 
-  public PitestSensor(Configuration configuration, ResultParser parser, PitestExecutor executor,
-      RulesProfile rulesProfile) {
-    this.configuration = configuration;
-    this.parser = parser;
-    this.executor = executor;
-    this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
-    this.rulesProfile = rulesProfile;
-  }
+	public PitestSensor(Configuration configuration, ResultParser parser, PitestExecutor executor, RulesProfile rulesProfile) {
+		this.configuration = configuration;
+		this.parser = parser;
+		this.executor = executor;
+		this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+		this.rulesProfile = rulesProfile;
+	}
 
-  public boolean shouldExecuteOnProject(Project project) {
-    return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey()) && !MODE_SKIP.equals(executionMode);
-  }
+	public boolean shouldExecuteOnProject(Project project) {
+		return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey()) && !MODE_SKIP.equals(executionMode);
+	}
 
-  public void analyse(Project project, SensorContext context) {
-    List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
+	public void analyse(Project project, SensorContext context) {
+	  List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
     if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
       LOG.warn("/!\\ SKIP PIT mutation tests: PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
       return;
@@ -81,30 +88,21 @@ public class PitestSensor implements Sensor {
     if (xmlReport == null) {
       LOG.warn("No pitest report found !");
     } else {
-      Rule rule = activeRules.get(0).getRule();
-
       Collection<Mutant> mutants = parser.parse(xmlReport);
-      for (Mutant mutant : mutants) {
-        JavaFile resource = new JavaFile(mutant.getSonarJavaFileKey());
-        if (context.getResource(resource) != null) {
-          Violation violation = Violation.create(rule, resource).setLineId(mutant.getLineNumber())
-              .setMessage(mutant.getMutatorDescription());
-          context.saveViolation(violation);
-        }
-      }
+			PitestMAO pitestMAO = new PitestMAO();
+			pitestMAO.saveMutantsInfo(mutants, context, activeRules);
+		}
+	}
 
-    }
-  }
-
-  private File findReport(File reportDirectory) {
-    Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[] { "xml" }, true);
-    File latestReport = null;
-    for (File report : reports) {
-      if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
-        latestReport = report;
-      }
-    }
-    return latestReport;
-  }
+	private File findReport(File reportDirectory) {
+		Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[] { "xml" }, true);
+		File latestReport = null;
+		for (File report : reports) {
+			if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
+				latestReport = report;
+			}
+		}
+		return latestReport;
+	}
 
 }

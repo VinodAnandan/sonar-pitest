@@ -21,14 +21,14 @@ package org.sonar.plugins.pitest;
 
 import static org.sonar.plugins.pitest.PitestConstants.*;
 
+import java.util.List;
+
 import org.sonar.api.Extension;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
 
 import com.google.common.collect.Lists;
-
-import java.util.List;
 
 /**
  * This class is the entry point for all PIT extensions
@@ -53,13 +53,13 @@ import java.util.List;
     name = "Methods not to mutate", description = "List of globs to match against method names. Methods matching the globs will be exluded from mutation.", global = false,
     project = true),
   @Property(key = EXCLUDED_CLASSES, defaultValue = "",
-    name = "Classes not to mutate or run tests from", description = "List of globs to match against class names. Matching classes will be excluded from mutation. Matching test classes will not be run (note if a suite includes an excluded class, then it will “leak” back in).", global = false,
+    name = "Classes not to mutate or run tests from", description = "List of globs to match against class names. Matching classes will be excluded from mutation. Matching test classes will not be run (note if a suite includes an excluded class, then it will leak back in).", global = false,
     project = true),
   @Property(key = AVOID_CALLS_TO, defaultValue = "(major logging framework APIs)",
     name = "List of packages and classes which are to be considered outside the scope of mutation", description = "", global = true,
     project = true),
   @Property(key = MAX_DEPENDENCY_DISTANCE, defaultValue = "-1",
-    name = "Maximum distance to look from test to class. Relevant when mutating static initializers", 
+    name = "Maximum distance to look from test to class. Relevant when mutating static initializers",
     description = "", global = false,
     project = true),
   @Property(key = THREADS, defaultValue = "1",
@@ -73,7 +73,7 @@ import java.util.List;
     project = true),
   @Property(key = TIMEOUT_FACTOR, defaultValue = "1.25",
     name = "Weighting to allow for timeouts", description = "A factor to apply to the normal runtime of a test when considering if it is stuck in an infinite loop.", global = true,
-    project = true),  
+    project = true),
   @Property(key = TIMEOUT_CONSTANT, defaultValue = "3000",
     name = "Constant amount of additional time to allow for timeouts", description = "Constant amount of additional time to allow a test to run for (after the application of the timeoutFactor) before considering it to be stuck in an infinite loop.", global = true,
     project = true),
@@ -99,13 +99,18 @@ public final class PitestPlugin extends SonarPlugin {
   @SuppressWarnings("unchecked")
   public List<Class<? extends Extension>> getExtensions() {
     return Lists.newArrayList(
-        ResultParser.class, 
-        PitestRuleRepository.class, 
+        ResultParser.class,
+        PitestRuleRepository.class,
         PitestSensor.class,
         PitestConfigurationBuilder.class,
         PitestExecutor.class,
         ReportOptionsBuilder.class,
-        JarExtractor.class
+        JarExtractor.class,
+        PitestMetrics.class,
+        PitestDecorator.class,
+        PitestCoverageDecorator.class,
+        PitestDashboardWidget.class,
+        PitSourceTab.class
     );
   }
 }

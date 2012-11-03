@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.File;
@@ -27,33 +26,34 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.plugins.pitest.viewer.client.Mutant;
+import org.sonar.plugins.pitest.viewer.client.Mutant.MutantStatus;
 import org.sonar.test.TestUtils;
-
 
 public class ResultParserTest {
 
-  private ResultParser parser;
-  
-  @Before
-  public void setUp() {
-    parser = new ResultParser();
-  }
-  
-  
-  @Test
-  public void should_parse_report_and_find_mutants() {
-    File report = TestUtils.getResource("mutations.xml");
-    Collection<Mutant> mutants = parser.parse(report);
-    assertThat(mutants).isNotEmpty().hasSize(11);
-    
-    Mutant expectedMutant = new Mutant(
-      "org.sonar.plugins.csharp.gallio.GallioSensor", 
-      166, 
-      "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"
-    );
-    
-    assertThat(mutants).onProperty("lineNumber").contains(166);
-    
-  }
-  
+	private ResultParser parser;
+
+	@Before
+	public void setUp() {
+		parser = new ResultParser();
+	}
+
+	@Test
+	public void should_parse_report_and_find_mutants() {
+		File report = TestUtils.getResource("mutations.xml");
+		Collection<Mutant> mutants = parser.parse(report);
+		assertThat(mutants).isNotEmpty().hasSize(39);
+
+		assertThat(mutants).contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", 87,
+				"org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+		assertThat(mutants).contains(new Mutant(false, MutantStatus.NO_COVERAGE, "org.sonar.plugins.csharp.gallio.GallioSensor", 162,
+				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
+		assertThat(mutants).contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", 166,
+				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
+		assertThat(mutants).contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
+				"org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"));
+		assertThat(mutants).onProperty("lineNumber").contains(166);
+		assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.UNKNOWN);
+	}
 }
