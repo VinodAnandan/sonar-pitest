@@ -40,7 +40,6 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.plugins.pitest.viewer.client.Mutant;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.

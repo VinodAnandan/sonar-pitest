@@ -27,7 +27,7 @@ import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
 
-import static org.sonar.plugins.pitest.viewer.client.PitestMetricsKeys.*;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
 
 /**
  * Metrics for the sonar pitest plugin.

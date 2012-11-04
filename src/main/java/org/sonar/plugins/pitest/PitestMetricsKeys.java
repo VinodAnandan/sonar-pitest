@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest.viewer.client;
+package org.sonar.plugins.pitest;
 
 /**
  * {@link PitestMetrics} keys.

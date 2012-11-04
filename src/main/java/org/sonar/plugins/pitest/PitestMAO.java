@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -35,16 +34,11 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
-import org.sonar.plugins.pitest.viewer.client.Mutant;
-import org.sonar.plugins.pitest.viewer.client.Mutant.MutantStatus;
+import org.sonar.plugins.pitest.Mutant.MutantStatus;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 /**
  * Utility class to save mutation metrics and violations from the Mutants
@@ -55,146 +49,6 @@ import com.google.common.collect.Multimaps;
 public class PitestMAO {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PitestMAO.class);
-
-	private static final class MetricsInfo {
-		private List<Mutant> mutants = new ArrayList<Mutant>();
-		private double mutationsTotal = 0;
-		private double mutationsNoCoverage = 0;
-		private double mutationsKilled = 0;
-		private double mutationsSurvived = 0;
-		private double mutationsMemoryError = 0;
-		private double mutationsTimedOut = 0;
-		private double mutationsUnknown = 0;
-		private double mutationsDetected = 0;
-
-		private MetricsInfo() {
-		}
-
-		private void addMutant(Mutant mutant) {
-			mutants.add(mutant);
-			if (mutant.isDetected()) {
-				incMutationsDetected();
-			}
-			switch (mutant.getMutantStatus()) {
-				case KILLED:
-					incMutationsKilled();
-					break;
-				case NO_COVERAGE:
-					incMutationsNoCoverage();
-					break;
-				case SURVIVED: // Only survived mutations are saved as violations
-					incMutationsSurvived();
-					break;
-				case MEMORY_ERROR:
-					incMutationsMemoryError();
-					break;
-				case TIMED_OUT:
-					incMutationsTimedOut();
-					break;
-				case UNKNOWN:
-					incMutationsUnknown();
-					break;
-			}
-		}
-
-		private void incMutationsTotal() {
-			mutationsTotal++;
-		}
-
-		private void incMutationsNoCoverage() {
-			incMutationsTotal();
-			mutationsNoCoverage++;
-		}
-
-		private void incMutationsKilled() {
-			incMutationsTotal();
-			mutationsKilled++;
-		}
-
-		private void incMutationsSurvived() {
-			incMutationsTotal();
-			mutationsSurvived++;
-		}
-
-		private void incMutationsMemoryError() {
-			incMutationsTotal();
-			mutationsMemoryError++;
-		}
-
-		private void incMutationsTimedOut() {
-			incMutationsTotal();
-			mutationsTimedOut++;
-		}
-
-		private void incMutationsUnknown() {
-			incMutationsTotal();
-			mutationsUnknown++;
-		}
-
-		private void incMutationsDetected() {
-			mutationsDetected++;
-		}
-
-		private List<Mutant> getMutants() {
-			return mutants;
-		}
-
-		/**
-		 * @return the mutationsTotal
-		 */
-		private double getMutationsTotal() {
-			return mutationsTotal;
-		}
-
-		/**
-		 * @return the mutationsNoCoverage
-		 */
-		private double getMutationsNoCoverage() {
-			return mutationsNoCoverage;
-		}
-
-		/**
-		 * @return the mutationsKilled
-		 */
-		private double getMutationsKilled() {
-			return mutationsKilled;
-		}
-
-		/**
-		 * @return the mutationsSurvived
-		 */
-		private double getMutationsSurvived() {
-			return mutationsSurvived;
-		}
-
-		/**
-		 * @return the mutationsMemoryError
-		 */
-		private double getMutationsMemoryError() {
-			return mutationsMemoryError;
-		}
-
-		/**
-		 * @return the mutationsTimedOut
-		 */
-		private double getMutationsTimedOut() {
-			return mutationsTimedOut;
-		}
-
-		/**
-		 * @return the mutationsUnknown
-		 */
-		private double getMutationsUnknown() {
-			return mutationsUnknown;
-		}
-
-		/**
-		 * @return the mutationsDetected
-		 */
-		private double getMutationsDetected() {
-			return mutationsDetected;
-		}
-	}
 
 	private MetricsInfo noResourceMetrics = new MetricsInfo();
 

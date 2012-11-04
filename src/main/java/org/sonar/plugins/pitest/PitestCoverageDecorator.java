@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
 
 /**
  * Mutation coverage decorator.
- * 
+ *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 public class PitestCoverageDecorator implements Decorator {

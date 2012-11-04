@@ -27,7 +27,6 @@ import org.sonar.api.web.RequiredMeasures;
 import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
-import org.sonar.plugins.pitest.viewer.client.PitestMetricsKeys;
 
 @NavigationSection(NavigationSection.RESOURCE_TAB)
 @ResourceQualifier({Qualifiers.FILE, Qualifiers.CLASS})
