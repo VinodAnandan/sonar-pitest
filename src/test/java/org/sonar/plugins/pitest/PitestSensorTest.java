@@ -53,7 +53,6 @@ import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
-import org.sonar.plugins.pitest.Mutant.MutantStatus;
 import org.sonar.test.TestUtils;
 
 public class PitestSensorTest {

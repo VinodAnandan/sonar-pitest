@@ -22,7 +22,7 @@ package org.sonar.plugins.pitest;
 import java.util.ArrayList;
 import java.util.List;
 
-final class MetricsInfo {
+public class JavaFileMutants {
 	private List<Mutant> mutants = new ArrayList<Mutant>();
 	private double mutationsTotal = 0;
 	private double mutationsNoCoverage = 0;
@@ -32,9 +32,6 @@ final class MetricsInfo {
 	private double mutationsTimedOut = 0;
 	private double mutationsUnknown = 0;
 	private double mutationsDetected = 0;
-
-	MetricsInfo() {
-	}
 
 	void addMutant(Mutant mutant) {
 		mutants.add(mutant);

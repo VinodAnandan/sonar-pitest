@@ -34,7 +34,6 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
-import org.sonar.plugins.pitest.Mutant.MutantStatus;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
@@ -50,7 +49,7 @@ public class PitestMAO {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PitestMAO.class);
 
-	private MetricsInfo noResourceMetrics = new MetricsInfo();
+	private JavaFileMutants noResourceMetrics = new JavaFileMutants();
 
 	/**
 	 * Save Mutant info (violations and metrics).
@@ -64,13 +63,13 @@ public class PitestMAO {
 	 *            domain.
 	 */
 	public void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
-		Map<Resource<?>, MetricsInfo> metrics = collectMetrics(mutants, context, activeRules);
-		for (Entry<Resource<?>, MetricsInfo> entry : metrics.entrySet()) {
+		Map<Resource<?>, JavaFileMutants> metrics = collectMetrics(mutants, context, activeRules);
+		for (Entry<Resource<?>, JavaFileMutants> entry : metrics.entrySet()) {
 			saveMetricsInfo(context, entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void saveMetricsInfo(SensorContext context, Resource<?> resource, MetricsInfo metricsInfo) {
+	private void saveMetricsInfo(SensorContext context, Resource<?> resource, JavaFileMutants metricsInfo) {
 		double detected = metricsInfo.getMutationsDetected();
 		double total = metricsInfo.getMutationsTotal();
 		context.saveMeasure(resource, PitestMetrics.MUTATIONS_TOTAL, total);
@@ -86,34 +85,14 @@ public class PitestMAO {
 
 	private void saveData(SensorContext context, Resource<?> resource, List<Mutant> mutants) {
 		if ((mutants != null) && (!mutants.isEmpty())) {
-			Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
-
-			for (Mutant mutant : mutants) {
-			  mutantsByLine.put(mutant.getLineNumber(), mutant.toJSON());
-      }
-
-			StringBuilder builder = new StringBuilder();
-			builder.append("{");
-			boolean first = true;
-			for (int line : mutantsByLine.keys()) {
-			  if (!first) {
-			    builder.append(",");
-			  }
-			  first = false;
-			  builder.append("\"");
-			  builder.append(line);
-			  builder.append("\":[");
-			  builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
-			  builder.append("]");
-			}
-			builder.append("}");
-			Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, builder.toString());
+		  String json = Mutant.toJSON(mutants);
+		  Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, json);
       context.saveMeasure(resource, measure);
 		}
 	}
 
-	private Map<Resource<?>, MetricsInfo> collectMetrics(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
-		Map<Resource<?>, MetricsInfo> metricsByResource = new HashMap<Resource<?>, MetricsInfo>();
+	private Map<Resource<?>, JavaFileMutants> collectMetrics(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
+		Map<Resource<?>, JavaFileMutants> metricsByResource = new HashMap<Resource<?>, JavaFileMutants>();
 		Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
 		JavaFile resource;
 		for (Mutant mutant : mutants) {
@@ -137,7 +116,7 @@ public class PitestMAO {
 		return rule;
 	}
 
-	private void processMutant(Mutant mutant, MetricsInfo resourceMetricsInfo, JavaFile resource, SensorContext context, Rule rule) {
+	private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, JavaFile resource, SensorContext context, Rule rule) {
 		resourceMetricsInfo.addMutant(mutant);
 		if (resource != null && rule != null && MutantStatus.SURVIVED.equals(mutant.getMutantStatus())) {
 			// Only survived mutations are saved as violations
@@ -146,12 +125,12 @@ public class PitestMAO {
 		}
 	}
 
-	private static MetricsInfo getMetricsInfo(Map<Resource<?>, MetricsInfo> metrics, Resource<?> resource) {
-		MetricsInfo metricsInfo = null;
+	private static JavaFileMutants getMetricsInfo(Map<Resource<?>, JavaFileMutants> metrics, Resource<?> resource) {
+		JavaFileMutants metricsInfo = null;
 		if (resource != null) {
 			metricsInfo = metrics.get(resource);
 			if (metricsInfo == null) {
-				metricsInfo = new MetricsInfo();
+				metricsInfo = new JavaFileMutants();
 				metrics.put(resource, metricsInfo);
 			}
 		}

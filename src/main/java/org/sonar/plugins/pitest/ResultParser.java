@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.utils.SonarException;
-import org.sonar.plugins.pitest.Mutant.MutantStatus;
 
 import com.google.common.collect.Lists;
 

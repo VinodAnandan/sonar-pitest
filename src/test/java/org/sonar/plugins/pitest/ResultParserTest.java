@@ -26,7 +26,6 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.plugins.pitest.Mutant.MutantStatus;
 import org.sonar.test.TestUtils;
 
 public class ResultParserTest {
