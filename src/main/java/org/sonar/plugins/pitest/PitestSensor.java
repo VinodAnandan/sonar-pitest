@@ -28,7 +28,10 @@ import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -36,10 +39,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.measures.Measure;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
+import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
+import org.sonar.api.rules.Rule;
+import org.sonar.api.rules.Violation;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.
@@ -49,6 +57,8 @@ import org.sonar.api.rules.ActiveRule;
 public class PitestSensor implements Sensor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
+
+	private JavaFileMutants noResourceMetrics = new JavaFileMutants();
 
 	private final Configuration configuration;
 	private final ResultParser parser;
@@ -88,8 +98,7 @@ public class PitestSensor implements Sensor {
       LOG.warn("No pitest report found !");
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
-			PitestMAO pitestMAO = new PitestMAO();
-			pitestMAO.saveMutantsInfo(mutants, context, activeRules);
+			saveMutantsInfo(mutants, context, activeRules);
 		}
 	}
 
@@ -103,5 +112,80 @@ public class PitestSensor implements Sensor {
 		}
 		return latestReport;
 	}
+
+	private void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
+    Map<Resource<?>, JavaFileMutants> metrics = collectMetrics(mutants, context, activeRules);
+    for (Entry<Resource<?>, JavaFileMutants> entry : metrics.entrySet()) {
+      saveMetricsInfo(context, entry.getKey(), entry.getValue());
+    }
+  }
+
+  private void saveMetricsInfo(SensorContext context, Resource<?> resource, JavaFileMutants metricsInfo) {
+    double detected = metricsInfo.getMutationsDetected();
+    double total = metricsInfo.getMutationsTotal();
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_TOTAL, total);
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_NO_COVERAGE, metricsInfo.getMutationsNoCoverage());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_KILLED, metricsInfo.getMutationsKilled());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_SURVIVED, metricsInfo.getMutationsSurvived());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_MEMORY_ERROR, metricsInfo.getMutationsMemoryError());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_TIMED_OUT, metricsInfo.getMutationsTimedOut());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_UNKNOWN, metricsInfo.getMutationsUnknown());
+    context.saveMeasure(resource, PitestMetrics.MUTATIONS_DETECTED, detected);
+    saveData(context, resource, metricsInfo.getMutants());
+  }
+
+  private void saveData(SensorContext context, Resource<?> resource, List<Mutant> mutants) {
+    if ((mutants != null) && (!mutants.isEmpty())) {
+      String json = Mutant.toJSON(mutants);
+      Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, json);
+      context.saveMeasure(resource, measure);
+    }
+  }
+
+  private Map<Resource<?>, JavaFileMutants> collectMetrics(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
+    Map<Resource<?>, JavaFileMutants> metricsByResource = new HashMap<Resource<?>, JavaFileMutants>();
+    Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
+    JavaFile resource;
+    for (Mutant mutant : mutants) {
+      resource = context.getResource(new JavaFile(mutant.getSonarJavaFileKey()));
+      if (resource == null) {
+        LOG.warn("Mutation in an unknown resource: {}", mutant);
+        processMutant(mutant, noResourceMetrics, resource, context, rule);
+      }
+      else {
+        processMutant(mutant, getMetricsInfo(metricsByResource, resource), resource, context, rule);
+      }
+    }
+    return metricsByResource;
+  }
+
+  private Rule getSurvivedRule(List<ActiveRule> activeRules) {
+    Rule rule = null;
+    if (activeRules != null && !activeRules.isEmpty()) {
+      rule = activeRules.get(0).getRule();
+    }
+    return rule;
+  }
+
+  private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, JavaFile resource, SensorContext context, Rule rule) {
+    resourceMetricsInfo.addMutant(mutant);
+    if (resource != null && rule != null && MutantStatus.SURVIVED.equals(mutant.getMutantStatus())) {
+      // Only survived mutations are saved as violations
+      Violation violation = Violation.create(rule, resource).setLineId(mutant.getLineNumber()).setMessage(mutant.getViolationDescription());
+      context.saveViolation(violation);
+    }
+  }
+
+  private static JavaFileMutants getMetricsInfo(Map<Resource<?>, JavaFileMutants> metrics, Resource<?> resource) {
+    JavaFileMutants metricsInfo = null;
+    if (resource != null) {
+      metricsInfo = metrics.get(resource);
+      if (metricsInfo == null) {
+        metricsInfo = new JavaFileMutants();
+        metrics.put(resource, metricsInfo);
+      }
+    }
+    return metricsInfo;
+  }
 
 }
