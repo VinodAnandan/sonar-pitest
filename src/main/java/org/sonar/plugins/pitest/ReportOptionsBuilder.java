@@ -100,6 +100,16 @@ public class ReportOptionsBuilder implements BatchExtension {
     this.configurationBuilder = configurationBuilder;
   }
 
+  public File detectBaseDir() {
+    // copy/paste from PitMojo
+    // execution project doesn't seem to always be available.
+    // possibly a maven 2 vs maven 3 issue?
+    MavenProject executionProject = mvnProject==null ? null : mvnProject.getExecutionProject();
+    if ( executionProject == null ) {
+      return null;
+    }
+    return executionProject.getBasedir();
+  }
 
   public ReportOptions build() {
     final ReportOptions data = new ReportOptions();

@@ -19,27 +19,26 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.PITEST_JAR_NAME;
-
-import java.net.URL;
-
+import org.pitest.classinfo.CodeSource;
+import org.pitest.coverage.CoverageGenerator;
+import org.pitest.coverage.DefaultCoverageGenerator;
 import org.pitest.coverage.execute.CoverageOptions;
 import org.pitest.coverage.execute.LaunchOptions;
 import org.pitest.functional.FCollection;
+import org.pitest.functional.Option;
 import org.pitest.internal.ClassPath;
 import org.pitest.internal.ClassPathByteArraySource;
-import org.pitest.internal.IsolationUtils;
-import org.pitest.internal.classloader.DefaultPITClassloader;
 import org.pitest.mutationtest.CompoundListenerFactory;
-import org.pitest.mutationtest.CoverageDatabase;
-import org.pitest.mutationtest.DefaultCoverageDatabase;
 import org.pitest.mutationtest.MutationClassPaths;
-import org.pitest.mutationtest.MutationCoverageReport;
+import org.pitest.mutationtest.MutationCoverage;
 import org.pitest.mutationtest.ReportOptions;
+import org.pitest.mutationtest.SettingsFactory;
 import org.pitest.mutationtest.Timings;
+import org.pitest.mutationtest.incremental.HistoryStore;
+import org.pitest.mutationtest.incremental.WriterFactory;
+import org.pitest.mutationtest.incremental.XStreamHistoryStore;
 import org.pitest.mutationtest.instrument.JarCreatingJarFinder;
 import org.pitest.mutationtest.instrument.KnownLocationJavaAgentFinder;
-import org.pitest.mutationtest.report.DatedDirectoryResultOutputStrategy;
 import org.pitest.mutationtest.report.OutputFormat;
 import org.pitest.mutationtest.report.ResultOutputStrategy;
 import org.pitest.mutationtest.verify.DefaultBuildVerifier;
@@ -49,15 +48,21 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.utils.SonarException;
 
+import java.io.File;
+import java.io.Reader;
+import java.net.URL;
+
+import static org.sonar.plugins.pitest.PitestConstants.PITEST_JAR_NAME;
+
 
 public class PitestExecutor implements BatchExtension {
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(PitestExecutor.class);
 
   private final ReportOptionsBuilder builder;
   private final JarExtractor jarExtractor;
-  
-  
+
+
   public PitestExecutor(ReportOptionsBuilder builder, JarExtractor jarExtractor) {
     this.builder = builder;
     this.jarExtractor = jarExtractor;
@@ -72,50 +77,55 @@ public class PitestExecutor implements BatchExtension {
     extractPitJar();
     ReportOptions data = builder.build();
     LOG.debug("Running report with {}", data);
+    File baseDir = builder.detectBaseDir();
+
+    final SettingsFactory settings = new SettingsFactory(data);
+
     final ClassPath cp = data.getClassPath();
+
+
+    final Option<Reader> reader = data.createHistoryReader();
+    final WriterFactory historyWriter = data.createHistoryWriter();
 
     // workaround for apparent java 1.5 JVM bug . . . might not play nicely
     // with distributed testing
-    final JavaAgent jac = new JarCreatingJarFinder(new ClassPathByteArraySource(cp));
+    final JavaAgent jac = new JarCreatingJarFinder(
+        new ClassPathByteArraySource(cp));
     final KnownLocationJavaAgentFinder ja = new KnownLocationJavaAgentFinder(
         jac.getJarLocation().value());
 
-    final ResultOutputStrategy reportOutput = new DatedDirectoryResultOutputStrategy(
-        data.getReportDir());
+    final ResultOutputStrategy reportOutput = settings.getOutputStrategy();
+
     final CompoundListenerFactory reportFactory = new CompoundListenerFactory(
         FCollection.map(data.getOutputFormats(),
             OutputFormat.createFactoryForFormat(reportOutput)));
 
-    CoverageOptions coverageOptions = data.createCoverageOptions();
-    LaunchOptions launchOptions = new LaunchOptions(ja, data.getJvmArgs());
-    MutationClassPaths cps = data.getMutationClassPaths();
+    final CoverageOptions coverageOptions = data.createCoverageOptions();
+    final LaunchOptions launchOptions = new LaunchOptions(ja, data.getJvmArgs());
+    final MutationClassPaths cps = data.getMutationClassPaths();
 
-    Timings timings = new Timings();
-    final CoverageDatabase coverageDatabase = new DefaultCoverageDatabase(
-        coverageOptions, launchOptions, cps, timings);
-    final MutationCoverageReport report = new MutationCoverageReport(
-        coverageDatabase, data, reportFactory, timings, new DefaultBuildVerifier());
+    final CodeSource code = new CodeSource(cps, coverageOptions.getPitConfig()
+        .testClassIdentifier());
 
-    // Create new classloader under boot
-    final ClassLoader loader = new DefaultPITClassloader(cp,
-        IsolationUtils.bootClassLoader());
-    final ClassLoader original = IsolationUtils.getContextClassLoader();
+    final Timings timings = new Timings();
+    final CoverageGenerator coverageDatabase = new DefaultCoverageGenerator(
+        baseDir, coverageOptions, launchOptions, code,
+        settings.createCoverageExporter(), timings, !data.isVerbose());
+
+    final HistoryStore history = new XStreamHistoryStore(historyWriter, reader);
+
+    final MutationCoverage report = new MutationCoverage(baseDir, history,
+        code, coverageDatabase, data, reportFactory, timings,
+        new DefaultBuildVerifier());
 
     try {
-      IsolationUtils.setContextClassLoader(loader);
-
-      final Runnable run = (Runnable) IsolationUtils.cloneForLoader(report,
-          loader);
-
-      run.run();
-
-    } catch (final Exception e) {
+      report.runReport();
+    } catch (Exception e) {
       throw new SonarException("fail", e);
     } finally {
-      IsolationUtils.setContextClassLoader(original);
       jac.close();
       ja.close();
-
+      historyWriter.close();
     }
   }
 
