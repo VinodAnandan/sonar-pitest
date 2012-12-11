@@ -22,13 +22,13 @@
   </scm>
 
   <properties>
-  	<license.owner>Alexandre Victoor</license.owner>
+    <license.owner>Alexandre Victoor</license.owner>
     <sonar.buildVersion>3.0</sonar.buildVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.min.version>1.5</jdk.min.version>
     <junit.version>4.10</junit.version>
     <powermock.version>1.4.10</powermock.version>
-    <pitest.version>0.27</pitest.version>
+    <pitest.version>0.29</pitest.version>
     <fest.version>1.4</fest.version>
     <guava.version>11.0.2</guava.version>
 
@@ -46,11 +46,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-		<groupId>org.codehaus.sonar</groupId>
-		<artifactId>sonar-gwt-api</artifactId>
-		<version>${sonar.buildVersion}</version>
-		<scope>provided</scope>
-	</dependency>
+    <groupId>org.codehaus.sonar</groupId>
+    <artifactId>sonar-gwt-api</artifactId>
+    <version>${sonar.buildVersion}</version>
+    <scope>provided</scope>
+  </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
@@ -63,13 +63,13 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
-	</dependency>
+  </dependency>
 
-	<dependency>
-	  <groupId>org.pitest</groupId>
+  <dependency>
+    <groupId>org.pitest</groupId>
       <artifactId>pitest</artifactId>
       <version>${pitest.version}</version>
-	</dependency>
+  </dependency>
 
     <!-- unit tests -->
     <dependency>
@@ -84,10 +84,10 @@
       <version>${junit.version}</version>
     </dependency>
     <dependency>
-	  <groupId>org.easytesting</groupId>
-	  <artifactId>fest-assert</artifactId>
-	  <version>${fest.version}</version>
-	  <scope>test</scope>
+    <groupId>org.easytesting</groupId>
+    <artifactId>fest-assert</artifactId>
+    <version>${fest.version}</version>
+    <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
@@ -148,28 +148,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>gwt-maven-plugin</artifactId>
-		<version>1.2</version>
-		<executions>
-	      <execution>
-		    <configuration>
-			  <modules>
-				<module>org.sonar.plugins.pitest.viewer.CoverageViewer</module>
-			  </modules>
-		      <skip>${skipGwt}</skip>
-              <webappDirectory>${project.build.directory}/classes</webappDirectory>
-
-
-              <extraJvmArgs>-Xmx256m -Dgwt.jjs.permutationWorkerFactory=com.google.gwt.dev.ThreadedPermutationWorkerFactory</extraJvmArgs>
-            </configuration>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin> -->
     </plugins>
   </build>
 </project>
