@@ -112,6 +112,7 @@
         <extensions>true</extensions>
         <configuration>
           <pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
+          <pluginName>Pitest</pluginName>
         </configuration>
       </plugin>
       <plugin>

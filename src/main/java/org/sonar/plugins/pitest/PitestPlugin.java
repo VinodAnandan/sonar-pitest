@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
  */
 @Properties({
   @Property(key = MODE_KEY, defaultValue = MODE_SKIP,
-    name = "PIT activation mode", description = "Possible values:  empty (means skip), 'enable' and 'reuseReport'", global = true,
+    name = "PIT activation mode", description = "Possible values:  empty (means skip), 'active' and 'reuseReport'", global = true,
     project = true),
   @Property(key = REPORT_DIRECTORY_KEY, defaultValue = REPORT_DIRECTORY_DEF,
     name = "Output directory for the PIT reports", description = "This property is needed only when the 'reuseReport' mode is activated", global = true,
