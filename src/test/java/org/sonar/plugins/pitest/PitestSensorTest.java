@@ -21,11 +21,7 @@ package org.sonar.plugins.pitest;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_ACTIVE;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_REUSE_REPORT;
@@ -61,7 +57,6 @@ public class PitestSensorTest {
 	private RulesProfile rulesProfile;
 	private ResultParser parser;
 	private Configuration configuration;
-	private PitestExecutor executor;
 	private Project project;
 
 	@Before
@@ -69,13 +64,12 @@ public class PitestSensorTest {
 		rulesProfile = mock(RulesProfile.class);
 		parser = mock(ResultParser.class);
 		configuration = mock(Configuration.class);
-		executor = mock(PitestExecutor.class);
 		project = mock(Project.class);
 		when(project.getLanguageKey()).thenReturn(Java.KEY);
 	}
 
 	private void createSensor() {
-		sensor = new PitestSensor(configuration, parser, executor, rulesProfile);
+		sensor = new PitestSensor(configuration, parser, rulesProfile);
 	}
 
 	@Test
@@ -114,33 +108,23 @@ public class PitestSensorTest {
 	}
 
 	@Test
-	public void should_skip_analysis_when_pitest_rule_not_activated() throws Exception {
+	public void should_not_skip_analysis_when_pitest_rule_not_activated() throws Exception {
 		when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
 		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_ACTIVE);
 		when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.EMPTY_LIST);
     when(rulesProfile.getName()).thenReturn("fake pit profile");
-    createSensor();
 
-    sensor.analyse(project, null);
-
-    verify(executor, never()).execute();
-	}
-
-	@Test
-	public void should_launch_pit_and_parse_reports_in_normal_mode() throws Exception {
-		when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
-		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_ACTIVE);
-		should_parse_report(false, true);
+    should_parse_report(true);
 	}
 
 	@Test
 	public void should_parse_reports_in_reuse_mode() throws Exception {
 		when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
 		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
-		should_parse_report(true, true);
+		should_parse_report(true);
 	}
 
-	private void should_parse_report(boolean reuseMode, boolean activeRule) {
+	private void should_parse_report(boolean activeRule) {
 		if (activeRule) {
 			ActiveRule fakeActiveRule = mock(ActiveRule.class);
 			when(fakeActiveRule.getRule()).thenReturn(Rule.create());
@@ -171,12 +155,6 @@ public class PitestSensorTest {
 		JavaFile javaFile = mock(JavaFile.class);
 		when(context.getResource(any(JavaFile.class))).thenReturn(javaFile);
 		sensor.analyse(project, context);
-
-		if (reuseMode) {
-			verify(executor, never()).execute();
-		} else {
-			verify(executor, times(1)).execute();
-		}
 
 		if (activeRule) {
 			ArgumentCaptor<Violation> violationCaptor = ArgumentCaptor.forClass(Violation.class);

@@ -28,7 +28,6 @@
     <jdk.min.version>1.5</jdk.min.version>
     <junit.version>4.10</junit.version>
     <powermock.version>1.4.10</powermock.version>
-    <pitest.version>0.29</pitest.version>
     <fest.version>1.4</fest.version>
     <guava.version>11.0.2</guava.version>
 
@@ -57,12 +56,6 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
-  </dependency>
-
-  <dependency>
-    <groupId>org.pitest</groupId>
-      <artifactId>pitest</artifactId>
-      <version>${pitest.version}</version>
   </dependency>
 
     <!-- unit tests -->

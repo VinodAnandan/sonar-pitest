@@ -52,7 +52,8 @@ import org.sonar.api.rules.Violation;
 /**
  * Sonar sensor for pitest mutation coverage analysis.
  *
- * @version Added pitest metrics even when the survived mutant rule is not active. By <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
+ * <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
+ * <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
  */
 public class PitestSensor implements Sensor {
 
@@ -63,13 +64,11 @@ public class PitestSensor implements Sensor {
 	private final Configuration configuration;
 	private final ResultParser parser;
 	private final String executionMode;
-	private final PitestExecutor executor;
 	private final RulesProfile rulesProfile;
 
-	public PitestSensor(Configuration configuration, ResultParser parser, PitestExecutor executor, RulesProfile rulesProfile) {
+	public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile) {
 		this.configuration = configuration;
 		this.parser = parser;
-		this.executor = executor;
 		this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
 		this.rulesProfile = rulesProfile;
 	}
@@ -81,12 +80,7 @@ public class PitestSensor implements Sensor {
 	public void analyse(Project project, SensorContext context) {
 	  List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
     if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
-      LOG.warn("/!\\ SKIP PIT mutation tests: PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
-      return;
-    }
-
-    if (MODE_ACTIVE.equals(executionMode)) {
-      executor.execute();
+      LOG.warn("/!\\ PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
     }
 
     File projectDirectory = project.getFileSystem().getBasedir();

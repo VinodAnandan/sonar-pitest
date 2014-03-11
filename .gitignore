@@ -1,0 +1,13 @@
+# ---- Maven
+target/
+
+# ---- IntelliJ IDEA
+*.iws
+*.iml
+*.ipr
+.idea/
+
+# ---- Eclipse
+.classpath
+.project
+.settings
