@@ -19,22 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.MODE_ACTIVE;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
@@ -48,6 +33,15 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static org.sonar.plugins.pitest.PitestConstants.*;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.
@@ -63,15 +57,17 @@ public class PitestSensor implements Sensor {
 
 	private final Configuration configuration;
 	private final ResultParser parser;
-	private final String executionMode;
+  private final ReportFinder reportFinder;
+  private final String executionMode;
 	private final RulesProfile rulesProfile;
 
-	public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile) {
+	public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile, ReportFinder reportFinder) {
 		this.configuration = configuration;
 		this.parser = parser;
-		this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+    this.reportFinder = reportFinder;
+    this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
 		this.rulesProfile = rulesProfile;
-	}
+  }
 
 	public boolean shouldExecuteOnProject(Project project) {
 		return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey()) && !MODE_SKIP.equals(executionMode);
@@ -87,24 +83,13 @@ public class PitestSensor implements Sensor {
     String reportDirectoryPath = configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
 
     File reportDirectory = new File(projectDirectory, reportDirectoryPath);
-    File xmlReport = findReport(reportDirectory);
+    File xmlReport = reportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
-      LOG.warn("No pitest report found !");
+      LOG.warn("No PIT report found in directory {} !", reportDirectory);
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
 			saveMutantsInfo(mutants, context, activeRules);
 		}
-	}
-
-	private File findReport(File reportDirectory) {
-		Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[] { "xml" }, true);
-		File latestReport = null;
-		for (File report : reports) {
-			if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
-				latestReport = report;
-			}
-		}
-		return latestReport;
 	}
 
 	private void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {

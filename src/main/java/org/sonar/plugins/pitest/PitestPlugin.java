@@ -48,6 +48,7 @@ public final class PitestPlugin extends SonarPlugin {
   public List<Class<? extends Extension>> getExtensions() {
     return Lists.newArrayList(
         ResultParser.class,
+        ReportFinder.class,
         PitestRuleRepository.class,
         PitestSensor.class,
         PitestMetrics.class,

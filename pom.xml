@@ -33,8 +33,6 @@
 
     <!--  eat your own dog food -->
     <sonar.pitest.mode>active</sonar.pitest.mode>
-    <sonar.pit.target.classes>org.sonar.plugins.pitest*</sonar.pit.target.classes>
-    <sonar.pit.target.tests>org.sonar.plugins.pitest*</sonar.pit.target.tests>
   </properties>
 
   <dependencies>
@@ -135,6 +133,24 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>0.33</version>
+        <configuration>
+          <targetClasses>
+            <param>org.sonar.plugins.pitest*</param>
+          </targetClasses>
+          <targetTests>
+            <param>org.sonar.plugins.pitest*</param>
+          </targetTests>
+          <outputFormats>
+            <outputFormat>XML</outputFormat>
+            <outputFormat>HTML</outputFormat>
+          </outputFormats>
+        </configuration>
       </plugin>
     </plugins>
   </build>

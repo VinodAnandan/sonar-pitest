@@ -38,7 +38,10 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
@@ -51,25 +54,28 @@ import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
 import org.sonar.test.TestUtils;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
 
 	private PitestSensor sensor;
+  @Mock
 	private RulesProfile rulesProfile;
-	private ResultParser parser;
-	private Configuration configuration;
+  @Mock
+  private ResultParser parser;
+  @Mock
+  private Configuration configuration;
+  @Mock
 	private Project project;
+  @Mock
+  private ReportFinder reportFinder;
 
-	@Before
+  @Before
 	public void setUp() {
-		rulesProfile = mock(RulesProfile.class);
-		parser = mock(ResultParser.class);
-		configuration = mock(Configuration.class);
-		project = mock(Project.class);
 		when(project.getLanguageKey()).thenReturn(Java.KEY);
 	}
 
 	private void createSensor() {
-		sensor = new PitestSensor(configuration, parser, rulesProfile);
+		sensor = new PitestSensor(configuration, parser, rulesProfile, reportFinder);
 	}
 
 	@Test
@@ -124,6 +130,19 @@ public class PitestSensorTest {
 		should_parse_report(true);
 	}
 
+  @Test
+  public void should_not_fail_when_no_report_found() throws Exception {
+    when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
+    when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
+    createSensor();
+    ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
+    when(fileSystem.getBasedir()).thenReturn(TestUtils.getResource("."));
+    when(project.getFileSystem()).thenReturn(fileSystem);
+    when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
+    when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
+    sensor.analyse(project, mock(SensorContext.class));
+  }
+
 	private void should_parse_report(boolean activeRule) {
 		if (activeRule) {
 			ActiveRule fakeActiveRule = mock(ActiveRule.class);
@@ -138,7 +157,8 @@ public class PitestSensorTest {
 		ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
 		when(fileSystem.getBasedir()).thenReturn(TestUtils.getResource("."));
 		when(project.getFileSystem()).thenReturn(fileSystem);
-		when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn(".");
+		when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
+    when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(new File("fake-report.xml"));
 
 		List<Mutant> mutants = new ArrayList<Mutant>();
 		Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "survived", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
