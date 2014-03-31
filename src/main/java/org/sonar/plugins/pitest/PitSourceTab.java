@@ -28,11 +28,21 @@ import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
 
+import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
+
 @NavigationSection(NavigationSection.RESOURCE_TAB)
 @ResourceQualifier({Qualifiers.FILE, Qualifiers.CLASS})
 @DefaultTab(
     metrics = {
-     PitestMetricsKeys.MUTATIONS_TOTAL_KEY
+     MUTATIONS_TOTAL_KEY,
+     MUTATIONS_COVERAGE_KEY,
+     MUTATIONS_DETECTED_KEY,
+     MUTATIONS_KILLED_KEY,
+     MUTATIONS_MEMORY_ERROR_KEY,
+     MUTATIONS_NO_COVERAGE_KEY,
+     MUTATIONS_SURVIVED_KEY,
+     MUTATIONS_TIMED_OUT_KEY,
+     MUTATIONS_UNKNOWN_KEY
     })
 @RequiredMeasures(anyOf = { PitestMetricsKeys.MUTATIONS_DATA_KEY })
 @UserRole(UserRole.CODEVIEWER)
