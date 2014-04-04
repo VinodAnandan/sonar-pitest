@@ -5,8 +5,7 @@
   <parent>
     <groupId>org.codehaus.sonar-plugins</groupId>
     <artifactId>parent</artifactId>
-    <version>13</version>
-    <relativePath>../parent</relativePath>
+    <version>17</version>
   </parent>
 
   <artifactId>sonar-pitest-plugin</artifactId>
@@ -23,7 +22,7 @@
 
   <properties>
     <license.owner>Alexandre Victoor</license.owner>
-    <sonar.buildVersion>3.0</sonar.buildVersion>
+    <sonar.buildVersion>3.7</sonar.buildVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.min.version>1.5</jdk.min.version>
     <junit.version>4.10</junit.version>

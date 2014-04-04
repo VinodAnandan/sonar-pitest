@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.pitest;
 
+import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_ACTIVE;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_REUSE_REPORT;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
@@ -43,16 +43,22 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Project.AnalysisType;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.Violation;
+import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.test.TestUtils;
+
+import javax.annotation.Nullable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
@@ -68,14 +74,18 @@ public class PitestSensorTest {
 	private Project project;
   @Mock
   private ReportFinder reportFinder;
+  @Mock
+  private ModuleFileSystem fileSystem;
+  @Mock
+  private ResourcePerspectives perspectives;
 
   @Before
 	public void setUp() {
-		when(project.getLanguageKey()).thenReturn(Java.KEY);
+		when(fileSystem.files(any(FileQuery.class))).thenReturn(asList(new File("whatever")));
 	}
 
 	private void createSensor() {
-		sensor = new PitestSensor(configuration, parser, rulesProfile, reportFinder);
+		sensor = new PitestSensor(configuration, parser, rulesProfile, reportFinder, fileSystem, perspectives);
 	}
 
 	@Test
@@ -84,15 +94,6 @@ public class PitestSensorTest {
 		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_SKIP);
 		createSensor();
 		assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-	}
-
-	@Test
-	public void should_do_analysis_if_pit_mode_set_propertly() throws Exception {
-		when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
-		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_ACTIVE);
-		createSensor();
-
-		assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
 	}
 
 	@Test
@@ -107,7 +108,7 @@ public class PitestSensorTest {
 	@Test
 	public void should_skip_analysis_if_dynamic_analysis_disabled() throws Exception {
 		when(project.getAnalysisType()).thenReturn(AnalysisType.STATIC);
-		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_ACTIVE);
+		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
 		createSensor();
 
 		assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
@@ -116,7 +117,7 @@ public class PitestSensorTest {
 	@Test
 	public void should_not_skip_analysis_when_pitest_rule_not_activated() throws Exception {
 		when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
-		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_ACTIVE);
+		when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
 		when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.EMPTY_LIST);
     when(rulesProfile.getName()).thenReturn("fake pit profile");
 
@@ -135,9 +136,7 @@ public class PitestSensorTest {
     when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
     when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
     createSensor();
-    ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
-    when(fileSystem.getBasedir()).thenReturn(TestUtils.getResource("."));
-    when(project.getFileSystem()).thenReturn(fileSystem);
+    when(fileSystem.baseDir()).thenReturn(TestUtils.getResource("."));
     when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
     when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
     sensor.analyse(project, mock(SensorContext.class));
@@ -154,9 +153,7 @@ public class PitestSensorTest {
 		}
 		when(rulesProfile.getName()).thenReturn("fake pit profile");
 
-		ProjectFileSystem fileSystem = mock(ProjectFileSystem.class);
-		when(fileSystem.getBasedir()).thenReturn(TestUtils.getResource("."));
-		when(project.getFileSystem()).thenReturn(fileSystem);
+		when(fileSystem.baseDir()).thenReturn(TestUtils.getResource("."));
 		when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
     when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(new File("fake-report.xml"));
 
@@ -174,15 +171,20 @@ public class PitestSensorTest {
 		SensorContext context = mock(SensorContext.class);
 		JavaFile javaFile = mock(JavaFile.class);
 		when(context.getResource(any(JavaFile.class))).thenReturn(javaFile);
+    Issuable issuable = mock(Issuable.class);
+    Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
+    when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
+    when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
+    when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
+    when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
+    when(perspectives.as(Issuable.class, javaFile)).thenReturn(issuable);
 		sensor.analyse(project, context);
 
-		if (activeRule) {
-			ArgumentCaptor<Violation> violationCaptor = ArgumentCaptor.forClass(Violation.class);
-			verify(context, times(1)).saveViolation(violationCaptor.capture());
-			Violation violation = violationCaptor.getValue();
-			assertThat(violation.getLineId()).isEqualTo(survived.getLineNumber());
-			assertThat(violation.getMessage()).isEqualTo(survived.getViolationDescription());
-		}
+    if (activeRule) {
+      verify(perspectives).as(Issuable.class, javaFile);
+      ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
+      verify(issuable, times(1)).addIssue(issueCaptor.capture());
+    }
 
 		// TODO: Test saved metrics.
 	}

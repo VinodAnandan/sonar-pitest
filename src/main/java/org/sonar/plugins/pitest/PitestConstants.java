@@ -40,8 +40,6 @@ public final class PitestConstants {
 
   public static final String MODE_KEY = "sonar.pitest.mode";
 
-  public static final String MODE_ACTIVE = "active";
-
   public static final String MODE_SKIP = "skip";
 
   public static final String MODE_REUSE_REPORT = "reuseReport";

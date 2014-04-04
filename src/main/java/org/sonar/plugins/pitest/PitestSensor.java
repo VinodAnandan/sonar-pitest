@@ -24,15 +24,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Java;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.Violation;
+import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
 import java.io.File;
 import java.util.Collection;
@@ -51,35 +54,41 @@ import static org.sonar.plugins.pitest.PitestConstants.*;
  */
 public class PitestSensor implements Sensor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-	private JavaFileMutants noResourceMetrics = new JavaFileMutants();
+  private JavaFileMutants noResourceMetrics = new JavaFileMutants();
 
-	private final Configuration configuration;
-	private final ResultParser parser;
+  private final Configuration configuration;
+  private final ResultParser parser;
   private final ReportFinder reportFinder;
   private final String executionMode;
-	private final RulesProfile rulesProfile;
+  private final RulesProfile rulesProfile;
+  private final ModuleFileSystem fileSystem;
+  private final ResourcePerspectives perspectives;
 
-	public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile, ReportFinder reportFinder) {
-		this.configuration = configuration;
-		this.parser = parser;
+  public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile, ReportFinder reportFinder, ModuleFileSystem fileSystem, ResourcePerspectives perspectives) {
+    this.configuration = configuration;
+    this.parser = parser;
     this.reportFinder = reportFinder;
+    this.fileSystem = fileSystem;
+    this.perspectives = perspectives;
     this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
-		this.rulesProfile = rulesProfile;
+    this.rulesProfile = rulesProfile;
   }
 
-	public boolean shouldExecuteOnProject(Project project) {
-		return project.getAnalysisType().isDynamic(true) && Java.KEY.equals(project.getLanguageKey()) && !MODE_SKIP.equals(executionMode);
-	}
+  public boolean shouldExecuteOnProject(Project project) {
+    return project.getAnalysisType().isDynamic(true)
+        && !fileSystem.files(FileQuery.onSource().onLanguage("java")).isEmpty()
+        && !MODE_SKIP.equals(executionMode);
+  }
 
-	public void analyse(Project project, SensorContext context) {
-	  List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
+  public void analyse(Project project, SensorContext context) {
+    List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
     if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
       LOG.warn("/!\\ PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
     }
 
-    File projectDirectory = project.getFileSystem().getBasedir();
+    File projectDirectory = fileSystem.baseDir();
     String reportDirectoryPath = configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
 
     File reportDirectory = new File(projectDirectory, reportDirectoryPath);
@@ -88,11 +97,11 @@ public class PitestSensor implements Sensor {
       LOG.warn("No PIT report found in directory {} !", reportDirectory);
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
-			saveMutantsInfo(mutants, context, activeRules);
-		}
-	}
+      saveMutantsInfo(mutants, context, activeRules);
+    }
+  }
 
-	private void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
+  private void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
     Map<Resource<?>, JavaFileMutants> metrics = collectMetrics(mutants, context, activeRules);
     for (Entry<Resource<?>, JavaFileMutants> entry : metrics.entrySet()) {
       saveMetricsInfo(context, entry.getKey(), entry.getValue());
@@ -124,9 +133,9 @@ public class PitestSensor implements Sensor {
   private Map<Resource<?>, JavaFileMutants> collectMetrics(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
     Map<Resource<?>, JavaFileMutants> metricsByResource = new HashMap<Resource<?>, JavaFileMutants>();
     Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
-    JavaFile resource;
+    Resource resource;
     for (Mutant mutant : mutants) {
-      resource = context.getResource(new JavaFile(mutant.getSonarJavaFileKey()));
+      resource = context.getResource(new org.sonar.api.resources.File(mutant.getSonarJavaFileKey()));
       if (resource == null) {
         LOG.warn("Mutation in an unknown resource: {}", mutant);
         processMutant(mutant, noResourceMetrics, resource, context, rule);
@@ -146,12 +155,21 @@ public class PitestSensor implements Sensor {
     return rule;
   }
 
-  private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, JavaFile resource, SensorContext context, Rule rule) {
+  private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, Resource resource, SensorContext context, Rule rule) {
     resourceMetricsInfo.addMutant(mutant);
     if (resource != null && rule != null && MutantStatus.SURVIVED.equals(mutant.getMutantStatus())) {
       // Only survived mutations are saved as violations
-      Violation violation = Violation.create(rule, resource).setLineId(mutant.getLineNumber()).setMessage(mutant.getViolationDescription());
-      context.saveViolation(violation);
+      Issuable issuable = perspectives.as(Issuable.class, resource);
+      if (issuable != null) {
+        // can be used
+        Issue issue
+            = issuable.newIssueBuilder()
+                .ruleKey(RuleKey.of(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY))
+                .line(mutant.getLineNumber())
+                .message(mutant.getViolationDescription())
+                .build();
+        issuable.addIssue(issue);
+      }
     }
   }
 
@@ -165,6 +183,11 @@ public class PitestSensor implements Sensor {
       }
     }
     return metricsInfo;
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName();
   }
 
 }
