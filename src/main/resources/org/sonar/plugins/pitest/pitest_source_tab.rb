@@ -108,3 +108,7 @@
 </td></tr>
 </tbody>
 </table>
+<script>
+  // nasty hack to avoid having the footer in the middle of the panel
+  setTimeout(function() { $j("#accordion-panel").height('auto'); }, 500);
+</script>
