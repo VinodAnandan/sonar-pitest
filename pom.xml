@@ -14,6 +14,23 @@
   <name>Sonar Pitest Plugin</name>
   <description>Plugin for the mutation testing tool Pitest</description>
 
+  <organization>
+    <name>Alexandre Victoor</name>
+  </organization>
+
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/15475</url>
+  </issueManagement>
+
+  <licenses>
+    <license>
+      <name>GNU LGPL 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
     <connection>scm:git:git@github.com:SonarCommunity/sonar-pitest.git</connection>
     <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-pitest.git</developerConnection>
