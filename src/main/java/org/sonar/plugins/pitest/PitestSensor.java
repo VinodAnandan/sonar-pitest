@@ -86,6 +86,7 @@ public class PitestSensor implements Sensor {
     List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
     if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
       LOG.warn("/!\\ PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
+      LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
     }
 
     File projectDirectory = fileSystem.baseDir();
@@ -94,7 +95,8 @@ public class PitestSensor implements Sensor {
     File reportDirectory = new File(projectDirectory, reportDirectoryPath);
     File xmlReport = reportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
-      LOG.warn("No PIT report found in directory {} !", reportDirectory);
+      LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
+      LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
       saveMutantsInfo(mutants, context, activeRules);
