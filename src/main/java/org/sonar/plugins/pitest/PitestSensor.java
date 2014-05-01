@@ -137,9 +137,12 @@ public class PitestSensor implements Sensor {
     Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
     Resource resource;
     for (Mutant mutant : mutants) {
-      resource = context.getResource(new org.sonar.api.resources.File(mutant.getSonarJavaFileKey()));
+      org.sonar.api.resources.File file = new org.sonar.api.resources.File(mutant.getSonarJavaFileKey());
+      context.index(file);
+      resource = context.getResource(file);
       if (resource == null) {
-        LOG.warn("Mutation in an unknown resource: {}", mutant);
+        LOG.warn("Mutation in an unknown resource: {}", mutant.getSonarJavaFileKey());
+        LOG.debug("Mutant: {}", mutant);
         processMutant(mutant, noResourceMetrics, resource, context, rule);
       }
       else {
