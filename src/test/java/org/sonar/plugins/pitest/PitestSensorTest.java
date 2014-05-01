@@ -33,15 +33,20 @@ import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
@@ -51,6 +56,7 @@ import org.sonar.api.resources.Java;
 import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Project.AnalysisType;
+import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
@@ -169,8 +175,25 @@ public class PitestSensorTest {
 		createSensor();
 
 		SensorContext context = mock(SensorContext.class);
-		JavaFile javaFile = mock(JavaFile.class);
-		when(context.getResource(any(JavaFile.class))).thenReturn(javaFile);
+		final JavaFile javaFile = mock(JavaFile.class);
+    final Set<Resource> knownResources = new HashSet<Resource>();
+    when(context.index(any(Resource.class))).thenAnswer(new Answer<Object>() {
+      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+        if (knownResources.contains(invocationOnMock.getArguments()[0])) {
+          return true;
+        }
+        else {
+          knownResources.add((Resource) invocationOnMock.getArguments()[0]);
+          return false;
+        }
+      }
+    });
+		when(context.getResource(any(JavaFile.class))).thenAnswer(new Answer<Object>() {
+      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+        Assert.assertTrue(knownResources.contains(invocationOnMock.getArguments()[0]));
+        return javaFile;
+      }
+    });
     Issuable issuable = mock(Issuable.class);
     Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
     when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
