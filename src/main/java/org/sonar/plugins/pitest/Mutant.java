@@ -155,6 +155,11 @@ public class Mutant {
     return true;
   }
 
+  @Override
+  public String toString() {
+    return toJSON();
+  }
+
   public static String toJSON(List<Mutant> mutants) {
     Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
 
