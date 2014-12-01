@@ -29,6 +29,7 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
@@ -137,8 +138,9 @@ public class PitestSensor implements Sensor {
     Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
     Resource resource;
     for (Mutant mutant : mutants) {
-      org.sonar.api.resources.File file = new org.sonar.api.resources.File(mutant.getSonarJavaFileKey());
-      context.index(file);
+        JavaFile file = new JavaFile(mutant.getSonarJavaFileKey());
+      //context.index(file);
+
       resource = context.getResource(file);
       if (resource == null) {
         LOG.warn("Mutation in an unknown resource: {}", mutant.getSonarJavaFileKey());

@@ -22,6 +22,7 @@ package org.sonar.plugins.pitest;
 import java.util.List;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -83,40 +84,19 @@ public class Mutant {
     return sonarJavaFileKey;
   }
 
-  public String getClassName() {
-    return className;
-  }
-
   public int getLineNumber() {
     return lineNumber;
-  }
-
-  public Mutator getMutator() {
-    return mutator;
   }
 
   public String getViolationDescription() {
     return mutator.getDescription() + " without breaking the tests";
   }
 
-  /**
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((className == null) ? 0 : className.hashCode());
-    result = prime * result + (detected ? 1231 : 1237);
-    result = prime * result + lineNumber;
-    result = prime * result + ((mutantStatus == null) ? 0 : mutantStatus.hashCode());
-    result = prime * result + ((mutator == null) ? 0 : mutator.hashCode());
-    return result;
+    return Objects.hashCode(className, detected, lineNumber, mutantStatus, mutator);
   }
 
-  /**
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -129,30 +109,12 @@ public class Mutant {
       return false;
     }
     Mutant other = (Mutant) obj;
-    if (className == null) {
-      if (other.className != null) {
-        return false;
-      }
-    } else if ( !className.equals(other.className)) {
-      return false;
-    }
-    if (detected != other.detected) {
-      return false;
-    }
-    if (lineNumber != other.lineNumber) {
-      return false;
-    }
-    if (mutantStatus != other.mutantStatus) {
-      return false;
-    }
-    if (mutator == null) {
-      if (other.mutator != null) {
-        return false;
-      }
-    } else if ( !mutator.equals(other.mutator)) {
-      return false;
-    }
-    return true;
+
+    return Objects.equal(className, other.className)
+      && Objects.equal(detected, other.detected)
+      && Objects.equal(lineNumber, other.lineNumber)
+      && Objects.equal(mutantStatus, other.mutantStatus)
+      && Objects.equal(mutator, other.mutator);
   }
 
   @Override
