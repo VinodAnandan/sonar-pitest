@@ -24,29 +24,13 @@ public enum MutantStatus {
 
   public static MutantStatus parse(String statusName) {
     if (statusName == null) {
-      return unknown(statusName);
+      return UNKNOWN;
     }
     for (MutantStatus mutantStatus : MutantStatus.values()) {
       if (mutantStatus.name().equals(statusName)) {
         return mutantStatus;
       }
     }
-    return unknown(statusName);
-  }
-
-  private static MutantStatus unknown(String statusName) {
     return UNKNOWN;
-  }
-
-  boolean is(MutantStatus... mutantStatuses) {
-    if (mutantStatuses == null) {
-      return false;
-    }
-    for (MutantStatus mutantStatus : mutantStatuses) {
-      if (this == mutantStatus) {
-        return true;
-      }
-    }
-    return false;
   }
 }
