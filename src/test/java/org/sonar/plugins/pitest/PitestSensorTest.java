@@ -29,27 +29,25 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FilePredicate;
+import org.sonar.api.batch.fs.FilePredicates;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Project.AnalysisType;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.scan.filesystem.FileQuery;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -70,7 +68,7 @@ public class PitestSensorTest {
   @Mock
   private ReportFinder reportFinder;
   @Mock
-  private ModuleFileSystem fileSystem;
+  private FileSystem fileSystem;
   @Mock
   private ResourcePerspectives perspectives;
   @Mock
@@ -78,11 +76,17 @@ public class PitestSensorTest {
   @Mock
   private Issuable issuable;
   @Mock
-  private JavaFile javaFile;
+  private org.sonar.api.resources.File javaFile;
 
   @Before
   public void setUp() {
-    when(fileSystem.files(any(FileQuery.class))).thenReturn(asList(new File("whatever")));
+    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
+
+    doReturn(new File("/")).when(projectFileSystem).getBasedir();
+    doReturn(projectFileSystem).when(project).getFileSystem();
+    doReturn(new TreeSet<String>(Arrays.asList("java"))).when(fileSystem).languages();
+    doReturn(mock(FilePredicates.class)).when(fileSystem).predicates();
+    doReturn(Arrays.asList(new File("/"))).when(fileSystem).files(any(FilePredicate.class));
   }
 
   @Test
@@ -192,7 +196,7 @@ public class PitestSensorTest {
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "unkwon", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
-    when(context.getResource(any(JavaFile.class))).thenAnswer(new Answer<Object>() {
+    when(context.getResource(any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<Object>() {
       public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
         return javaFile;
       }
