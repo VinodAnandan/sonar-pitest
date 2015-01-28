@@ -26,129 +26,156 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-
 /**
  * Mutation information from the pitest report.
  *
- * @version Added metrics info by <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>. Also, it has been moved to the gwt
- *          client package to avoid code duplications.
+ * @version Added metrics info by <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>. Also, it has been
+ *          moved to the gwt client package to avoid code duplications.
  */
 public class Mutant {
 
-  private final boolean detected;
+    private final boolean detected;
 
-  private final MutantStatus mutantStatus;
+    private final MutantStatus mutantStatus;
 
-  private final String className;
+    private final String className;
 
-  private final int lineNumber;
+    private final int lineNumber;
 
-  private final Mutator mutator;
+    private final Mutator mutator;
 
-  private transient String sonarJavaFileKey;
+    private transient String sonarJavaFileKey;
 
-  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey) {
-    this(detected, mutantStatus, className, lineNumber, Mutator.parse(mutatorKey));
-  }
+    public Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
+            final String mutatedClass, final int lineNumber, final String mutatorKey) {
 
-  private Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, Mutator mutator) {
-    this.detected = detected;
-    this.mutantStatus = mutantStatus;
-    this.className = className;
-    this.lineNumber = lineNumber;
-    this.mutator = mutator;
-  }
-
-  /**
-   * @return the detected
-   */
-  public boolean isDetected() {
-    return detected;
-  }
-
-  /**
-   * @return the mutantStatus
-   */
-  public MutantStatus getMutantStatus() {
-    return mutantStatus;
-  }
-
-  public String getSonarJavaFileKey() {
-    if (sonarJavaFileKey == null) {
-      if (className.indexOf('$') > -1) {
-        sonarJavaFileKey = className.substring(0, className.indexOf('$'));
-      } else {
-        sonarJavaFileKey = className;
-      }
-    }
-    return sonarJavaFileKey;
-  }
-
-  public int getLineNumber() {
-    return lineNumber;
-  }
-
-  public String getViolationDescription() {
-    return mutator.getDescription() + " without breaking the tests";
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(className, detected, lineNumber, mutantStatus, mutator);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Mutant other = (Mutant) obj;
-
-    return Objects.equal(className, other.className)
-      && Objects.equal(detected, other.detected)
-      && Objects.equal(lineNumber, other.lineNumber)
-      && Objects.equal(mutantStatus, other.mutantStatus)
-      && Objects.equal(mutator, other.mutator);
-  }
-
-  @Override
-  public String toString() {
-    return toJSON();
-  }
-
-  public static String toJSON(List<Mutant> mutants) {
-    Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
-
-    for (Mutant mutant : mutants) {
-      mutantsByLine.put(mutant.getLineNumber(), mutant.toJSON());
+        this(detected, mutantStatus, sourceFile, mutatedClass, lineNumber, Mutator.parse(mutatorKey));
     }
 
-    StringBuilder builder = new StringBuilder();
-    builder.append("{");
-    boolean first = true;
-    for (int line : mutantsByLine.keySet()) {
-      if (!first) {
-        builder.append(",");
-      }
-      first = false;
-      builder.append("\"");
-      builder.append(line);
-      builder.append("\":[");
-      builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
-      builder.append("]");
+    private Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
+            final String className, final int lineNumber, final Mutator mutator) {
+
+        this.detected = detected;
+        this.mutantStatus = mutantStatus;
+        this.className = className;
+        this.lineNumber = lineNumber;
+        this.mutator = mutator;
     }
-    builder.append("}");
 
-    return builder.toString();
-  }
+    /**
+     * @return the detected
+     */
+    public boolean isDetected() {
 
-  private String toJSON() {
-    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\"  }";
-  }
+        return detected;
+    }
+
+    /**
+     * @return the mutantStatus
+     */
+    public MutantStatus getMutantStatus() {
+
+        return mutantStatus;
+    }
+
+    public String getSonarJavaFileKey() {
+
+        if (sonarJavaFileKey == null) {
+            String fileKey;
+            if (className.indexOf('$') > -1) {
+                fileKey = className.substring(0, className.indexOf('$'));
+            } else {
+                fileKey = className;
+            }
+            fileKey = fileKey.replaceAll("\\.", "/") + ".java";
+            sonarJavaFileKey = fileKey;
+
+        }
+        return sonarJavaFileKey;
+    }
+
+    public int getLineNumber() {
+
+        return lineNumber;
+    }
+
+    public String getViolationDescription() {
+
+        return mutator.getDescription() + " without breaking the tests";
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(className, detected, lineNumber, mutantStatus, mutator);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Mutant other = (Mutant) obj;
+
+        return Objects.equal(className, other.className)
+                && Objects.equal(detected, other.detected)
+                && Objects.equal(lineNumber, other.lineNumber)
+                && Objects.equal(mutantStatus, other.mutantStatus)
+                && Objects.equal(mutator, other.mutator);
+    }
+
+    @Override
+    public String toString() {
+
+        return toJSON();
+    }
+
+    public static String toJSON(final List<Mutant> mutants) {
+
+        final Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
+
+        for (final Mutant mutant : mutants) {
+            mutantsByLine.put(mutant.getLineNumber(), mutant.toJSON());
+        }
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        boolean first = true;
+        for (final int line : mutantsByLine.keySet()) {
+            if (!first) {
+                builder.append(",");
+            }
+            first = false;
+            builder.append("\"");
+            builder.append(line);
+            builder.append("\":[");
+            builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
+            builder.append("]");
+        }
+        builder.append("}");
+
+        return builder.toString();
+    }
+
+    private String toJSON() {
+
+        return "{ \"d\" : "
+                + detected
+                + ", \"s\" : \""
+                + mutantStatus
+                + "\", \"c\" : \""
+                + className
+                + "\", \"mname\" : \""
+                + mutator.getName()
+                + "\", \"mdesc\" : \""
+                + mutator.getDescription()
+                + "\"  }";
+    }
 }
