@@ -21,11 +21,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,14 +32,14 @@ import org.sonar.api.SonarPlugin;
  * This class is the entry point for all PIT extensions
  */
 @Properties({
-        @Property(key = MODE_KEY,
-                defaultValue = MODE_SKIP,
+        @Property(key = PitestPlugin.MODE_KEY,
+                defaultValue = PitestPlugin.MODE_SKIP,
                 name = "PIT activation mode",
                 description = "Possible values:  empty (means skip) and 'reuseReport'",
                 global = true,
                 project = true),
-        @Property(key = REPORT_DIRECTORY_KEY,
-                defaultValue = REPORT_DIRECTORY_DEF,
+        @Property(key = PitestPlugin.REPORT_DIRECTORY_KEY,
+                defaultValue = PitestPlugin.REPORT_DIRECTORY_DEF,
                 name = "Output directory for the PIT reports",
                 description = "This property is needed when the 'reuseReport' mode is activated and the reports are not located in the default directory (i.e. target/pit-reports)",
                 global = true,
@@ -52,11 +47,22 @@ import org.sonar.api.SonarPlugin;
 })
 public final class PitestPlugin extends SonarPlugin {
 
-    // modification: changed signature and creation of List
-    @Override
-    public List<Class<?>> getExtensions() {
+    public static final String MODE_KEY = "sonar.pitest.mode";
 
-        return Arrays.asList(ResultParser.class, ReportFinder.class, PitestRuleRepository.class, PitestSensor.class,
+    public static final String MODE_SKIP = "skip";
+
+    public static final String MODE_REUSE_REPORT = "reuseReport";
+
+    public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reportsDirectory";
+
+    public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
+
+    // modification: changed signature and creation of List
+    @SuppressWarnings("rawtypes")
+    @Override
+    public List getExtensions() {
+
+        return Arrays.asList(ResultParser.class, ReportFinder.class, PitestRulesDefinition.class, PitestSensor.class,
                 PitestMetrics.class, PitestDecorator.class, PitestCoverageDecorator.class, PitestDashboardWidget.class,
                 PitSourceTab.class);
     }

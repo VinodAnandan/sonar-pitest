@@ -2,6 +2,8 @@
  * Sonar Pitest Plugin
  * Copyright (C) 2009 Alexandre Victoor
  * dev@sonar.codehaus.org
+ * Copyright (C) 2015 Gerald Muecke
+ * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +36,8 @@ import org.sonar.api.BatchExtension;
 /**
  * Finder to determine the latest report file in the reports directory.
  *
- * @author gerald@moskito.li
+ * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
+ * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
  *
  */
 public class ReportFinder implements BatchExtension {

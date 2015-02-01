@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestPlugin.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestPlugin.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestPlugin.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestRulesDefinition.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestRulesDefinition.RULE_SURVIVED_MUTANT;
 
 import java.io.File;
 import java.util.Collection;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
@@ -50,6 +49,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.plugins.pitest.model.Mutant;
+import org.sonar.plugins.pitest.model.MutantHelper;
 import org.sonar.plugins.pitest.model.MutantStatus;
 
 /**
@@ -64,7 +64,6 @@ public class PitestSensor implements Sensor {
 
     private final JavaFileMutants noResourceMetrics = new JavaFileMutants();
 
-    private final Configuration configuration;
     private final ResultParser parser;
     private final ReportFinder reportFinder;
     private final String executionMode;
@@ -72,25 +71,27 @@ public class PitestSensor implements Sensor {
     private final FileSystem fileSystem;
     private final ResourcePerspectives perspectives;
 
-    public PitestSensor(final Configuration configuration, final ResultParser parser, final RulesProfile rulesProfile,
-            final ReportFinder reportFinder, final FileSystem fileSystem, final ResourcePerspectives perspectives) {
+    public PitestSensor(final ResultParser parser, final RulesProfile rulesProfile, final ReportFinder reportFinder,
+            final FileSystem fileSystem, final ResourcePerspectives perspectives) {
 
-        this.configuration = configuration;
         this.parser = parser;
         this.reportFinder = reportFinder;
         this.fileSystem = fileSystem;
         this.perspectives = perspectives;
-        executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+        // executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+        executionMode = MODE_SKIP;
         this.rulesProfile = rulesProfile;
     }
 
+    @Override
     public boolean shouldExecuteOnProject(final Project project) {
 
         return project.getAnalysisType().isDynamic(true)
                 && fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java"))
-                && !MODE_SKIP.equals(executionMode);
+                && !PitestPlugin.MODE_SKIP.equals(executionMode);
     }
 
+    @Override
     public void analyse(final Project project, final SensorContext context) {
 
         final List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
@@ -108,7 +109,7 @@ public class PitestSensor implements Sensor {
             LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
             LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
         } else {
-            final Collection<Mutant> mutants = parser.parse(xmlReport);
+            final Collection<Mutant> mutants = parser.parseMutants(xmlReport);
             saveMutantsInfo(mutants, context, activeRules);
         }
     }
@@ -140,7 +141,7 @@ public class PitestSensor implements Sensor {
     private void saveData(final SensorContext context, final Resource resource, final List<Mutant> mutants) {
 
         if (mutants != null && !mutants.isEmpty()) {
-            final String json = Mutant.toJSON(mutants);
+            final String json = MutantHelper.toJson(mutants);
             final Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, json);
             context.saveMeasure(resource, measure);
         }
@@ -192,9 +193,9 @@ public class PitestSensor implements Sensor {
             final Issuable issuable = perspectives.as(Issuable.class, resource);
             if (issuable != null) {
                 // can be used
-                final Issue issue = issuable.newIssueBuilder().
-                        .ruleKey(RuleKey.of(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY))
-                        .line(mutant.getLineNumber()).message(mutant.getViolationDescription()).build();
+                final Issue issue = issuable.newIssueBuilder()
+                        .ruleKey(RuleKey.of(REPOSITORY_KEY, RULE_SURVIVED_MUTANT)).line(mutant.getLineNumber())
+                        .message(mutant.getMutator().getViolationDescription()).build();
                 issuable.addIssue(issue);
             }
         }

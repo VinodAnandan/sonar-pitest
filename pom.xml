@@ -23,9 +23,11 @@
 	<developers>
 		<developer>
 			<name>Alexandre Victoor</name>
+			<email>alexvictoor@gmail.com</email>
 		</developer>
 		<developer>
 			<name>Gerald Muekce</name>
+			<email>gerald@moskito.li</email>
 		</developer>
 	</developers>
 
@@ -70,13 +72,11 @@
 			<version>${sonar.buildVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- 
 		<dependency>
 			<groupId>org.codehaus.sonar</groupId>
 			<artifactId>sonar-deprecated</artifactId>
 			<version>${sonar.buildVersion}</version>
 		</dependency>
- 		-->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-project</artifactId>
