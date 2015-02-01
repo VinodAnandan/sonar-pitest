@@ -1,0 +1,110 @@
+<div id="INLINE_CONSTS">
+<h2>Inline Constant Mutator (INLINE_CONSTS)</h2>
+
+<p>The inline constant mutator mutates inline constants. An inline constant is a
+literal value assigned to a non-final variable, for example</p>
+
+<pre class="prettyprint lang-java">
+public void foo() {
+  int i = 3;
+  // do something with i
+}
+</pre>
+
+<p>Depending on the type of the inline constant another mutation is used. The rules
+are a little complex due to the different ways that apparently similar Java statements
+are converted to byte code.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Constant Type</th>
+            <th>Mutation</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>boolean</code></td>
+            <td>
+                replace the unmutated value <code>true</code> with <code>false</code> and
+                replace the unmutated value <code>false</code> with <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td><code>integer</code> <code>byte</code> <code>short</code></td>
+            <td>
+                replace the unmutated value <code>1</code> with <code>0</code>,
+                <code>-1</code> with <code>1</code>, <code>5</code> with <code>-1</code>
+                or otherwise increment the unmutated value by one. <a href="#fn1"><sup>1</sup></a> <a name="fnref1" id="fnref1"></a>
+            </td>
+        </tr>
+        <tr>
+            <td><code>long</code></td>
+            <td>
+                replace the unmutated value <code>1</code> with <code>0</code>, otherwise
+                increment the unmutated value by one.
+            </td>
+        </tr>
+        <tr>
+            <td><code>float</code></td>
+            <td>
+                replace the unmutated values <code>1.0</code> and <code>2.0</code>
+                with <code>0.0</code> and replace any other value with <code>1.0</code> <a href="#fn2"><sup>2</sup></a> <a name="fnref2" id="fnref2"></a>
+            </td>
+        </tr>
+        <tr>
+            <td><code>double</code></td>
+            <td>
+                replace the unmutated value <code>1.0</code> with <code>0.0</code>
+                and replace any other value with <code>1.0</code> <a href="#fn3"><sup>3</sup></a> <a name="fnref3" id="fnref3"></a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>For example</p>
+
+<pre class="prettyprint lang-java">
+public int foo() {
+  int i = 42;
+  return i;
+}
+</pre>
+
+<p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public int foo() {
+  int i = 43;
+  return i;
+}
+</pre>
+
+<p>Please note that the compiler might optimize the use of final variables 
+(regardless whether those are stack variables or member variables). For example
+the following code</p>
+
+<pre class="prettyprint lang-java">
+public class A {
+  private static final int VAR = 13;
+  
+  public String foo() {
+    final int i = 42;
+    return "" + VAR + ":" + i;
+  }
+}
+</pre>
+
+<p>will be changed/optimized by the compiler to</p>
+
+<pre class="prettyprint lang-java">
+public class A {
+  public String foo() {
+    return "13:42";
+  }
+}
+</pre>
+
+<p>In such situations the mutation engine can not mutate any variable.</p>
+<p>see <a href="http://pitest.org/quickstart/mutators#INLINE_CONSTS">Pitest Mutators</a></p>
+</div>

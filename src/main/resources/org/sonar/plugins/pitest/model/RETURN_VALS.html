@@ -1,0 +1,73 @@
+<div id="RETURN_VALS">
+<h2>Return Values Mutator (RETURN_VALS)</h2>
+
+<p><strong>Active by default</strong></p>
+
+<p>The return values mutator mutates the return values of method calls. Depending
+on the return type of the method another mutation is used.<a href="#fn4"><sup>4</sup></a> <a name="fnref4" id="fnref4"></a></p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Return Type</th>
+            <th>Mutation</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>boolean</code></td>
+            <td>
+                replace the unmutated return value <code>true</code> with <code>false</code> and
+                replace the unmutated return value <code>false</code> with <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td><code>int</code> <code>byte</code> <code>short</code></td>
+            <td>
+                if the unmutated return value is <code>0</code> return <code>1</code>, otherwise
+                mutate to return value <code>0</code>
+            </td>
+        </tr>
+        <tr>
+            <td><code>long</code></td>
+            <td>
+                replace the unmutated return value <code>x</code> with the result of <code>x+1</code>
+            </td>
+        </tr>
+        <tr>
+            <td><code>float</code> <code>double</code></td>
+            <td>
+                replace the unmutated return value <code>x</code> with the result of
+                <code>-(x+1.0)</code> if <code>x</code> is not <code>NAN</code> and
+                replace <code>NAN</code> with <code>0</code>
+            </td>
+        </tr>
+        <tr>
+            <td><code>Object</code></td>
+            <td>
+                replace non-<code>null</code> return values with <code>null</code> and throw a
+                <code>java.lang.RuntimeException</code> if the unmutated method
+                would return <code>null</code>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>For example</p>
+
+<pre class="prettyprint lang-java">
+public Object foo() {
+  return new Object();
+}
+</pre>
+
+<p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public Object foo() {
+  new Object();
+  return null;
+}
+</pre>
+<p>see <a href="http://pitest.org/quickstart/mutators#RETURN_VALS">Pitest Mutators</a></p>
+</div>

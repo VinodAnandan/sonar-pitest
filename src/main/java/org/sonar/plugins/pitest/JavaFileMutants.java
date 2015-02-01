@@ -22,6 +22,8 @@ package org.sonar.plugins.pitest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sonar.plugins.pitest.model.Mutant;
+
 public class JavaFileMutants {
 	private List<Mutant> mutants = new ArrayList<Mutant>();
 	private double mutationsTotal = 0;

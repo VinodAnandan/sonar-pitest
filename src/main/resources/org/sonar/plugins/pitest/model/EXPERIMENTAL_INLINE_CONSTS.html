@@ -1,0 +1,77 @@
+<div id="EXPERIMENTAL_INLINE_CONSTS">
+<h2>Experimental Inline Constant Mutator (EXPERIMENTAL<em>INLINE</em>CONSTS)</h2>
+
+<p>The experimental inline constant mutator is similar to the inline constant mutator but attempts
+to provide a more consistent behaviour.</p>
+
+<p>As much as possible the mutator simply adds 1 to the value. This is not done in
+some cases for due to esoteric JVM details. In the case of floating point types
+simply adding 1 would result in equivalent mutants (for large enough values, (a + 1) == a).</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Constant Type</th>
+            <th>Mutation</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>boolean</code></td>
+            <td>
+                replace the unmutated value `true` with `false` and
+                replace the unmutated value `false` with `true`
+            </td>
+        </tr>
+        <tr>
+            <td><code>int</code> <code>byte</code> <code>short</code></td>
+            <td>
+                replace the unmutated value `1` with `0`, `-1` with `0`,
+                otherwise increment the unmutated value  by one.
+
+                Values of Byte.MAX, Short.MAX and Integer.MAX will be
+                rolled to the corresponding min value. This happens even
+                if the declared type would not overflow.
+            </td>
+        </tr>
+        <tr>
+            <td><code>long</code></td>
+            <td>
+                replace the unmutated value `1` with `0`, otherwise
+                increment the unmutated value by one.
+            </td>
+        </tr>
+        <tr>
+            <td><code>float</code></td>
+            <td>
+                replace the `0.0` with `1.0`, `1.0` with `2.0`
+                and replace any other value with `1.0`
+            </td>
+        </tr>
+        <tr>
+            <td><code>double</code></td>
+            <td>
+                replace the `0.0` with `1.0`, `1.0` with `2.0`
+                any replace other value with `1.0`
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>The rolling behaviour is a little surprising for <code>short</code> and <code>int</code> as the example below shows</p>
+
+<pre class="prettyprint lang-java">
+short s = Byte.MAX_VALUE;
+int i = Short.MAX_VALUE;
+int j = Byte.MAX_VALUE;
+</pre>
+
+<p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+short s = Byte.MIN_VALUE;
+int i = Short.MIN_VALUE;
+int j = Byte.MIN_VALUE
+</pre>
+<p>see <a href="http://pitest.org/quickstart/mutators#EXPERIMENTAL_INLINE_CONSTS">Pitest Mutators</a></p>
+</div>

@@ -1,0 +1,84 @@
+<div id="EXPERIMENTAL_MEMBER_VARIABLE">
+<h2>Experimental Member Variable Mutator (EXPERIMENTAL<em>MEMBER</em>VARIABLE)</h2>
+
+<p>The experimental member variable mutator mutates classes by removing assignments
+to member variables. The mutator can even remove assignments to final members.
+The members will be initialized with their Java Default Value for the specific
+type. See the table below.</p>
+
+<p>Table: Java Default Values for Primitives and Reference Types</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Default Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <code>boolean</code>
+            </td>
+            <td>`false`</td>
+        </tr>
+        <tr>
+            <td>
+                <code>int</code>
+                <code>short</code>
+                <code>byte</code>
+                <code>long</code>
+            </td>
+            <td>`0`</td>
+        </tr>
+        <tr>
+            <td>
+                <code>float</code>
+                <code>double</code>
+            </td>
+            <td>`0.0`</td>
+        </tr>
+        <tr>
+            <td>
+                <code>char</code>
+            </td>
+            <td>`'\u0000'`</td>
+        </tr>
+        <tr>
+            <td>
+                <code>Object</code>
+            </td>
+            <td>`null`</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>For example</p>
+
+<pre class="prettyprint lang-java">
+public class MutateMe {
+    private final int x = 5;
+    //...
+}
+</pre>
+
+<p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+  public class MutateMe {
+    private final int x = 0;
+    ...
+  }
+</pre>
+
+<p><strong>Please Note: This mutator is likely to create equivalent mutations</strong> if a
+member variable is <strong>explicitly</strong> initialized with the Java default value for 
+the specific type of the member variable as in</p>
+
+<pre class="prettyprint lang-java">
+public class EquivalentMutant {
+    private int x = 0;
+}
+</pre>
+<p>see <a href="http://pitest.org/quickstart/mutators#EXPERIMENTAL_MEMBER_VARIABLE">Pitest Mutators</a></p>
+</div>

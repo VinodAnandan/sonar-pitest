@@ -2,6 +2,8 @@
  * Sonar Pitest Plugin
  * Copyright (C) 2009 Alexandre Victoor
  * dev@sonar.codehaus.org
+ * Copyright (C) 2015 Gerald Muecke
+ * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,20 +19,27 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.model;
 
 public enum MutantStatus {
-  NO_COVERAGE, KILLED, SURVIVED, MEMORY_ERROR, TIMED_OUT, UNKNOWN;
+    NO_COVERAGE,
+    KILLED,
+    SURVIVED,
+    MEMORY_ERROR,
+    TIMED_OUT,
+    UNKNOWN;
 
-  public static MutantStatus parse(String statusName) {
-    if (statusName == null) {
-      return UNKNOWN;
+    public static MutantStatus parse(final String statusName) {
+
+        if (statusName == null) {
+            return UNKNOWN;
+        }
+        for (final MutantStatus mutantStatus : MutantStatus.values()) {
+            // changes by Gerald: changed to equalsIngoreCase
+            if (mutantStatus.name().equalsIgnoreCase(statusName)) {
+                return mutantStatus;
+            }
+        }
+        return UNKNOWN;
     }
-    for (MutantStatus mutantStatus : MutantStatus.values()) {
-      if (mutantStatus.name().equals(statusName)) {
-        return mutantStatus;
-      }
-    }
-    return UNKNOWN;
-  }
 }

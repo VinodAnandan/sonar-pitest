@@ -17,28 +17,45 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
+/*
+ * Modifications:
+ * gerald: - added javadoc,
+ *         - added todo comment
+ *         - externalized extensions array
+ */
 package org.sonar.plugins.pitest;
-
-import org.apache.commons.io.FileUtils;
-import org.sonar.api.BatchExtension;
 
 import java.io.File;
 import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
+import org.sonar.api.BatchExtension;
+
+/**
+ * Finder to determine the latest report file in the reports directory.
+ *
+ * @author gerald@moskito.li
+ *
+ */
 public class ReportFinder implements BatchExtension {
 
-  public File findReport(File reportDirectory) {
-    if (reportDirectory== null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
-      return null;
-    }
-    Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[]{"xml"}, true);
-    File latestReport = null;
-    for (File report : reports) {
-      if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
-        latestReport = report;
-      }
-    }
-    return latestReport;
-  }
+    private static final String[] FILE_EXTENSIONS = new String[] {
+        "xml"
+    };
 
+    public File findReport(final File reportDirectory) {
+
+        if (reportDirectory == null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
+            // TODO null shouldnt be returned
+            return null;
+        }
+        final Collection<File> reports = FileUtils.listFiles(reportDirectory, FILE_EXTENSIONS, true);
+        File latestReport = null;
+        for (final File report : reports) {
+            if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
+                latestReport = report;
+            }
+        }
+        return latestReport;
+    }
 }

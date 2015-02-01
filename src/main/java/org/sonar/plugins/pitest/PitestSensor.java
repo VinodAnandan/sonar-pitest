@@ -49,6 +49,8 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
+import org.sonar.plugins.pitest.model.Mutant;
+import org.sonar.plugins.pitest.model.MutantStatus;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.
@@ -190,7 +192,7 @@ public class PitestSensor implements Sensor {
             final Issuable issuable = perspectives.as(Issuable.class, resource);
             if (issuable != null) {
                 // can be used
-                final Issue issue = issuable.newIssueBuilder()
+                final Issue issue = issuable.newIssueBuilder().
                         .ruleKey(RuleKey.of(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY))
                         .line(mutant.getLineNumber()).message(mutant.getViolationDescription()).build();
                 issuable.addIssue(issue);

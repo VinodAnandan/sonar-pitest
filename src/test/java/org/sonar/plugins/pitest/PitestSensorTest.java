@@ -42,6 +42,8 @@ import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.plugins.pitest.model.Mutant;
+import org.sonar.plugins.pitest.model.MutantStatus;
 import org.sonar.test.TestUtils;
 
 import java.io.File;

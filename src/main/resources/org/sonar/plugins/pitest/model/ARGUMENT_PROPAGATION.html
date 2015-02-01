@@ -1,0 +1,27 @@
+<div id="ARGUMENT_PROPAGATION">
+<h2>Argument Propagation Mutator (ARGUMENT_PROPAGATION)</h2>
+<p>Mutator for non-void methods that have a parameter that matches
+the return type: it replaces the result of the method call with a
+parameter. E. g. the method call</p>
+
+ <pre  class="prettyprint lang-java">
+   public int originalMethod() {
+     int someInt = 3;
+     return someOtherMethod(someInt);
+   }
+
+   private int someOtherMethod(int parameter) {
+     return parameter + 1;
+   }
+ </pre>
+
+ is mutated to
+
+ <pre class="prettyprint lang-java">
+   public int mutatedMethod() {
+     int someInt = 3;
+     return someInt;
+   }
+ </pre>
+ <p>see <a href="http://pitest.org/quickstart/mutators#ARGUMENT_PROPAGATION">Pitest Mutators</a></p>
+</div>

@@ -1,7 +1,9 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009 Alexandre Victoor,
  * dev@sonar.codehaus.org
+ * Copyright (C) 2015 Gerald Muecke,
+ * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,14 +26,12 @@ import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.sonar.api.Extension;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
-
-import com.google.common.collect.Lists;
 
 /**
  * This class is the entry point for all PIT extensions
@@ -52,12 +52,13 @@ import com.google.common.collect.Lists;
 })
 public final class PitestPlugin extends SonarPlugin {
 
-    // This is where you're going to declare all your Sonar extensions
-    @SuppressWarnings("unchecked")
-    public List<Class<? extends Extension>> getExtensions() {
+    // modification: changed signature and creation of List
+    @Override
+    public List<Class<?>> getExtensions() {
 
-        return Lists.newArrayList(ResultParser.class, ReportFinder.class, PitestRuleRepository.class,
-                PitestSensor.class, PitestMetrics.class, PitestDecorator.class, PitestCoverageDecorator.class,
-                PitestDashboardWidget.class, PitSourceTab.class);
+        return Arrays.asList(ResultParser.class, ReportFinder.class, PitestRuleRepository.class, PitestSensor.class,
+                PitestMetrics.class, PitestDecorator.class, PitestCoverageDecorator.class, PitestDashboardWidget.class,
+                PitSourceTab.class);
     }
+
 }

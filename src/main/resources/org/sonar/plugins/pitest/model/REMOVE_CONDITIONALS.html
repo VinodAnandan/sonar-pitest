@@ -1,0 +1,24 @@
+<div id="REMOVE_CONDITIONALS">
+<h2>Remove Conditionals Mutator (REMOVE_CONDITIONALS)</h2>
+<p>The remove conditionals mutator will remove all conditionals statements such that the guarded statements always
+execute</p>
+
+<p>For example</p>
+
+<pre class="prettyprint lang-java">
+if (a == b) {
+  // do something
+}
+</pre>
+
+<p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+if (true) {
+  // do something
+}
+</pre>
+
+<p>Although not currently enabled by default it is highly recommended that you enable it if you wish to ensure your test suite has full coverage of conditional statements.</p>
+<p>see <a href="http://pitest.org/quickstart/mutators#REMOVE_CONDITIONALS">Pitest Mutators</a></p>
+</div>
