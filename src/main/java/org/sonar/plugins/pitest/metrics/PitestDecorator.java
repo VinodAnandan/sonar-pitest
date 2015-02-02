@@ -17,36 +17,29 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.metrics;
 
-import org.sonar.api.web.AbstractRubyTemplate;
-import org.sonar.api.web.Description;
-import org.sonar.api.web.NavigationSection;
-import org.sonar.api.web.RubyRailsWidget;
-import org.sonar.api.web.UserRole;
-import org.sonar.api.web.WidgetCategory;
+import java.util.List;
+
+import org.sonar.api.batch.AbstractSumChildrenDecorator;
+import org.sonar.api.batch.DependedUpon;
+import org.sonar.api.measures.Metric;
 
 /**
- * Sonar user widget for pitest metrics.
- *   
+ * Sum children decorator for pitest quantitative metrics.
+ * 
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
-@NavigationSection(NavigationSection.RESOURCE)
-@UserRole(UserRole.USER)
-@WidgetCategory("Pitest")
-@Description("Pitest mutation coverage report.")
-public class PitestDashboardWidget extends AbstractRubyTemplate implements RubyRailsWidget {
+public class PitestDecorator extends AbstractSumChildrenDecorator {
 
-	public String getId() {
-		return "pitest";
-	}
-
-	public String getTitle() {
-		return "Pitest report";
+	@DependedUpon
+	@Override
+	public List<Metric> generatesMetrics() {
+		return PitestMetrics.getQuantitativeMetrics();
 	}
 
 	@Override
-	protected String getTemplatePath() {
-		return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
+	protected boolean shouldSaveZeroIfNoChildMeasures() {
+		return false;
 	}
 }

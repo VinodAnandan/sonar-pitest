@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.ui;
 
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.web.AbstractRubyTemplate;
@@ -27,8 +27,9 @@ import org.sonar.api.web.RequiredMeasures;
 import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
+import org.sonar.plugins.pitest.metrics.PitestMetricsKeys;
 
-import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.*;
 
 @NavigationSection(NavigationSection.RESOURCE_TAB)
 @ResourceQualifier({Qualifiers.FILE, Qualifiers.CLASS})

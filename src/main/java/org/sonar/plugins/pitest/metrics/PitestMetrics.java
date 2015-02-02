@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.metrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
 
-import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.*;
 
 /**
  * Metrics for the sonar pitest plugin.

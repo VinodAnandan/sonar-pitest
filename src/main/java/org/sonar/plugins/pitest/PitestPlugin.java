@@ -27,6 +27,11 @@ import java.util.List;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
+import org.sonar.plugins.pitest.metrics.PitestCoverageDecorator;
+import org.sonar.plugins.pitest.metrics.PitestDecorator;
+import org.sonar.plugins.pitest.metrics.PitestMetrics;
+import org.sonar.plugins.pitest.ui.PitSourceTab;
+import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 
 /**
  * This class is the entry point for all PIT extensions

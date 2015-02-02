@@ -36,7 +36,9 @@ public class PitestRulesDefinition implements RulesDefinition {
                 .createRule(RULE_SURVIVED_MUTANT)
                 .setHtmlDescription(
                         "Survived mutant. For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>");
-
+        // TODO add rule mutation coverage below threshold
+        // TODO add separate rule for each mutator
+        // TODO add mutation without test coverage
     }
 
 }

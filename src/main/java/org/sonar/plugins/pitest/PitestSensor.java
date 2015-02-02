@@ -48,6 +48,8 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
+import org.sonar.plugins.pitest.metrics.JavaFileMutants;
+import org.sonar.plugins.pitest.metrics.PitestMetrics;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantHelper;
 import org.sonar.plugins.pitest.model.MutantStatus;
