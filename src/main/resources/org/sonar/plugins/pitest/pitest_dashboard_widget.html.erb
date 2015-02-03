@@ -36,7 +36,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_killed', 
               :url => url_for_drilldown('pitest_mutations_killed')) -%>
-            <%= trend_icon(measure('pitest_mutations_killed')) %>
+            <%= trend_icon(measure('pitest_mutations_killed')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -44,7 +44,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_memoryError', 
               :url => url_for_drilldown('pitest_mutations_memoryError')) -%>
-            <%= trend_icon(measure('pitest_mutations_memoryError')) %>
+            <%= trend_icon(measure('pitest_mutations_memoryError')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -52,7 +52,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_timedOut', 
               :url => url_for_drilldown('pitest_mutations_timedOut')) -%>
-            <%= trend_icon(measure('pitest_mutations_timedOut')) %>
+            <%= trend_icon(measure('pitest_mutations_timedOut')) -%>
           </span>
         </div>
         <div class="widget-measure widget-measure-main">
@@ -63,7 +63,7 @@
           <span class="nowrap" title="Survivors are covered but not killed by a test">
             <%= format_measure('pitest_mutations_survived', 
               :url => url_for_drilldown('pitest_mutations_survived')) -%>
-            <%= trend_icon(measure('pitest_mutations_survived')) %>
+            <%= trend_icon(measure('pitest_mutations_survived')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -71,7 +71,7 @@
           <span class="nowrap" title="Lurkers are not covered by a test">
             <%= format_measure('pitest_mutations_noCoverage', 
               :url => url_for_drilldown('pitest_mutations_noCoverage')) -%>
-            <%= trend_icon(measure('pitest_mutations_noCoverage')) %>
+            <%= trend_icon(measure('pitest_mutations_noCoverage')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -79,7 +79,7 @@
           <span class="nowrap" title="Status of the mutant is not determined">
             <%= format_measure('pitest_mutations_unknown', 
               :url => url_for_drilldown('pitest_mutations_unknown')) -%>
-            <%= trend_icon(measure('pitest_mutations_unknown')) %>
+            <%= trend_icon(measure('pitest_mutations_unknown')) -%>
           </span>
         </div>
       </div>
