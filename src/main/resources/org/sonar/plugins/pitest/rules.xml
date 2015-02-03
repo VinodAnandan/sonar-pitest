@@ -51,9 +51,8 @@
 			<key>pitest.mutant.coverage.threshold</key>
 			<description>
          	<![CDATA[
-         	<h2>Mutation Coverage</h2>
-         	<p>Mutation coverage is calculated by the ratio of killed mutants and total number of mutants.</p>
-         	<p>If the ratio (in percent) is below this threshold value, an issue for the resource is.]]>
+         	Mutation coverage is calculated by the ratio of killed mutants and total number of mutants.
+         	If the ratio (in percent) is below this threshold value, an issue for the resource is.]]>
 			</description>
 			<defaultValue>80.0</defaultValue>
 		</param>
