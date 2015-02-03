@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -27,19 +27,21 @@ import org.sonar.api.measures.Metric;
 
 /**
  * Sum children decorator for pitest quantitative metrics.
- * 
+ *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 public class PitestDecorator extends AbstractSumChildrenDecorator {
 
-	@DependedUpon
-	@Override
-	public List<Metric> generatesMetrics() {
-		return PitestMetrics.getQuantitativeMetrics();
-	}
+    @DependedUpon
+    @Override
+    public List<Metric> generatesMetrics() {
 
-	@Override
-	protected boolean shouldSaveZeroIfNoChildMeasures() {
-		return false;
-	}
+        return PitestMetrics.getQuantitativeMetrics();
+    }
+
+    @Override
+    protected boolean shouldSaveZeroIfNoChildMeasures() {
+
+        return false;
+    }
 }

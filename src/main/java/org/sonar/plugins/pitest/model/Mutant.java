@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2015 Gerald Muecke
- * gerald@moskito.li
+ * Copyright (C) 2015 SonarCommunity
+ * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -228,6 +228,21 @@ public class Mutant {
                 + ", killingTest="
                 + killingTest
                 + "]";
+    }
+
+    /**
+     * As the source file in the mutant reports is without a package path, the method determines the path to the source
+     * file from the fully qualified name of the mutated class.
+     *
+     * @return returns the full path to the source file including the name of file itself. The path is relative to the
+     *         source folder.
+     */
+    public String getPathToSourceFile() {
+
+        final int packageSeparatorPos = mutatedClass.lastIndexOf('.');
+        final String packagePath = mutatedClass.substring(0, packageSeparatorPos).replaceAll("\\.", "/");
+
+        return new StringBuilder(packagePath).append('/').append(sourceFile).toString();
     }
 
 }

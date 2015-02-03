@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ import org.sonar.api.web.WidgetCategory;
 
 /**
  * Sonar user widget for pitest metrics.
- *   
+ * 
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 @NavigationSection(NavigationSection.RESOURCE)
@@ -37,16 +37,21 @@ import org.sonar.api.web.WidgetCategory;
 @Description("Pitest mutation coverage report.")
 public class PitestDashboardWidget extends AbstractRubyTemplate implements RubyRailsWidget {
 
-	public String getId() {
-		return "pitest";
-	}
+    @Override
+    public String getId() {
 
-	public String getTitle() {
-		return "Pitest report";
-	}
+        return "pitest";
+    }
 
-	@Override
-	protected String getTemplatePath() {
-		return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
-	}
+    @Override
+    public String getTitle() {
+
+        return "Pitest report";
+    }
+
+    @Override
+    protected String getTemplatePath() {
+
+        return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
+    }
 }

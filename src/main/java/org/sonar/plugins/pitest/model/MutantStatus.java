@@ -1,9 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
- * Copyright (C) 2015 Gerald Muecke
- * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,8 +33,7 @@ public enum MutantStatus {
             return UNKNOWN;
         }
         for (final MutantStatus mutantStatus : MutantStatus.values()) {
-            // changes by Gerald: changed to equalsIngoreCase
-            if (mutantStatus.name().equalsIgnoreCase(statusName)) {
+            if (mutantStatus.name().equals(statusName)) {
                 return mutantStatus;
             }
         }

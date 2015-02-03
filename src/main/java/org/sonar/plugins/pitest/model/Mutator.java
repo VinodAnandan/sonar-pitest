@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2015 Gerald Muecke
- * gerald@moskito.li
+ * Copyright (C) 2015 SonarCommunity
+ * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

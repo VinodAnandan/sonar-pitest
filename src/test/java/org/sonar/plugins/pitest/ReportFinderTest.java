@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -19,52 +19,55 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.junit.Test;
-import org.sonar.test.TestUtils;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
+import org.sonar.test.TestUtils;
 
 public class ReportFinderTest {
 
-  @Test
-  public void should_find_report_file() {
-    // given
-    ReportFinder finder = new ReportFinder();
-    File xmlFile = TestUtils.getResource("mutations.xml");
-    File directory = xmlFile.getParentFile();
+    @Test
+    public void should_find_report_file() {
 
-    // when
-    File report = finder.findReport(directory);
+        // given
+        final ReportFinder finder = new ReportFinder();
+        final File xmlFile = TestUtils.getResource("mutations.xml");
+        final File directory = xmlFile.getParentFile();
 
-    // then
-    assertThat(report).isEqualTo(xmlFile);
-  }
+        // when
+        final File report = finder.findReport(directory);
 
-  @Test
-  public void should_return_null_if_no_report() {
-    // given
-    ReportFinder finder = new ReportFinder();
-    File directory = TestUtils.getResource("fake_libs");
+        // then
+        assertThat(report).isEqualTo(xmlFile);
+    }
 
-    // when
-    File report = finder.findReport(directory);
+    @Test
+    public void should_return_null_if_no_report() {
 
-    // then
-    assertThat(report).isNull();
-  }
+        // given
+        final ReportFinder finder = new ReportFinder();
+        final File directory = TestUtils.getResource("fake_libs");
 
-  @Test
-  public void should_return_null_if_directory_does_not_exist() {
-    // given
-    ReportFinder finder = new ReportFinder();
-    File directory = TestUtils.getResource("imaginary");
+        // when
+        final File report = finder.findReport(directory);
 
-    // when
-    File report = finder.findReport(directory);
+        // then
+        assertThat(report).isNull();
+    }
 
-    // then
-    assertThat(report).isNull();
-  }
+    @Test
+    public void should_return_null_if_directory_does_not_exist() {
+
+        // given
+        final ReportFinder finder = new ReportFinder();
+        final File directory = TestUtils.getResource("imaginary");
+
+        // when
+        final File report = finder.findReport(directory);
+
+        // then
+        assertThat(report).isNull();
+    }
 }

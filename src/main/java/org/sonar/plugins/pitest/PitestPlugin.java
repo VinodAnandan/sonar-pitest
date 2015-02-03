@@ -1,9 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor,
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
- * Copyright (C) 2015 Gerald Muecke,
- * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,14 +25,17 @@ import java.util.List;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.Settings;
 import org.sonar.plugins.pitest.metrics.PitestCoverageDecorator;
 import org.sonar.plugins.pitest.metrics.PitestDecorator;
 import org.sonar.plugins.pitest.metrics.PitestMetrics;
 import org.sonar.plugins.pitest.ui.PitSourceTab;
 import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 
+//gerald: added text to javadoc
 /**
- * This class is the entry point for all PIT extensions
+ * This class is the entry point for all PIT extensions. The properties define, which {@link Settings} are configurable
+ * for the plugin.
  */
 @Properties({
         @Property(key = PitestPlugin.MODE_KEY,
@@ -53,16 +54,13 @@ import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 public final class PitestPlugin extends SonarPlugin {
 
     public static final String MODE_KEY = "sonar.pitest.mode";
-
     public static final String MODE_SKIP = "skip";
-
     public static final String MODE_REUSE_REPORT = "reuseReport";
 
-    public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reportsDirectory";
-
+    public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reports.directory";
     public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
 
-    // modification: changed signature and creation of List
+    // gerald: changed signature and creation of List
     @SuppressWarnings("rawtypes")
     @Override
     public List getExtensions() {

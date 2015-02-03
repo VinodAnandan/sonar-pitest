@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2015 Gerald Muecke
- * gerald@moskito.li
+ * Copyright (C) 2015 SonarCommunity
+ * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,9 +22,11 @@ package org.sonar.plugins.pitest;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,18 +100,19 @@ public class ResultParser implements BatchExtension {
      * Parses the contents of the report file into a list of {@link Mutant}s. The report file must be a PIT report.
      *
      * @param report
-     *            the PIT report file to be parsed
+     *            the {@link Path} to the PIT report file to be parsed
      * @return a {@link Collection} of {@link Mutant}s
+     * @throws IOException
+     *             if the report file could not be read
      */
-    public Collection<Mutant> parseMutants(final File report) {
+    public Collection<Mutant> parseMutants(final Path report) throws IOException {
 
         Collection<Mutant> result;
 
-        try {
+        try (InputStream stream = Files.newInputStream(report)) {
             final XMLInputFactory inf = XMLInputFactory.newInstance();
-            final XMLStreamReader reader = inf.createXMLStreamReader(new FileInputStream(report));
+            final XMLStreamReader reader = inf.createXMLStreamReader(stream);
             result = readMutants(reader);
-
         } catch (FileNotFoundException | XMLStreamException e) {
             LOG.error("Parsing report failed", e);
             result = Collections.emptyList();

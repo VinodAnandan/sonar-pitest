@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -19,47 +19,58 @@
  */
 package org.sonar.plugins.pitest.ui;
 
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_KILLED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_MEMORY_ERROR_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_NO_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_SURVIVED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TIMED_OUT_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_UNKNOWN_KEY;
+
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.web.AbstractRubyTemplate;
 import org.sonar.api.web.DefaultTab;
 import org.sonar.api.web.NavigationSection;
-import org.sonar.api.web.RequiredMeasures;
 import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
-import org.sonar.plugins.pitest.metrics.PitestMetricsKeys;
-
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.*;
 
 @NavigationSection(NavigationSection.RESOURCE_TAB)
-@ResourceQualifier({Qualifiers.FILE, Qualifiers.CLASS})
-@DefaultTab(
-    metrics = {
-     MUTATIONS_TOTAL_KEY,
-     MUTATIONS_COVERAGE_KEY,
-     MUTATIONS_DETECTED_KEY,
-     MUTATIONS_KILLED_KEY,
-     MUTATIONS_MEMORY_ERROR_KEY,
-     MUTATIONS_NO_COVERAGE_KEY,
-     MUTATIONS_SURVIVED_KEY,
-     MUTATIONS_TIMED_OUT_KEY,
-     MUTATIONS_UNKNOWN_KEY
-    })
-@RequiredMeasures(anyOf = { PitestMetricsKeys.MUTATIONS_DATA_KEY })
+@ResourceQualifier({
+    Qualifiers.FILE
+})
+@DefaultTab(metrics = {
+        MUTATIONS_TOTAL_KEY,
+        MUTATIONS_COVERAGE_KEY,
+        MUTATIONS_DETECTED_KEY,
+        MUTATIONS_KILLED_KEY,
+        MUTATIONS_MEMORY_ERROR_KEY,
+        MUTATIONS_NO_COVERAGE_KEY,
+        MUTATIONS_SURVIVED_KEY,
+        MUTATIONS_TIMED_OUT_KEY,
+        MUTATIONS_UNKNOWN_KEY
+})
 @UserRole(UserRole.CODEVIEWER)
 public class PitSourceTab extends AbstractRubyTemplate implements RubyRailsPage {
 
-  @Override
-  protected String getTemplatePath() {
-    return "/org/sonar/plugins/pitest/pitest_source_tab.rb";
-  }
+    @Override
+    protected String getTemplatePath() {
 
-  public String getId() {
-    return "Mutations Coverage";
-  }
+        return "/org/sonar/plugins/pitest/pitest_source_tab.rb";
+    }
 
-  public String getTitle() {
-    return "Mutations Coverage";
-  }
+    @Override
+    public String getId() {
+
+        return "Mutations Coverage";
+    }
+
+    @Override
+    public String getTitle() {
+
+        return "Mutations Coverage";
+    }
 
 }

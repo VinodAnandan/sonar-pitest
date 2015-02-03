@@ -1,9 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
- * Copyright (C) 2015 Gerald Muecke
- * gerald@moskito.li
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,46 +17,80 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-/*
- * Modifications:
- * gerald: - added javadoc,
- *         - added todo comment
- *         - externalized extensions array
- */
 package org.sonar.plugins.pitest;
 
-import java.io.File;
-import java.util.Collection;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
 import org.sonar.api.BatchExtension;
 
 /**
- * Finder to determine the latest report file in the reports directory.
+ * Searches the latest xml file in the reports directory.
  *
- * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
  * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
  *
  */
 public class ReportFinder implements BatchExtension {
 
-    private static final String[] FILE_EXTENSIONS = new String[] {
-        "xml"
-    };
+    /**
+     * Finds the PIT report in the given report directory.
+     *
+     * @param reportDirectory
+     *            the report directory to search for the report. The report directory must not be <code>null</code>,
+     *            must exist and must be a directory.
+     * @return the Path to the found PIT report or null, if no report was found
+     * @throws IOException
+     *             if the most recent report could not be determined
+     * @throws IllegalArgumentException
+     *             if the reportDirectory is null, does not exist or is no directory
+     */
+    public Path findReport(final Path reportDirectory) throws IOException {
 
-    public File findReport(final File reportDirectory) {
-
-        if (reportDirectory == null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
-            // TODO null shouldnt be returned
-            return null;
+        if (reportDirectory == null || !Files.exists(reportDirectory) || !Files.isDirectory(reportDirectory)) {
+            throw new IllegalArgumentException("ReportDirectory "
+                    + reportDirectory
+                    + " is null, does not exist or is no directory");
         }
-        final Collection<File> reports = FileUtils.listFiles(reportDirectory, FILE_EXTENSIONS, true);
-        File latestReport = null;
-        for (final File report : reports) {
-            if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
-                latestReport = report;
+
+        return findMostRecentReport(reportDirectory);
+    }
+
+    /**
+     * Locates the most recent report in the report directory by searching all xml files in the reports directory and
+     * selecting the most recent file.
+     *
+     * @param reportDirectory
+     *            the path to the report directory to search the report in
+     * @return the {@link Path} to the most recent report
+     * @throws IOException
+     */
+    private Path findMostRecentReport(final Path reportDirectory) throws IOException {
+
+        Path mostRecent = null;
+        try (DirectoryStream<Path> reports = Files.newDirectoryStream(reportDirectory, "*.xml")) {
+            for (final Path report : reports) {
+                if (mostRecent == null || isNewer(mostRecent, report)) {
+                    mostRecent = report;
+                }
             }
         }
-        return latestReport;
+        return mostRecent;
+    }
+
+    /**
+     * Determines if the otherPath is newer than the referencePath.
+     *
+     * @param referencePath
+     *            the path to compare the other path agains
+     * @param otherPath
+     *            the other path to be comapred against the reference path
+     * @return <code>true</code> if the otherPath is newer than the referencePath
+     * @throws IOException
+     */
+    private boolean isNewer(final Path referencePath, final Path otherPath) throws IOException {
+
+        return Files.getLastModifiedTime(referencePath).compareTo(Files.getLastModifiedTime(otherPath)) > 0;
     }
 }

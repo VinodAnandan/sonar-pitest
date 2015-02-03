@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -39,26 +39,33 @@ import com.google.common.collect.Lists;
  */
 public class PitestCoverageDecorator implements Decorator {
 
-	public boolean shouldExecuteOnProject(Project project) {
-		return project.getAnalysisType().isDynamic(true);
-	}
+    @Override
+    public boolean shouldExecuteOnProject(final Project project) {
 
-	@DependedUpon
-	public Metric getCoverageMetric() {
-		return PitestMetrics.MUTATIONS_COVERAGE;
-	}
+        return project.getAnalysisType().isDynamic(true);
+    }
 
-	@DependsUpon
-	public List<Metric> getBaseMetrics() {
-		return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
-	}
+    @DependedUpon
+    public Metric getCoverageMetric() {
 
-	public void decorate(Resource resource, DecoratorContext context) {
-		Double elements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_TOTAL), 0.0);
+        return PitestMetrics.MUTATIONS_COVERAGE;
+    }
 
-		if (elements > 0.0) {
-			Double coveredElements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_DETECTED), 0.0);
-			context.saveMeasure(PitestMetrics.MUTATIONS_COVERAGE, (100.0 * coveredElements) / elements);
-		}
-	}
+    @DependsUpon
+    public List<Metric> getBaseMetrics() {
+
+        return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
+    }
+
+    @Override
+    public void decorate(final Resource resource, final DecoratorContext context) {
+
+        final Double elements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_TOTAL), 0.0);
+
+        if (elements > 0.0) {
+            final Double coveredElements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_DETECTED),
+                    0.0);
+            context.saveMeasure(PitestMetrics.MUTATIONS_COVERAGE, 100.0 * coveredElements / elements);
+        }
+    }
 }
