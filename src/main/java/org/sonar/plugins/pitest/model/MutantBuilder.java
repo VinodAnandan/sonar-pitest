@@ -110,6 +110,9 @@ public class MutantBuilder {
         mutator = Mutator.find(mutatorName);
         mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
 
+        if (mutatorSuffix.startsWith("_")) {
+            mutatorSuffix = mutatorSuffix.substring(1);
+        }
         return this;
 
     }
