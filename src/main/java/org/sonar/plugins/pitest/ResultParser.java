@@ -62,7 +62,7 @@ import org.sonar.plugins.pitest.model.MutantHelper;
  * &lt;/mutantions&gt;
  * </pre>
  *
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class ResultParser implements BatchExtension {
@@ -139,7 +139,7 @@ public class ResultParser implements BatchExtension {
             case START_ELEMENT:
                 if (ELEMENT_MUTATION.equals(reader.getLocalName())) {
                     final Mutant mutant = parseMutant(reader);
-                    LOG.info("Found mutant {}", mutant);
+                    LOG.debug("Found mutant {}", mutant);
                     result.add(mutant);
                 }
                 break;

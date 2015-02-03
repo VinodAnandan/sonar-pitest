@@ -37,7 +37,7 @@ package org.sonar.plugins.pitest.model;
  *
  * Mutation information from the pitest report.
  *
- * @author gerald@moskito.li
+ * @author gerald.muecke@gmail.com
  *
  */
 public class Mutant {
@@ -52,10 +52,12 @@ public class Mutant {
     private final Mutator mutator;
     private final int index;
     private final String killingTest;
+    private final String mutatorSuffix;
 
     public Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
             final String mutatedClass, final String mutatedMethod, final String methodDescription,
-            final int lineNumber, final Mutator mutator, final int index, final String killingTest) {
+            final int lineNumber, final Mutator mutator, final String mutatorSuffix, final int index,
+            final String killingTest) {
 
         super();
         this.detected = detected;
@@ -66,6 +68,7 @@ public class Mutant {
         this.methodDescription = methodDescription;
         this.lineNumber = lineNumber;
         this.mutator = mutator;
+        this.mutatorSuffix = mutatorSuffix;
         this.index = index;
         this.killingTest = killingTest;
     }
@@ -108,6 +111,11 @@ public class Mutant {
     public Mutator getMutator() {
 
         return mutator;
+    }
+
+    public String getMutatorSuffix() {
+
+        return mutatorSuffix;
     }
 
     public int getIndex() {

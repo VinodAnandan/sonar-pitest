@@ -32,16 +32,17 @@ import org.sonar.plugins.pitest.metrics.PitestMetrics;
 import org.sonar.plugins.pitest.ui.PitSourceTab;
 import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 
-//gerald: added text to javadoc
 /**
  * This class is the entry point for all PIT extensions. The properties define, which {@link Settings} are configurable
  * for the plugin.
+ *
+ * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  */
 @Properties({
         @Property(key = PitestPlugin.MODE_KEY,
-                defaultValue = PitestPlugin.MODE_SKIP,
                 name = "PIT activation mode",
-                description = "Possible values:  empty (means skip) and 'reuseReport'",
+                description = "Possible values:  empty or 'skip'",
                 global = true,
                 project = true),
         @Property(key = PitestPlugin.REPORT_DIRECTORY_KEY,
@@ -55,12 +56,10 @@ public final class PitestPlugin extends SonarPlugin {
 
     public static final String MODE_KEY = "sonar.pitest.mode";
     public static final String MODE_SKIP = "skip";
-    public static final String MODE_REUSE_REPORT = "reuseReport";
 
     public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reports.directory";
     public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
 
-    // gerald: changed signature and creation of List
     @SuppressWarnings("rawtypes")
     @Override
     public List getExtensions() {

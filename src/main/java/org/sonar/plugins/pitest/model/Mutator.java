@@ -48,7 +48,7 @@ import org.xml.sax.InputSource;
  * itself contains a violation description as well a description of the mutator itself that is copied from the
  * documentation at <a href="http://pitest.org/quickstart/mutators">pitest.org/quickstart/mutators</a>
  *
- * @author gerald@moskito.li
+ * @author gerald.muecke@gmail.com
  *
  */
 public final class Mutator {

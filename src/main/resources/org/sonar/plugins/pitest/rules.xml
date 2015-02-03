@@ -5,7 +5,7 @@
 		<name>Survived Mutants</name>
 		<description>
 	       <![CDATA[<h2>Survived mutant</h2>
-	       <p>A mutant of a class has not been killed by a test.</p> 
+	       <p>A mutant of a class has not been killed although appearing to be covered by a test.</p>
 	       <p>If you don't want to active any mutator specific rule, you may use this rule which is triggered by
 	       any Mutator. You should not active this rule, when you use mutator specific rules, as it may result
 	       in redundant issued.</p>
@@ -25,9 +25,11 @@
 	       <![CDATA[
 	       <h2>Uncovered mutant</h2>
 	       <p>A mutant of a class has not been covered by a test at all.</p>
-	       <p>This rule may be active in combination with either Survived Mutant or any Mutant specific rule.</p>
-	       <p> 
-	       For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>
+	       <p>An uncovered mutant is also a survived mutant. If you activate this rule, it will produce more issues
+	       than the Survived Mutant rule. It's advised to have either this or the Survived Mutant rule activated, but
+	       not both, as it will result in duplicate issues.Further it is not recommended to have this rule activated
+	       with any of the mutator specific rules.</p>
+	       <p>For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>
 	       </p>
 	       ]]>
 		</description>

@@ -22,7 +22,7 @@ package org.sonar.plugins.pitest.model;
 /**
  * A builder for creating a new mutant.
  *
- * @author gerald@moskito.li
+ * @author gerald.muecke@gmail.com
  *
  */
 public class MutantBuilder {
@@ -35,6 +35,7 @@ public class MutantBuilder {
     private String methodDescription;
     private int lineNumber;
     private Mutator mutator;
+    private String mutatorSuffix;
     private int index;
     private String killingTest;
 
@@ -107,6 +108,8 @@ public class MutantBuilder {
     public MutantBuilder usingMutator(final String mutatorName) {
 
         mutator = Mutator.find(mutatorName);
+        mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
+
         return this;
 
     }
@@ -126,6 +129,6 @@ public class MutantBuilder {
     public Mutant build() {
 
         return new Mutant(detected, mutantStatus, sourceFile, mutatedClass, mutatedMethod, methodDescription,
-                lineNumber, mutator, index, killingTest);
+                lineNumber, mutator, mutatorSuffix, index, killingTest);
     }
 }

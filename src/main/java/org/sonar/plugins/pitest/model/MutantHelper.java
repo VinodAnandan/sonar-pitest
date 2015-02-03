@@ -28,6 +28,12 @@ import javax.json.stream.JsonGenerator;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+/**
+ * Helper class to deal with {@link Mutant}s.
+ * 
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
+ *
+ */
 public final class MutantHelper {
 
     private MutantHelper() {
@@ -48,7 +54,7 @@ public final class MutantHelper {
      * <li>violationDescription</li>
      * <li>mutatorDescription</li>
      * </ul>
-     * 
+     *
      * @param mutants
      *            the mutants to be rendered as JSon
      * @return a string containing the json representation of the mutants
@@ -89,7 +95,7 @@ public final class MutantHelper {
      * Creates a new build to define a mutant. As the {@link Mutant} class is designed as being immutable, the builder
      * allows sequential definition of the {@link Mutant}'s properties instead of passing all at once to the
      * constructor.
-     * 
+     *
      * @return a {@link MutantBuilder} for creating a {@link Mutant}
      */
     public static MutantBuilder newMutant() {

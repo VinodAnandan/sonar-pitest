@@ -42,7 +42,7 @@ import org.sonar.api.measures.Metrics;
 /**
  * Metrics for the sonar pitest plugin.
  *
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 public class PitestMetrics<T extends Serializable> implements Metrics {

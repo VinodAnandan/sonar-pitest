@@ -30,7 +30,7 @@ import org.sonar.plugins.pitest.model.Mutant;
  * Metrics for Mutants found in a single resource.
  *
  * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class ResourceMutantMetrics {

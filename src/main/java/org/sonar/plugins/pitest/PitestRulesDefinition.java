@@ -30,7 +30,7 @@ import org.sonar.plugins.pitest.model.Mutator;
  * The definition of pitest rules. A new repository is created for the Pitest plugin and Java language. The rules are
  * defined in the rules.xml file in the classpath. The rule keys are accessible as constants.
  *
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class PitestRulesDefinition implements RulesDefinition {

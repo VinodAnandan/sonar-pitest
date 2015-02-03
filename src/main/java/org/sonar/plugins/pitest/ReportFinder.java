@@ -29,7 +29,7 @@ import org.sonar.api.BatchExtension;
 /**
  * Searches the latest xml file in the reports directory.
  *
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class ReportFinder implements BatchExtension {

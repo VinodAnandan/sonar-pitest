@@ -64,7 +64,7 @@ import org.sonar.plugins.pitest.model.MutantStatus;
  *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
- * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class PitestSensor implements Sensor {
@@ -73,11 +73,6 @@ public class PitestSensor implements Sensor {
      * SLF4J Logger for this class
      */
     private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
-
-    /**
-     * Empty metrics for Java Mutant
-     */
-    private static final ResourceMutantMetrics EMPTY_RESOURCE_METRICS = new ResourceMutantMetrics(null);
 
     private final ResultParser parser;
     private final ReportFinder reportFinder;
@@ -232,7 +227,7 @@ public class PitestSensor implements Sensor {
         for (final ResourceMutantMetrics resourceMetrics : metrics) {
             final Issuable issuable = perspectives.as(Issuable.class, resourceMetrics.getResource());
             if (issuable != null) {
-                applyActiveRules(issuable, resourceMetrics, activeRules);
+                applyRules(issuable, resourceMetrics, activeRules);
             }
         }
     }
@@ -247,11 +242,11 @@ public class PitestSensor implements Sensor {
      * @param activeRules
      *            the active rules to apply
      */
-    private void applyActiveRules(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
+    private void applyRules(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
             final Collection<ActiveRule> activeRules) {
 
         for (final ActiveRule rule : activeRules) {
-            applyActiveRule(issuable, resourceMetrics, rule);
+            applyRule(issuable, resourceMetrics, rule);
         }
     }
 
@@ -265,17 +260,9 @@ public class PitestSensor implements Sensor {
      * @param rule
      *            the active rule to apply
      */
-    private void applyActiveRule(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
-            final ActiveRule rule) {
+    private void applyRule(final Issuable issuable, final ResourceMutantMetrics resourceMetrics, final ActiveRule rule) {
 
-        if (RULE_MUTANT_COVERAGE.equals(rule.getRuleKey())
-                && resourceMetrics.getMutationCoverage() < Double.parseDouble(rule
-                        .getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD))) {
-            addIssue(
-                    issuable,
-                    rule,
-                    "The mutation coverage for the resource is below the threshold "
-                            + rule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD), 0);
+        if (applyThresholdRule(issuable, resourceMetrics, rule)) {
             return;
         }
 
@@ -296,6 +283,38 @@ public class PitestSensor implements Sensor {
     }
 
     /**
+     * Creates a the mutation coverage threshold issue if the active rule is the Mutation Coverage rule.
+     *
+     * @param issuable
+     *            the issuable on which to apply the rule
+     * @param resourceMetrics
+     *            the metrics for the resource behind the issuable
+     * @param rule
+     *            the rule to apply.
+     * @return <code>true</code> if the rule was the mutation coverage rule and the rule have been applied or
+     *         <code>false</code> if it was another rule
+     */
+    private boolean applyThresholdRule(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
+            final ActiveRule rule) {
+
+        if (!RULE_MUTANT_COVERAGE.equals(rule.getRuleKey())) {
+            return false;
+        }
+        final double actualCoverage = resourceMetrics.getMutationCoverage();
+        final double threshold = Double.parseDouble(rule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD));
+
+        if (resourceMetrics.getMutationCoverage() < threshold) {
+
+            final double minimumKilledMutants = resourceMetrics.getMutationsTotal() * threshold;
+            final double additionalRequiredMutants = minimumKilledMutants - resourceMetrics.getMutationsKilled();
+            addIssue(issuable, rule, String.format(
+                    "%s more mutants need to be killed to get the mutation coverage from %s to %s",
+                    additionalRequiredMutants, actualCoverage, threshold), 0);
+        }
+        return true;
+    }
+
+    /**
      * Adds an issue for the current mutant and the violated rule
      *
      * @param issuable
@@ -307,7 +326,12 @@ public class PitestSensor implements Sensor {
      */
     private void addIssue(final Issuable issuable, final ActiveRule rule, final Mutant mutant) {
 
-        addIssue(issuable, rule, mutant.getMutator().getViolationDescription(), mutant.getLineNumber());
+        final StringBuilder message = new StringBuilder(mutant.getMutator().getViolationDescription());
+        if (!mutant.getMutatorSuffix().isEmpty()) {
+            message.append(" (").append(mutant.getMutatorSuffix()).append(')');
+        }
+
+        addIssue(issuable, rule, message.toString(), mutant.getLineNumber());
     }
 
     /**
