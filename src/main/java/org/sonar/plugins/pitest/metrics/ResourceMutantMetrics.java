@@ -61,26 +61,27 @@ public class ResourceMutantMetrics {
 
         mutants.add(mutant);
         if (mutant.isDetected()) {
-            incMutationsDetected();
+            mutationsDetected++;
         }
+        mutationsTotal++;
         switch (mutant.getMutantStatus()) {
         case KILLED:
-            incMutationsKilled();
+            mutationsKilled++;
             break;
         case NO_COVERAGE:
-            incMutationsNoCoverage();
+            mutationsNoCoverage++;
             break;
         case SURVIVED:
-            incMutationsSurvived();
+            mutationsSurvived++;
             break;
         case MEMORY_ERROR:
-            incMutationsMemoryError();
+            mutationsMemoryError++;
             break;
         case TIMED_OUT:
-            incMutationsTimedOut();
+            mutationsTimedOut++;
             break;
         case UNKNOWN:
-            incMutationsUnknown();
+            mutationsUnknown++;
             break;
         }
         updateMutationCoverage();
@@ -92,52 +93,6 @@ public class ResourceMutantMetrics {
             mutationCoverage = 100.0 * mutationsKilled / mutationsTotal;
         }
 
-    }
-
-    private void incMutationsTotal() {
-
-        mutationsTotal++;
-    }
-
-    private void incMutationsNoCoverage() {
-
-        incMutationsTotal();
-        mutationsNoCoverage++;
-    }
-
-    private void incMutationsKilled() {
-
-        incMutationsTotal();
-        mutationsKilled++;
-    }
-
-    private void incMutationsSurvived() {
-
-        incMutationsTotal();
-        mutationsSurvived++;
-    }
-
-    private void incMutationsMemoryError() {
-
-        incMutationsTotal();
-        mutationsMemoryError++;
-    }
-
-    private void incMutationsTimedOut() {
-
-        incMutationsTotal();
-        mutationsTimedOut++;
-    }
-
-    private void incMutationsUnknown() {
-
-        incMutationsTotal();
-        mutationsUnknown++;
-    }
-
-    private void incMutationsDetected() {
-
-        mutationsDetected++;
     }
 
     public Collection<Mutant> getMutants() {
