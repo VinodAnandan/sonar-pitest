@@ -22,6 +22,7 @@ package org.sonar.plugins.pitest.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -113,6 +114,19 @@ public final class Mutator {
             CACHE.put(mutatorKey, result);
         }
         return result;
+    }
+
+    /**
+     * Retrieves all defined {@link Mutator}s from the mutator-def.xml.
+     *
+     * @return a collection of {@link Mutator}s
+     */
+    public static Collection<Mutator> getAllMutators() {
+
+        if (INSTANCES.isEmpty()) {
+            initializeMutatorDefs();
+        }
+        return Collections.unmodifiableCollection(INSTANCES);
     }
 
     /**
