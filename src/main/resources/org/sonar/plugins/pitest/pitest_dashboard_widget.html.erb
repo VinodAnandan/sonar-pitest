@@ -1,27 +1,88 @@
 <%	if measure('pitest_mutations_total') and measure('pitest_mutations_total').value > 0 %>
-<div class="yui-gd">
-  <div class="yui-u first">
-    <div class="dashbox">
-		<h3><%= metric('pitest_mutations_coverage').short_name -%></h3>
-		<p><span class="big"><%= format_measure('pitest_mutations_coverage', :suffix => '', :url => url_for_drilldown('pitest_mutations_coverage')) -%></span></p>
-		<p><%= format_measure('pitest_mutations_total', :suffix => ' total mutations', :url => url_for_drilldown('pitest_mutations_total')) -%></p>
-		<p><%= format_measure('pitest_mutations_detected', :suffix => ' detected mutations', :url => url_for_drilldown('pitest_mutations_detected')) -%></p>
+<div class="widget">
+  <div class="widget-row">
+    <div class="widget-span widget-span-6">
+      <div class="widget-measure-container">
+        <div class="widget-measure widget-measure-main">
+          <span class="widget-label"><%= metric('pitest_mutations_coverage').short_name -%></span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_coverage', 
+              :url => url_for_drilldown('pitest_mutations_coverage')) -%>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label">Spotted Mutants</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_total', 
+              :url => url_for_drilldown('pitest_mutations_total')) -%>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label">Killed Mutants</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_detected', 
+              :url => url_for_drilldown('pitest_mutations_detected')) -%>
+          </span>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="yui-u">
-    <div class="dashbox">
-		<h3>Killed mutations</h3>
-		<p><%= format_measure('pitest_mutations_killed', :suffix => ' mutations killed by tests ', :url => url_for_drilldown('pitest_mutations_killed')) -%><%= tendency_icon(measure('pitest_mutations_killed')) %></p>
-		<p><%= format_measure('pitest_mutations_memoryError', :suffix => ' mutations killed by memory errors ', :url => url_for_drilldown('pitest_mutations_memoryError')) -%><%= tendency_icon(measure('pitest_mutations_memoryError')) %></p>
-		<p><%= format_measure('pitest_mutations_timedOut', :suffix => ' mutations killed by time outs ', :url => url_for_drilldown('pitest_mutations_timedOut')) -%><%= tendency_icon(measure('pitest_mutations_timedOut')) %></p>
-    </div>
-  </div>
-  <div class="yui-u">
-    <div class="dashbox">
-		<h3>Non killed mutations</h3>
-  		 <p><%= format_measure('pitest_mutations_survived', :suffix => ' survived mutations ', :url => url_for_drilldown('pitest_mutations_survived')) -%><%= tendency_icon(measure('pitest_mutations_survived')) %></p>
-  		 <p><%= format_measure('pitest_mutations_noCoverage', :suffix => ' non covered mutations ', :url => url_for_drilldown('pitest_mutations_noCoverage')) -%><%= tendency_icon(measure('pitest_mutations_noCoverage')) %></p>
-  		 <p><%= format_measure('pitest_mutations_unknown', :suffix => ' mutations with unknown status ', :url => url_for_drilldown('pitest_mutations_unknown')) -%><%= tendency_icon(measure('pitest_mutations_unknown')) %></p>
+    <div class="widget-span widget-span-6">
+      <div class="widget-measure-container">
+        <div class="widget-measure widget-measure-main">
+          <span class="widget-label">Mutants killed by</span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label">Tests</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_killed', 
+              :url => url_for_drilldown('pitest_mutations_killed')) -%>
+            <%= trend_icon(measure('pitest_mutations_killed')) %>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label">MemErrors</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_memoryError', 
+              :url => url_for_drilldown('pitest_mutations_memoryError')) -%>
+            <%= trend_icon(measure('pitest_mutations_memoryError')) %>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label">TimeOuts</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_timedOut', 
+              :url => url_for_drilldown('pitest_mutations_timedOut')) -%>
+            <%= trend_icon(measure('pitest_mutations_timedOut')) %>
+          </span>
+        </div>
+        <div class="widget-measure widget-measure-main">
+          <span class="widget-label">Alive mutants</span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label" title="Survivors are covered but not killed by a test">Survivors</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_survived', 
+              :url => url_for_drilldown('pitest_mutations_survived')) -%>
+            <%= trend_icon(measure('pitest_mutations_survived')) %>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label" title="Lurkers are not covered by a test">Lurkers</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_noCoverage', 
+              :url => url_for_drilldown('pitest_mutations_noCoverage')) -%>
+            <%= trend_icon(measure('pitest_mutations_noCoverage')) %>
+          </span>
+        </div>
+        <div class="widget-measure">
+          <span class="widget-label" title="Status of the mutant is not determined">Unknown</span>
+          <span class="nowrap">
+            <%= format_measure('pitest_mutations_unknown', 
+              :url => url_for_drilldown('pitest_mutations_unknown')) -%>
+            <%= trend_icon(measure('pitest_mutations_unknown')) %>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </div>  
