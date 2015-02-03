@@ -305,10 +305,10 @@ public class PitestSensor implements Sensor {
 
         if (resourceMetrics.getMutationCoverage() < threshold) {
 
-            final double minimumKilledMutants = resourceMetrics.getMutationsTotal() * threshold;
+            final double minimumKilledMutants = resourceMetrics.getMutationsTotal() * threshold / 100.0;
             final double additionalRequiredMutants = minimumKilledMutants - resourceMetrics.getMutationsKilled();
             addIssue(issuable, rule, String.format(
-                    "%s more mutants need to be killed to get the mutation coverage from %s to %s",
+                    "%.0f more mutants need to be killed to get the mutation coverage from %.1f%% to %.1f%%",
                     additionalRequiredMutants, actualCoverage, threshold), 0);
         }
         return true;
