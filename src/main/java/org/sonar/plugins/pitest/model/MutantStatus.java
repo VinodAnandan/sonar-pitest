@@ -20,12 +20,24 @@
 package org.sonar.plugins.pitest.model;
 
 public enum MutantStatus {
-    NO_COVERAGE,
-    KILLED,
-    SURVIVED,
-    MEMORY_ERROR,
-    TIMED_OUT,
-    UNKNOWN;
+    NO_COVERAGE(true),
+    KILLED(false),
+    SURVIVED(true),
+    MEMORY_ERROR(false),
+    TIMED_OUT(false),
+    UNKNOWN(true);
+
+    private boolean alive;
+
+    MutantStatus(final boolean alive) {
+
+        this.alive = alive;
+    }
+
+    public boolean isAlive() {
+
+        return alive;
+    }
 
     public static MutantStatus parse(final String statusName) {
 

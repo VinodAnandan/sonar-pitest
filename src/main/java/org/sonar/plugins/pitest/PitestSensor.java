@@ -275,7 +275,8 @@ public class PitestSensor implements Sensor {
             } else if (RULE_UNKNOWN_MUTANT_STATUS.equals(rule.getRuleKey())
                     && mutant.getMutantStatus() == MutantStatus.UNKNOWN) {
                 addIssue(issuable, rule, mutant);
-            } else if (rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId())) {
+            } else if (rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId())
+                    && mutant.getMutantStatus().isAlive()) {
                 addIssue(issuable, rule, mutant);
             }
         }
