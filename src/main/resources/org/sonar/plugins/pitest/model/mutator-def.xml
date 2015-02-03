@@ -84,6 +84,7 @@
 		class="org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator">
 		<name>Remove Increments Mutator</name>
 		<violationDescription>An increment operation has been removed.</violationDescription>
+		<mutatorDescription classpath="EXPERIMENTAL_REMOVE_INCREMENTS.html"/>
 	</mutator>
 	<mutator id="EXPERIMENTAL_REMOVE_SWITCH"
 		class="org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator">
