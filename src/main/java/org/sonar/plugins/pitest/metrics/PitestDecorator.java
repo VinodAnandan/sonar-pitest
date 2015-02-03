@@ -32,6 +32,7 @@ import org.sonar.api.measures.Metric;
  */
 public class PitestDecorator extends AbstractSumChildrenDecorator {
 
+    @SuppressWarnings("rawtypes")
     @DependedUpon
     @Override
     public List<Metric> generatesMetrics() {

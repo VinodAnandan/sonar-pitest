@@ -20,7 +20,7 @@
 package org.sonar.plugins.pitest.model;
 
 import java.io.StringWriter;
-import java.util.List;
+import java.util.Collection;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -28,9 +28,32 @@ import javax.json.stream.JsonGenerator;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-public class MutantHelper {
+public final class MutantHelper {
 
-    public static String toJson(final List<Mutant> mutants) {
+    private MutantHelper() {
+
+    }
+
+    /**
+     * Creates a Json representation of the collection of mutants. The Json representation describes an Object
+     * containing an array with an array element for each mutant. Each array element is an object itself, containing the
+     * mutant's properties
+     * <ul>
+     * <li>detected</li>
+     * <li>status</li>
+     * <li>sourceFile</li>
+     * <li>mutatedClass</li>
+     * <li>mutatedMethod</li>
+     * <li>mutator</li>
+     * <li>violationDescription</li>
+     * <li>mutatorDescription</li>
+     * </ul>
+     * 
+     * @param mutants
+     *            the mutants to be rendered as JSon
+     * @return a string containing the json representation of the mutants
+     */
+    public static String toJson(final Collection<Mutant> mutants) {
 
         final Multimap<Integer, Mutant> mutantsByLine = ArrayListMultimap.create();
         for (final Mutant mutant : mutants) {
@@ -62,6 +85,13 @@ public class MutantHelper {
         return writer.toString();
     }
 
+    /**
+     * Creates a new build to define a mutant. As the {@link Mutant} class is designed as being immutable, the builder
+     * allows sequential definition of the {@link Mutant}'s properties instead of passing all at once to the
+     * constructor.
+     * 
+     * @return a {@link MutantBuilder} for creating a {@link Mutant}
+     */
     public static MutantBuilder newMutant() {
 
         return new MutantBuilder();

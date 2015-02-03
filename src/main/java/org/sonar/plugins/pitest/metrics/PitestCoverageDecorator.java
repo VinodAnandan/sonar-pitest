@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 /**
  * Mutation coverage decorator.
  *
+ * @author <a href="mailto:gerald@moskito.li">Gerald Muecke</a>
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 public class PitestCoverageDecorator implements Decorator {
@@ -42,17 +43,18 @@ public class PitestCoverageDecorator implements Decorator {
     @Override
     public boolean shouldExecuteOnProject(final Project project) {
 
-        return project.getAnalysisType().isDynamic(true);
+        return true;
     }
 
     @DependedUpon
-    public Metric getCoverageMetric() {
+    public Metric<Double> getCoverageMetric() {
 
         return PitestMetrics.MUTATIONS_COVERAGE;
     }
 
+    @SuppressWarnings("unchecked")
     @DependsUpon
-    public List<Metric> getBaseMetrics() {
+    public List<Metric<Integer>> getBaseMetrics() {
 
         return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
     }

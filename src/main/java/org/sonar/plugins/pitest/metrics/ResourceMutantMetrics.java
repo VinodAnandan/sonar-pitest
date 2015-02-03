@@ -20,6 +20,7 @@
 package org.sonar.plugins.pitest.metrics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.sonar.api.resources.Resource;
@@ -43,6 +44,7 @@ public class ResourceMutantMetrics {
     private double mutationsTimedOut = 0;
     private double mutationsUnknown = 0;
     private double mutationsDetected = 0;
+    private double mutationCoverage = 0;
     private final Resource resource;
 
     public ResourceMutantMetrics(final Resource resource) {
@@ -69,7 +71,6 @@ public class ResourceMutantMetrics {
             incMutationsNoCoverage();
             break;
         case SURVIVED:
-            // Only survived mutations are saved as violations
             incMutationsSurvived();
             break;
         case MEMORY_ERROR:
@@ -82,6 +83,15 @@ public class ResourceMutantMetrics {
             incMutationsUnknown();
             break;
         }
+        updateMutationCoverage();
+    }
+
+    private void updateMutationCoverage() {
+
+        if (mutationsTotal > 0) {
+            mutationCoverage = 100.0 * mutationsKilled / mutationsTotal;
+        }
+
     }
 
     private void incMutationsTotal() {
@@ -130,7 +140,7 @@ public class ResourceMutantMetrics {
         mutationsDetected++;
     }
 
-    public List<Mutant> getMutants() {
+    public Collection<Mutant> getMutants() {
 
         return mutants;
     }
@@ -173,6 +183,11 @@ public class ResourceMutantMetrics {
     public double getMutationsDetected() {
 
         return mutationsDetected;
+    }
+
+    public double getMutationCoverage() {
+
+        return mutationCoverage;
     }
 
     /**
