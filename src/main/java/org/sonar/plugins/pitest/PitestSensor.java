@@ -76,7 +76,7 @@ public class PitestSensor implements Sensor {
 
     private final ResultParser parser;
     private final ReportFinder reportFinder;
-    private final String executionMode;
+    private final boolean sensorEnabled;
     private final RulesProfile rulesProfile;
     private final FileSystem fileSystem;
     private final ResourcePerspectives perspectives;
@@ -89,7 +89,7 @@ public class PitestSensor implements Sensor {
         this.reportFinder = reportFinder;
         this.fileSystem = fileSystem;
         this.perspectives = perspectives;
-        executionMode = settings.getString(PitestPlugin.MODE_KEY);
+        sensorEnabled = settings.getBoolean(PitestPlugin.SENSOR_ENABLED);
         this.rulesProfile = rulesProfile;
         this.settings = settings;
 
@@ -101,8 +101,7 @@ public class PitestSensor implements Sensor {
     @Override
     public boolean shouldExecuteOnProject(final Project project) {
 
-        return fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java"))
-                && !PitestPlugin.MODE_SKIP.equals(executionMode);
+        return fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && sensorEnabled;
     }
 
     @Override

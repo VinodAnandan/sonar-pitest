@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.Settings;
 import org.sonar.plugins.pitest.metrics.PitestCoverageDecorator;
@@ -40,9 +41,11 @@ import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  */
 @Properties({
-        @Property(key = PitestPlugin.MODE_KEY,
-                name = "PIT activation mode",
+        @Property(key = PitestPlugin.SENSOR_ENABLED,
+                name = "PIT Sensor enabled",
                 description = "Possible values:  empty or 'skip'",
+                type = PropertyType.BOOLEAN,
+                defaultValue = "true",
                 global = true,
                 project = true),
         @Property(key = PitestPlugin.REPORT_DIRECTORY_KEY,
@@ -54,8 +57,7 @@ import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 })
 public final class PitestPlugin extends SonarPlugin {
 
-    public static final String MODE_KEY = "sonar.pitest.mode";
-    public static final String MODE_SKIP = "skip";
+    public static final String SENSOR_ENABLED = "sonar.pitest.enabled";
 
     public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reports.directory";
     public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";

@@ -37,7 +37,7 @@ import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
 
-@NavigationSection(NavigationSection.RESOURCE)
+@NavigationSection(NavigationSection.RESOURCE_TAB)
 @ResourceQualifier({
     Qualifiers.FILE
 })

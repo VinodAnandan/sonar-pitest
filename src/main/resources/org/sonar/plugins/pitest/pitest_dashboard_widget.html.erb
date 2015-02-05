@@ -8,6 +8,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_coverage', 
               :url => url_for_drilldown('pitest_mutations_coverage')) -%>
+            <%= trend_icon(measure('pitest_mutations_coverage')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -15,6 +16,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_total', 
               :url => url_for_drilldown('pitest_mutations_total')) -%>
+            <%= trend_icon(measure('pitest_mutations_total')) -%>
           </span>
         </div>
         <div class="widget-measure">
@@ -22,6 +24,7 @@
           <span class="nowrap">
             <%= format_measure('pitest_mutations_detected', 
               :url => url_for_drilldown('pitest_mutations_detected')) -%>
+            <%= trend_icon(measure('pitest_mutations_detected')) -%>
           </span>
         </div>
       </div>
