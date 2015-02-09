@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
 
 /**
  * Helper class to deal with {@link Mutant}s.
- * 
+ *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
@@ -80,13 +80,14 @@ public final class MutantHelper {
                 json.write("mutatedMethod", mutant.getMutatedMethod());
                 json.write("mutator", mutant.getMutator().getId());
                 json.write("violationDescription", mutant.getMutator().getViolationDescription());
-                json.write("mutatorDescription", mutant.getMutator().getMutatorDescription());
+                // json.write("mutatorDescription", mutant.getMutator().getMutatorDescription());
                 json.writeEnd();
             }
 
             json.writeEnd();
         }
         json.writeEnd();
+        json.flush();
 
         return writer.toString();
     }

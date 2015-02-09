@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.sonar.api.batch.Decorator;
@@ -47,14 +48,14 @@ public class PitestCoverageDecorator implements Decorator {
     }
 
     @DependedUpon
-    public Metric<Double> getCoverageMetric() {
+    public Metric<Serializable> getCoverageMetric() {
 
         return PitestMetrics.MUTATIONS_COVERAGE;
     }
 
     @SuppressWarnings("unchecked")
     @DependsUpon
-    public List<Metric<Integer>> getBaseMetrics() {
+    public List<Metric<Serializable>> getBaseMetrics() {
 
         return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
     }

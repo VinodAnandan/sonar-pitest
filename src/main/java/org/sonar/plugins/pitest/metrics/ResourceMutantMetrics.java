@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.pitest.model.Mutant;
 
 /**
@@ -36,18 +36,18 @@ import org.sonar.plugins.pitest.model.Mutant;
 public class ResourceMutantMetrics {
 
     private final List<Mutant> mutants = new ArrayList<Mutant>();
-    private double mutationsTotal = 0;
-    private double mutationsNoCoverage = 0;
-    private double mutationsKilled = 0;
-    private double mutationsSurvived = 0;
-    private double mutationsMemoryError = 0;
-    private double mutationsTimedOut = 0;
-    private double mutationsUnknown = 0;
-    private double mutationsDetected = 0;
+    private int mutationsTotal = 0;
+    private int mutationsNoCoverage = 0;
+    private int mutationsKilled = 0;
+    private int mutationsSurvived = 0;
+    private int mutationsMemoryError = 0;
+    private int mutationsTimedOut = 0;
+    private int mutationsUnknown = 0;
+    private int mutationsDetected = 0;
     private double mutationCoverage = 0;
-    private final Resource resource;
+    private final InputFile resource;
 
-    public ResourceMutantMetrics(final Resource resource) {
+    public ResourceMutantMetrics(final InputFile resource) {
 
         this.resource = resource;
     }
@@ -100,42 +100,42 @@ public class ResourceMutantMetrics {
         return mutants;
     }
 
-    public double getMutationsTotal() {
+    public int getMutationsTotal() {
 
         return mutationsTotal;
     }
 
-    public double getMutationsNoCoverage() {
+    public int getMutationsNoCoverage() {
 
         return mutationsNoCoverage;
     }
 
-    public double getMutationsKilled() {
+    public int getMutationsKilled() {
 
         return mutationsKilled;
     }
 
-    public double getMutationsSurvived() {
+    public int getMutationsSurvived() {
 
         return mutationsSurvived;
     }
 
-    public double getMutationsMemoryError() {
+    public int getMutationsMemoryError() {
 
         return mutationsMemoryError;
     }
 
-    public double getMutationsTimedOut() {
+    public int getMutationsTimedOut() {
 
         return mutationsTimedOut;
     }
 
-    public double getMutationsUnknown() {
+    public int getMutationsUnknown() {
 
         return mutationsUnknown;
     }
 
-    public double getMutationsDetected() {
+    public int getMutationsDetected() {
 
         return mutationsDetected;
     }
@@ -150,7 +150,7 @@ public class ResourceMutantMetrics {
      *
      * @return
      */
-    public Resource getResource() {
+    public InputFile getResource() {
 
         return resource;
     }

@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_MISSING_COVERAGE;
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_SURVIVED_MUTANT;
 import static org.sonar.plugins.pitest.PitestPlugin.REPORT_DIRECTORY_KEY;
 import static org.sonar.plugins.pitest.PitestRulesDefinition.MUTANT_RULES_PREFIX;
 import static org.sonar.plugins.pitest.PitestRulesDefinition.PARAM_MUTANT_COVERAGE_THRESHOLD;
@@ -39,17 +41,17 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputFile.Type;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issuable.IssueBuilder;
-import org.sonar.api.measures.Measure;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.plugins.pitest.metrics.PitestMetrics;
@@ -79,7 +81,6 @@ public class PitestSensor implements Sensor {
     private final boolean sensorEnabled;
     private final RulesProfile rulesProfile;
     private final FileSystem fileSystem;
-    private final ResourcePerspectives perspectives;
     private final Settings settings;
 
     public PitestSensor(final Settings settings, final ResultParser parser, final RulesProfile rulesProfile,
@@ -88,24 +89,30 @@ public class PitestSensor implements Sensor {
         this.parser = parser;
         this.reportFinder = reportFinder;
         this.fileSystem = fileSystem;
-        this.perspectives = perspectives;
         sensorEnabled = settings.getBoolean(PitestPlugin.SENSOR_ENABLED);
         this.rulesProfile = rulesProfile;
         this.settings = settings;
 
     }
 
-    /**
-     * Will execute the plugin if the language is Java and execution mode is not skip.
-     */
     @Override
-    public boolean shouldExecuteOnProject(final Project project) {
+    public void describe(final SensorDescriptor descriptor) {
 
-        return fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && sensorEnabled;
+        descriptor.name("PIT");
+        descriptor.provides(PitestMetrics.getSensorMetrics().toArray(new Metric[0]));
+        descriptor.workOnLanguages("java");
+        descriptor.workOnFileTypes(Type.MAIN);
+        descriptor.createIssuesForRuleRepositories(REPOSITORY_KEY);
+
     }
 
     @Override
-    public void analyse(final Project project, final SensorContext context) {
+    public void execute(final SensorContext context) {
+
+        if (!(fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && sensorEnabled)) {
+            LOG.info("PIT Sensor disabled");
+            return;
+        }
 
         final List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
         if (activeRules.isEmpty()) {
@@ -116,7 +123,7 @@ public class PitestSensor implements Sensor {
         try {
             final Collection<Mutant> mutants = readMutants();
             final Collection<ResourceMutantMetrics> metrics = collectMetrics(mutants, context);
-            applyRules(metrics, activeRules);
+            applyRules(metrics, activeRules, context);
             saveMetrics(metrics, context);
         } catch (final IOException e) {
             LOG.error("Could not read mutants", e);
@@ -171,7 +178,7 @@ public class PitestSensor implements Sensor {
     private Collection<ResourceMutantMetrics> collectMetrics(final Collection<Mutant> mutants,
             final SensorContext context) {
 
-        final Map<Resource, ResourceMutantMetrics> metricsByResource = new HashMap<Resource, ResourceMutantMetrics>();
+        final Map<InputFile, ResourceMutantMetrics> metricsByResource = new HashMap<>();
 
         for (final Mutant mutant : mutants) {
             collectMetricsForMutant(mutant, context, metricsByResource);
@@ -191,15 +198,14 @@ public class PitestSensor implements Sensor {
      *            one resource, the metrics are accumulated
      */
     private void collectMetricsForMutant(final Mutant mutant, final SensorContext context,
-            final Map<Resource, ResourceMutantMetrics> metricsByResource) {
+            final Map<InputFile, ResourceMutantMetrics> metricsByResource) {
 
         final InputFile file = getInputFile(mutant);
         if (file != null) {
-            final Resource resource = context.getResource(file);
-            if (!metricsByResource.containsKey(resource)) {
-                metricsByResource.put(resource, new ResourceMutantMetrics(resource));
+            if (!metricsByResource.containsKey(file)) {
+                metricsByResource.put(file, new ResourceMutantMetrics(file));
             }
-            metricsByResource.get(resource).addMutant(mutant);
+            metricsByResource.get(file).addMutant(mutant);
         } else {
             LOG.warn("No input file found matching mutated class {}", mutant.getMutatedClass());
         }
@@ -220,82 +226,71 @@ public class PitestSensor implements Sensor {
      * @param metrics
      *            the metrics for each individual resource
      * @param activeRules
+     *            the currently active rule
+     * @param context
+     *            the current sensor context
      */
-    private void applyRules(final Collection<ResourceMutantMetrics> metrics, final Collection<ActiveRule> activeRules) {
+    private void applyRules(final Collection<ResourceMutantMetrics> metrics, final Collection<ActiveRule> activeRules,
+            final SensorContext context) {
 
         for (final ResourceMutantMetrics resourceMetrics : metrics) {
-            final Issuable issuable = perspectives.as(Issuable.class, resourceMetrics.getResource());
-            if (issuable != null) {
-                applyRules(issuable, resourceMetrics, activeRules);
-            }
+            applyRules(resourceMetrics, activeRules, context);
         }
     }
 
     /**
      * Applies the active rules on resource metrics for the {@link Issuable} resource.
      *
-     * @param issuable
-     *            the issuable on which the rules should be applied
      * @param resourceMetrics
      *            the mutants for found for the issuable
      * @param activeRules
      *            the active rules to apply
+     * @param context
+     *            the current sensor context
      */
-    private void applyRules(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
-            final Collection<ActiveRule> activeRules) {
+    private void applyRules(final ResourceMutantMetrics resourceMetrics, final Collection<ActiveRule> activeRules,
+            final SensorContext context) {
 
         for (final ActiveRule rule : activeRules) {
-            applyRule(issuable, resourceMetrics, rule);
+            applyRule(resourceMetrics, rule, context);
         }
     }
 
     /**
      * Applies the active rule on the issuable if any of the resource metrics for the issuable violates the rule
      *
-     * @param issuable
-     *            the {@link Issuable} for which an issue is created
      * @param resourceMetrics
      *            the metrics for the {@link Resource} behind the {@link Issuable}
      * @param rule
      *            the active rule to apply
+     * @param context
+     *            the current sensor context
      */
-    private void applyRule(final Issuable issuable, final ResourceMutantMetrics resourceMetrics, final ActiveRule rule) {
+    private void applyRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
+            final SensorContext context) {
 
-        if (applyThresholdRule(issuable, resourceMetrics, rule)) {
+        if (applyThresholdRule(resourceMetrics, rule, context)) {
             return;
         }
 
-        for (final Mutant mutant : resourceMetrics.getMutants()) {
-            if (RULE_SURVIVED_MUTANT.equals(rule.getRuleKey()) && mutant.getMutantStatus() == MutantStatus.SURVIVED) {
-                addIssue(issuable, rule, mutant);
-            } else if (RULE_UNCOVERED_MUTANT.equals(rule.getRuleKey())
-                    && mutant.getMutantStatus() == MutantStatus.NO_COVERAGE) {
-                addIssue(issuable, rule, mutant);
-            } else if (RULE_UNKNOWN_MUTANT_STATUS.equals(rule.getRuleKey())
-                    && mutant.getMutantStatus() == MutantStatus.UNKNOWN) {
-                addIssue(issuable, rule, mutant);
-            } else if (rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId())
-                    && mutant.getMutantStatus().isAlive()) {
-                addIssue(issuable, rule, mutant);
-            }
-        }
+        applyMutantRule(resourceMetrics, rule, context);
 
     }
 
     /**
      * Creates a the mutation coverage threshold issue if the active rule is the Mutation Coverage rule.
      *
-     * @param issuable
-     *            the issuable on which to apply the rule
      * @param resourceMetrics
-     *            the metrics for the resource behind the issuable
+     *            the issuable on which to apply the rule
      * @param rule
+     *            the metrics for the resource behind the issuable
+     * @param context
      *            the rule to apply.
      * @return <code>true</code> if the rule was the mutation coverage rule and the rule have been applied or
      *         <code>false</code> if it was another rule
      */
-    private boolean applyThresholdRule(final Issuable issuable, final ResourceMutantMetrics resourceMetrics,
-            final ActiveRule rule) {
+    private boolean applyThresholdRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
+            final SensorContext context) {
 
         if (!RULE_MUTANT_COVERAGE.equals(rule.getRuleKey())) {
             return false;
@@ -307,58 +302,131 @@ public class PitestSensor implements Sensor {
 
             final double minimumKilledMutants = resourceMetrics.getMutationsTotal() * threshold / 100.0;
             final double additionalRequiredMutants = minimumKilledMutants - resourceMetrics.getMutationsKilled();
-            addIssue(issuable, rule, String.format(
+
+            //@formatter:off
+            context.newIssue()
+                .onFile(resourceMetrics.getResource())
+                .message(String.format(
                     "%.0f more mutants need to be killed to get the mutation coverage from %.1f%% to %.1f%%",
-                    additionalRequiredMutants, actualCoverage, threshold), 0);
+                    additionalRequiredMutants, actualCoverage, threshold))
+                .ruleKey(rule.getRule().ruleKey())
+                .effortToFix(settings.getDouble(EFFORT_FACTOR_MISSING_COVERAGE) * additionalRequiredMutants)
+                .save();
+            // @formatter:on
         }
         return true;
     }
 
     /**
-     * Adds an issue for the current mutant and the violated rule
+     * Applies mutant specific rule on each mutant captured in the resource metric. For each mutant assigned to the
+     * resource, it is checked if it violates:
+     * <ul>
+     * <li>the survived mutant rule</li>
+     * <li>the uncovered mutant rule</li>
+     * <li>the unknown mutator status rule</li>
+     * <li>any of the mutator specific rules</li>
+     * </ul>
      *
-     * @param issuable
-     *            the issuable resource for which an issue should be created
+     * @param resourceMetrics
+     *            the resource metric containing the resource that might have an issue and all mutants found for that
+     *            resource
      * @param rule
-     *            the rule that has been violated
-     * @param mutant
-     *            the mutant that caused the violation
+     *            the rule that might be violated
+     * @param context
+     *            the current sensor context
      */
-    private void addIssue(final Issuable issuable, final ActiveRule rule, final Mutant mutant) {
+    private void applyMutantRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
+            final SensorContext context) {
+
+        for (final Mutant mutant : resourceMetrics.getMutants()) {
+            if (violatesSurvivedMutantRule(rule, mutant)
+                    || violatesUncoveredMutantRule(rule, mutant)
+                    || violatesUnknownMutantStatusRule(rule, mutant)
+                    || violatesMutatorRule(rule, mutant)) {
+                //@formatter:off
+                context.newIssue()
+                    .onFile(resourceMetrics.getResource())
+                    .atLine(mutant.getLineNumber())
+                    .message(getViolationDescription(mutant))
+                    .ruleKey(rule.getRule().ruleKey())
+                    .effortToFix(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT))
+                    .save();
+                // @formatter:on
+            }
+        }
+    }
+
+    /**
+     * Checks if the active rule is a mutator-specific rule and if the mutant violates it.
+     *
+     * @param rule
+     *            the rule to verify
+     * @param mutant
+     *            the mutant that might violate the rule
+     * @return <code>true</code> if the rule is violated
+     */
+    private boolean violatesMutatorRule(final ActiveRule rule, final Mutant mutant) {
+
+        return rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId())
+                && mutant.getMutantStatus().isAlive();
+    }
+
+    /**
+     * Checks if the rule is the Unknown Mutator Status rule and if the mutant violates it
+     *
+     * @param rule
+     *            the rule to verify
+     * @param mutant
+     *            the mutant that might violate the rule
+     * @return <code>true</code> if the rule is violated
+     */
+    private boolean violatesUnknownMutantStatusRule(final ActiveRule rule, final Mutant mutant) {
+
+        return RULE_UNKNOWN_MUTANT_STATUS.equals(rule.getRuleKey()) && mutant.getMutantStatus() == MutantStatus.UNKNOWN;
+    }
+
+    /**
+     * Checks if the rule is the Uncovered Mutant rule and if the mutant violates it
+     *
+     * @param rule
+     *            the rule to verify
+     * @param mutant
+     *            the mutant that might violate the rule
+     * @return <code>true</code> if the rule is violated
+     */
+    private boolean violatesUncoveredMutantRule(final ActiveRule rule, final Mutant mutant) {
+
+        return RULE_UNCOVERED_MUTANT.equals(rule.getRuleKey()) && mutant.getMutantStatus() == MutantStatus.NO_COVERAGE;
+    }
+
+    /**
+     * Checks if the rule if the Survived Mutant rule and if the mutant violates it
+     *
+     * @param rule
+     *            the rule to verify
+     * @param mutant
+     *            the mutant that might violate the rule
+     * @return <code>true</code> if the rule is violated
+     */
+    private boolean violatesSurvivedMutantRule(final ActiveRule rule, final Mutant mutant) {
+
+        return RULE_SURVIVED_MUTANT.equals(rule.getRuleKey()) && mutant.getMutantStatus() == MutantStatus.SURVIVED;
+    }
+
+    /**
+     * Gets the mutant specific violation description of the mutator of the mutant
+     *
+     * @param mutant
+     *            the mutant to receive the violation description
+     * @return the description as string
+     */
+    private String getViolationDescription(final Mutant mutant) {
 
         final StringBuilder message = new StringBuilder(mutant.getMutator().getViolationDescription());
         if (!mutant.getMutatorSuffix().isEmpty()) {
             message.append(" (").append(mutant.getMutatorSuffix()).append(')');
         }
-
-        addIssue(issuable, rule, message.toString(), mutant.getLineNumber());
-    }
-
-    /**
-     * Adds an issue with the given message on the given line for the specified rule.
-     *
-     * @param issuable
-     *            the issuable resource for which an issue should be created
-     * @param rule
-     *            the rule that has been violated
-     * @param message
-     *            the message for the issue
-     * @param lineNumber
-     *            optional line number where the issue was detected. Set to 0 or negative if you have no specific line
-     *
-     */
-    private void addIssue(final Issuable issuable, final ActiveRule rule, final String message, final int lineNumber) {
-
-        //@formatter:off
-        final IssueBuilder issueBuilder = issuable.newIssueBuilder()
-                .ruleKey(rule.getRule().ruleKey())
-                .message(message);
-        if(lineNumber > 0) {
-            issueBuilder.line(lineNumber);
-        }
-
-        // @formatter:on
-        issuable.addIssue(issueBuilder.build());
+        return message.toString();
     }
 
     /**
@@ -387,17 +455,26 @@ public class PitestSensor implements Sensor {
      */
     private void saveResourceMetrics(final ResourceMutantMetrics resourceMetrics, final SensorContext context) {
 
-        final Resource resource = resourceMetrics.getResource();
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_TOTAL, resourceMetrics.getMutationsTotal());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_NO_COVERAGE, resourceMetrics.getMutationsNoCoverage());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_KILLED, resourceMetrics.getMutationsKilled());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_SURVIVED, resourceMetrics.getMutationsSurvived());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_MEMORY_ERROR, resourceMetrics.getMutationsMemoryError());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_TIMED_OUT, resourceMetrics.getMutationsTimedOut());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_UNKNOWN, resourceMetrics.getMutationsUnknown());
-        context.saveMeasure(resource, PitestMetrics.MUTATIONS_DETECTED, resourceMetrics.getMutationsDetected());
-        context.saveMeasure(resource,
-                new Measure<>(PitestMetrics.MUTATIONS_DATA, MutantHelper.toJson(resourceMetrics.getMutants())));
+        final InputFile resource = resourceMetrics.getResource();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_TOTAL)
+                .withValue(resourceMetrics.getMutationsTotal()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_NO_COVERAGE)
+                .withValue(resourceMetrics.getMutationsNoCoverage()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_KILLED)
+                .withValue(resourceMetrics.getMutationsKilled()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_SURVIVED)
+                .withValue(resourceMetrics.getMutationsSurvived()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_MEMORY_ERROR)
+                .withValue(resourceMetrics.getMutationsMemoryError()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_TIMED_OUT)
+                .withValue(resourceMetrics.getMutationsTimedOut()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_UNKNOWN)
+                .withValue(resourceMetrics.getMutationsUnknown()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_DETECTED)
+                .withValue(resourceMetrics.getMutationsDetected()).save();
+        context.newMeasure().onFile(resource).forMetric(PitestMetrics.MUTATIONS_DATA)
+                .withValue(MutantHelper.toJson(resourceMetrics.getMutants())).save();
+
     }
 
     @Override

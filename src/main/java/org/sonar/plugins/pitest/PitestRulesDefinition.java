@@ -19,8 +19,11 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_MUTANT_KILL;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Settings;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
@@ -83,9 +86,12 @@ public class PitestRulesDefinition implements RulesDefinition {
      */
     private final RulesDefinitionXmlLoader xmlLoader;
 
-    public PitestRulesDefinition(final RulesDefinitionXmlLoader xmlLoader) {
+    private final Settings settings;
+
+    public PitestRulesDefinition(final Settings settings, final RulesDefinitionXmlLoader xmlLoader) {
 
         this.xmlLoader = xmlLoader;
+        this.settings = settings;
     }
 
     @Override
@@ -94,6 +100,12 @@ public class PitestRulesDefinition implements RulesDefinition {
         final NewRepository repository = context.createRepository(REPOSITORY_KEY, "java").setName(REPOSITORY_NAME);
         xmlLoader.load(repository, getClass().getResourceAsStream("rules.xml"), "UTF-8");
         addMutatorRules(repository);
+        for (final NewRule rule : repository.rules()) {
+            rule.setDebtSubCharacteristic(SubCharacteristics.UNIT_TESTS);
+            rule.setDebtRemediationFunction(rule.debtRemediationFunctions().linearWithOffset(
+                    settings.getString(EFFORT_MUTANT_KILL), "15min"));
+            rule.setEffortToFixDescription("Effort to kill the mutant(s)");
+        }
         repository.done();
         LOG.info("Defining PIT rule repository {} done", repository);
     }

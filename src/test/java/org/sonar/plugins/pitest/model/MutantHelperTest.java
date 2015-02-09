@@ -19,37 +19,49 @@
  */
 package org.sonar.plugins.pitest.model;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 public class MutantHelperTest {
 
     @Test
-    public void should_generate_a_json_string() {
+    public void testToJson_equals() throws JSONException {
 
         final Mutant m1 = new Mutant(true, MutantStatus.KILLED, "SomeClass.java", "com.foo.bar", "method",
                 "methodDesc", 17, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator"),
-                5, "killingTest");
+                "", 5, "killingTest");
         final Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "SomeClass.java", "com.foo.bar.qix", "method",
-                "methodDesc", 17, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"), 5,
+                "methodDesc", 17, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"), "",
+                5,
+
                 "killingTest");
         final Mutant m3 = new Mutant(true, MutantStatus.KILLED, "SomeClass.java", "com.foo.bar", "method",
                 "methodDesc", 42, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator"),
-                5, "killingTest");
+                "", 5, "killingTest");
 
         final String result = MutantHelper.toJson(Arrays.asList(m1, m2, m3));
-        System.out.println(result);
-        assertThat(result)
-                .isEqualTo(
-                        "{\"17\":["
-                                + "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\"  },"
-                                + "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\"  }"
-                                + "],"
-                                + "\"42\":["
-                                + "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\"  }"
-                                + "]}");
+        ////@formatter:off
+        final String expected =
+                "{\"17\":"
+                    + "[{\"detected\":true,\"status\":\"KILLED\",\"sourceFile\":\"SomeClass.java\",\"mutatedClass\":\"com.foo.bar\",\"mutatedMethod\":\"method\",\"mutator\":\"INLINE_CONSTS\",\"violationDescription\":\"Alive Mutant: An inline constant has been changed without being detected by a test.\"},"
+                    + "{\"detected\":false,\"status\":\"SURVIVED\",\"sourceFile\":\"SomeClass.java\",\"mutatedClass\":\"com.foo.bar.qix\",\"mutatedMethod\":\"method\",\"mutator\":\"RETURN_VALS\",\"violationDescription\":\"Alive Mutant: The return value of a method call has been replaced without being detected by a test.\"}"
+                    + "],"
+                + "\"42\":"
+                    + "[{\"detected\":true,\"status\":\"KILLED\",\"sourceFile\":\"SomeClass.java\",\"mutatedClass\":\"com.foo.bar\",\"mutatedMethod\":\"method\",\"mutator\":\"INLINE_CONSTS\",\"violationDescription\":\"Alive Mutant: An inline constant has been changed without being detected by a test.\"}]}";
+        // @formatter:on
+
+        JSONAssert.assertEquals(expected, result, false);
+    }
+
+    @Test
+    public void testNewMutant() throws Exception {
+
+        final MutantBuilder builder = MutantHelper.newMutant();
+        assertNotNull(builder);
     }
 }
