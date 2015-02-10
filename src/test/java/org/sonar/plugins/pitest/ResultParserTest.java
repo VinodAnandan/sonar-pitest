@@ -21,7 +21,8 @@ package org.sonar.plugins.pitest;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.junit.Before;
@@ -42,19 +43,19 @@ public class ResultParserTest {
     }
 
     @Test
-    public void should_parse_report_and_find_mutants() {
+    public void should_parse_report_and_find_mutants() throws IOException {
 
-        final File report = TestUtils.getResource("mutations.xml");
+        final Path report = TestUtils.getResource("mutations.xml").toPath();
         final Collection<Mutant> mutants = subject.parseMutants(report);
         assertThat(mutants).isNotEmpty().hasSize(10);
 
         //@formatter:off
         assertThat(mutants).contains(
-                new Mutant(true,MutantStatus.KILLED,"ResourceInjection.java","io.inkstand.scribble.inject.ResourceInjection$ResourceLiteral","authenticationType","()Ljavax/annotation/Resource$AuthenticationType;",164,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"),5,"io.inkstand.scribble.inject.ResourceInjectionTest.testByMappedName_match(io.inkstand.scribble.inject.ResourceInjectionTest)"));
+                new Mutant(true,MutantStatus.KILLED,"ResourceInjection.java","io.inkstand.scribble.inject.ResourceInjection$ResourceLiteral","authenticationType","()Ljavax/annotation/Resource$AuthenticationType;",164,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"),"",5,"io.inkstand.scribble.inject.ResourceInjectionTest.testByMappedName_match(io.inkstand.scribble.inject.ResourceInjectionTest)"));
         assertThat(mutants).contains(
-                new Mutant(false, MutantStatus.NO_COVERAGE, "RemoteContentRepository.java","io.inkstand.scribble.rules.jcr.RemoteContentRepository", "after", "()V", 197, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"), 5,null));
+                new Mutant(false, MutantStatus.NO_COVERAGE, "RemoteContentRepository.java","io.inkstand.scribble.rules.jcr.RemoteContentRepository", "after", "()V", 197, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"), "",5,null));
         assertThat(mutants).contains(
-                new Mutant(false,MutantStatus.SURVIVED,"ContentRepository.java","io.inkstand.scribble.rules.jcr.ContentRepository","before","()V",63,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator_EQUAL_IF"),5, null));
+                new Mutant(false,MutantStatus.SURVIVED,"ContentRepository.java","io.inkstand.scribble.rules.jcr.ContentRepository","before","()V",63,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator_EQUAL_IF"),"",5, null));
         // @formatter:on
         assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.UNKNOWN);
         assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.MEMORY_ERROR);

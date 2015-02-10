@@ -20,54 +20,55 @@
 package org.sonar.plugins.pitest;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.test.TestUtils;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ReportFinderTest {
 
+    @InjectMocks
+    private ReportFinder subject;
+
+    // TODO use testrule for folder
+
     @Test
-    public void should_find_report_file() {
+    public void testFindReport_existingReport() throws IOException {
 
-        // given
-        final ReportFinder finder = new ReportFinder();
-        final File xmlFile = TestUtils.getResource("mutations.xml");
-        final File directory = xmlFile.getParentFile();
+        // prepare
+        final Path xmlFile = TestUtils.getResource("mutations.xml").toPath();
+        final Path directory = xmlFile.getParent();
 
-        // when
-        final File report = finder.findReport(directory);
+        // act
+        final Path report = subject.findReport(directory);
 
-        // then
-        assertThat(report).isEqualTo(xmlFile);
+        // assert
+        assertEquals(xmlFile, report);
     }
 
     @Test
-    public void should_return_null_if_no_report() {
+    public void testFindReport_noReportInDirectory() throws IOException {
 
-        // given
-        final ReportFinder finder = new ReportFinder();
-        final File directory = TestUtils.getResource("fake_libs");
+        final Path directory = TestUtils.getResource("fake_libs").toPath();
 
-        // when
-        final File report = finder.findReport(directory);
+        // act
+        final Path report = subject.findReport(directory);
 
-        // then
+        // assert
         assertThat(report).isNull();
     }
 
-    @Test
-    public void should_return_null_if_directory_does_not_exist() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindReport_nullPath_exception() throws IOException {
 
-        // given
-        final ReportFinder finder = new ReportFinder();
-        final File directory = TestUtils.getResource("imaginary");
+        subject.findReport(null);
 
-        // when
-        final File report = finder.findReport(directory);
-
-        // then
-        assertThat(report).isNull();
     }
 }
