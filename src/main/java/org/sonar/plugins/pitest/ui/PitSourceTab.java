@@ -19,15 +19,15 @@
  */
 package org.sonar.plugins.pitest.ui;
 
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_KILLED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_MEMORY_ERROR_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_NO_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_SURVIVED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TIMED_OUT_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_UNKNOWN_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_DETECTED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_KILLED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_MEMORY_ERROR_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_NO_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_SURVIVED_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_TIMED_OUT_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_TOTAL_KEY;
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_UNKNOWN_KEY;
 
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.web.AbstractRubyTemplate;

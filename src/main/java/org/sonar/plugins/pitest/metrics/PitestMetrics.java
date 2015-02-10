@@ -19,17 +19,6 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_DATA_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_KILLED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_MEMORY_ERROR_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_NO_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_SURVIVED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TIMED_OUT_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetricsKeys.MUTATIONS_UNKNOWN_KEY;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +35,17 @@ import org.sonar.api.measures.Metrics;
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
 public class PitestMetrics<T extends Serializable> implements Metrics {
+
+    public static final String MUTATIONS_DATA_KEY = "pitest_mutations_data";
+    public static final String MUTATIONS_TOTAL_KEY = "pitest_mutations_total";
+    public static final String MUTATIONS_DETECTED_KEY = "pitest_mutations_detected";
+    public static final String MUTATIONS_NO_COVERAGE_KEY = "pitest_mutations_noCoverage";
+    public static final String MUTATIONS_KILLED_KEY = "pitest_mutations_killed";
+    public static final String MUTATIONS_SURVIVED_KEY = "pitest_mutations_survived";
+    public static final String MUTATIONS_MEMORY_ERROR_KEY = "pitest_mutations_memoryError";
+    public static final String MUTATIONS_TIMED_OUT_KEY = "pitest_mutations_timedOut";
+    public static final String MUTATIONS_UNKNOWN_KEY = "pitest_mutations_unknown";
+    public static final String MUTATIONS_COVERAGE_KEY = "pitest_mutations_coverage";
 
     @SuppressWarnings("rawtypes")
     private static final List<Metric> METRICS = new ArrayList<Metric>();
