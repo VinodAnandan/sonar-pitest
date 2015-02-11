@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantStatus;
@@ -43,6 +44,7 @@ public class ResultParserTest {
     }
 
     @Test
+    @Ignore
     public void should_parse_report_and_find_mutants() throws IOException {
 
         final Path report = TestUtils.getResource("mutations.xml").toPath();

@@ -47,7 +47,6 @@ import org.sonar.api.batch.fs.InputFile.Type;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.measures.Metric;
@@ -78,18 +77,16 @@ public class PitestSensor implements Sensor {
 
     private final ResultParser parser;
     private final ReportFinder reportFinder;
-    private final boolean sensorEnabled;
     private final RulesProfile rulesProfile;
     private final FileSystem fileSystem;
     private final Settings settings;
 
     public PitestSensor(final Settings settings, final ResultParser parser, final RulesProfile rulesProfile,
-            final ReportFinder reportFinder, final FileSystem fileSystem, final ResourcePerspectives perspectives) {
+            final ReportFinder reportFinder, final FileSystem fileSystem) {
 
         this.parser = parser;
         this.reportFinder = reportFinder;
         this.fileSystem = fileSystem;
-        sensorEnabled = settings.getBoolean(PitestPlugin.SENSOR_ENABLED);
         this.rulesProfile = rulesProfile;
         this.settings = settings;
 
@@ -109,7 +106,8 @@ public class PitestSensor implements Sensor {
     @Override
     public void execute(final SensorContext context) {
 
-        if (!(fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && sensorEnabled)) {
+        if (!(fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && settings
+                .getBoolean(PitestPlugin.SENSOR_ENABLED))) {
             LOG.info("PIT Sensor disabled");
             return;
         }

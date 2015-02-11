@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,7 @@ public class ReportFinderTest {
     // TODO use testrule for folder
 
     @Test
+    @Ignore
     public void testFindReport_existingReport() throws IOException {
 
         // prepare
