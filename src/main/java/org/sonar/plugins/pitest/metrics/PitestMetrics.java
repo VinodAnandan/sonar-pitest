@@ -19,13 +19,21 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
+import static org.sonar.api.measures.Metric.DIRECTION_BETTER;
+import static org.sonar.api.measures.Metric.DIRECTION_NONE;
+import static org.sonar.api.measures.Metric.DIRECTION_WORST;
+import static org.sonar.api.measures.Metric.ValueType.DATA;
+import static org.sonar.api.measures.Metric.ValueType.INT;
+import static org.sonar.api.measures.Metric.ValueType.PERCENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metric.Builder;
-import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
 
 /**
@@ -48,86 +56,78 @@ public class PitestMetrics<T extends Serializable> implements Metrics {
     public static final String MUTATIONS_COVERAGE_KEY = "pitest_mutations_coverage";
 
     @SuppressWarnings("rawtypes")
-    private static final List<Metric> METRICS = new ArrayList<Metric>();
+    private static final List<Metric> METRICS;
     @SuppressWarnings("rawtypes")
-    private static final List<Metric> QUANTITATIVE_METRICS = new ArrayList<Metric>();
+    private static final List<Metric> QUANTITATIVE_METRICS;
 
     public static final String PITEST_DOMAIN = "Mutation analysis";
 
-    public static final Metric<Serializable> MUTATIONS_DATA = buildMetric(MUTATIONS_DATA_KEY, "Mutations Data",
-            "Data of mutations", Metric.ValueType.DATA, Metric.DIRECTION_NONE, true, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_DATA = new Builder(MUTATIONS_DATA_KEY, "Mutations Data", DATA)
+            .setDomain(PITEST_DOMAIN).setDirection(DIRECTION_NONE).setQualitative(true).create();
 
-    public static final Metric<Serializable> MUTATIONS_TOTAL = buildMetric(MUTATIONS_TOTAL_KEY, "Total Mutations",
-            "Total number of mutations generated", Metric.ValueType.INT, Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_TOTAL = new Builder(MUTATIONS_TOTAL_KEY, "Total Mutations", INT)
+            .setDomain(PITEST_DOMAIN).setDescription("Total number of mutations generated")
+            .setDirection(DIRECTION_BETTER).create();
 
-    public static final Metric<Serializable> MUTATIONS_DETECTED = buildMetric(MUTATIONS_DETECTED_KEY,
-            "Detected Mutations", "Total number of mutations detected", Metric.ValueType.INT, Metric.DIRECTION_BETTER,
-            false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_DETECTED = new Builder(MUTATIONS_DETECTED_KEY,
+            "Detected Mutations", INT).setDomain(PITEST_DOMAIN).setDescription("Total number of mutations detected")
+            .setDirection(DIRECTION_BETTER).create();
 
-    public static final Metric<Serializable> MUTATIONS_NO_COVERAGE = buildMetric(MUTATIONS_NO_COVERAGE_KEY,
-            "Non Covered Mutations", "Number of mutations non covered by any test.", Metric.ValueType.INT,
-            Metric.DIRECTION_WORST, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_NO_COVERAGE = new Builder(MUTATIONS_NO_COVERAGE_KEY,
+            "Non Covered Mutations", INT).setDomain(PITEST_DOMAIN)
+            .setDescription("Number of mutations non covered by any test.").setDirection(DIRECTION_WORST).create();
 
-    public static final Metric<Serializable> MUTATIONS_KILLED = buildMetric(MUTATIONS_KILLED_KEY, "Killed Mutations",
-            "Number of mutations killed by tests", Metric.ValueType.INT, Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_KILLED = new Builder(MUTATIONS_KILLED_KEY, "Killed Mutations",
+            INT).setDomain(PITEST_DOMAIN).setDescription("Number of mutations killed by tests")
+            .setDirection(DIRECTION_BETTER).create();
 
-    public static final Metric<Serializable> MUTATIONS_SURVIVED = buildMetric(MUTATIONS_SURVIVED_KEY,
-            "Survived Mutations", "Number of mutations survived.", Metric.ValueType.INT, Metric.DIRECTION_WORST, false,
-            PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_SURVIVED = new Builder(MUTATIONS_SURVIVED_KEY,
+            "Survived Mutations", INT).setDomain(PITEST_DOMAIN).setDescription("Number of mutations survived.")
+            .setDirection(Metric.DIRECTION_WORST).create();
 
-    public static final Metric<Serializable> MUTATIONS_MEMORY_ERROR = buildMetric(MUTATIONS_MEMORY_ERROR_KEY,
-            "Memory Error Mutations", "Number of mutations detected by memory errors.", Metric.ValueType.INT,
-            Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_MEMORY_ERROR = new Builder(MUTATIONS_MEMORY_ERROR_KEY,
+            "Memory Error Mutations", INT).setDomain(PITEST_DOMAIN)
+            .setDescription("Number of mutations detected by memory errors.").setDirection(DIRECTION_BETTER).create();
 
-    public static final Metric<Serializable> MUTATIONS_TIMED_OUT = buildMetric(MUTATIONS_TIMED_OUT_KEY,
-            "Timed Out Mutations", "Number of mutations detected by time outs.", Metric.ValueType.INT,
-            Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_TIMED_OUT = new Builder(MUTATIONS_TIMED_OUT_KEY,
+            "Timed Out Mutations", INT).setDomain(PITEST_DOMAIN)
+            .setDescription("Number of mutations detected by time outs.").setDirection(DIRECTION_BETTER).create();
 
-    public static final Metric<Serializable> MUTATIONS_UNKNOWN = buildMetric(MUTATIONS_UNKNOWN_KEY,
-            "Unknown Status Mutations", "Number of mutations with unknown status.", Metric.ValueType.INT,
-            Metric.DIRECTION_WORST, false, PITEST_DOMAIN);
+    public static final Metric<Serializable> MUTATIONS_UNKNOWN = new Builder(MUTATIONS_UNKNOWN_KEY,
+            "Unknown Status Mutations", INT).setDomain(PITEST_DOMAIN)
+            .setDescription("Number of mutations with unknown status.").setDirection(DIRECTION_WORST).create();
 
-    public static final Metric<Serializable> MUTATIONS_COVERAGE = buildMetric(MUTATIONS_COVERAGE_KEY,
-            "Mutations Coverage", "Mutations coverage percentage", Metric.ValueType.PERCENT, Metric.DIRECTION_BETTER,
-            true, PITEST_DOMAIN, 100d, 0d);
+    public static final Metric<Serializable> MUTATIONS_COVERAGE = new Builder(MUTATIONS_COVERAGE_KEY,
+            "Mutations Coverage", PERCENT).setDomain(PITEST_DOMAIN).setDescription("Mutations coverage percentage")
+            .setDirection(DIRECTION_BETTER).setQualitative(true).setBestValue(100d).setWorstValue(0d).create();
 
-    private static <T extends Serializable> Metric<T> buildMetric(final String key, final String name,
-            final String description, final ValueType valueType, final Integer direction, final Boolean qualitative,
-            final String domain) {
+    static {
+        //@formatter:off
+        @SuppressWarnings("rawtypes")
+        final List<Metric> metrics = Arrays.<Metric> asList(
+                MUTATIONS_DATA,
+                MUTATIONS_TOTAL,
+                MUTATIONS_DETECTED,
+                MUTATIONS_NO_COVERAGE,
+                MUTATIONS_KILLED,
+                MUTATIONS_SURVIVED,
+                MUTATIONS_MEMORY_ERROR,
+                MUTATIONS_TIMED_OUT,
+                MUTATIONS_UNKNOWN,
+                MUTATIONS_COVERAGE);
 
-        return buildMetric(instanceBuilder(key, name, description, valueType, direction, qualitative, domain),
-                qualitative);
-    }
-
-    private static <T extends Serializable> Metric<T> buildMetric(final String key, final String name,
-            final String description, final ValueType valueType, final Integer direction, final Boolean qualitative,
-            final String domain, final Double best, final Double worst) {
-
-        final Builder builder = instanceBuilder(key, name, description, valueType, direction, qualitative, domain);
-        builder.setBestValue(best);
-        builder.setWorstValue(worst);
-        return buildMetric(builder, qualitative);
-    }
-
-    private static <T extends Serializable> Metric<T> buildMetric(final Builder builder, final boolean qualitative) {
-
-        final Metric<T> metric = builder.create();
-        METRICS.add(metric);
-        if (!qualitative) {
-            QUANTITATIVE_METRICS.add(metric);
+        @SuppressWarnings("rawtypes")
+        final List<Metric> quantitativeMetric = new ArrayList<>();
+        for(@SuppressWarnings("rawtypes") final Metric m : metrics){
+            if(!m.getQualitative()) {
+                quantitativeMetric.add(m);
+            }
         }
-        return metric;
-    }
 
-    private static Builder instanceBuilder(final String key, final String name, final String description,
-            final ValueType valueType, final Integer direction, final Boolean quailitative, final String domain) {
+        // @formatter:on
+        METRICS = Collections.unmodifiableList(metrics);
+        QUANTITATIVE_METRICS = Collections.unmodifiableList(quantitativeMetric);
 
-        final Builder builder = new Builder(key, name, valueType);
-        builder.setDescription(description);
-        builder.setDirection(direction);
-        builder.setQualitative(quailitative);
-        builder.setDomain(domain);
-        return builder;
     }
 
     /**

@@ -45,6 +45,8 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.ActiveRule;
+import org.sonar.plugins.pitest.report.PitestReportParser;
+import org.sonar.plugins.pitest.report.ReportFinder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
@@ -59,7 +61,7 @@ public class PitestSensorTest {
     @Mock
     private Settings settings;
     @Mock
-    private ResultParser parser;
+    private PitestReportParser parser;
     @Mock
     private RulesProfile rulesProfile;
     @Mock

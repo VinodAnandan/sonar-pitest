@@ -208,6 +208,24 @@ public class ResourceMutantMetricsTest {
     }
 
     @Test
+    public void testGetMutationCoverage_fullCoverage() throws Exception {
+
+        // prepare
+        when(mutant.getMutantStatus()).thenReturn(MutantStatus.KILLED);
+        subject.addMutant(mutant);
+        when(mutant.getMutantStatus()).thenReturn(MutantStatus.KILLED);
+        subject.addMutant(mutant);
+        when(mutant.getMutantStatus()).thenReturn(MutantStatus.KILLED);
+        subject.addMutant(mutant);
+
+        // act
+        final double value = subject.getMutationCoverage();
+
+        // assert
+        assertEquals(100.0, value, 0.000001);
+    }
+
+    @Test
     public void testGetResource() throws Exception {
 
         assertEquals(resource, subject.getResource());

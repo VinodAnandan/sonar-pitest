@@ -58,6 +58,8 @@ import org.sonar.plugins.pitest.metrics.ResourceMutantMetrics;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantHelper;
 import org.sonar.plugins.pitest.model.MutantStatus;
+import org.sonar.plugins.pitest.report.PitestReportParser;
+import org.sonar.plugins.pitest.report.ReportFinder;
 
 /**
  *
@@ -75,13 +77,13 @@ public class PitestSensor implements Sensor {
      */
     private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-    private final ResultParser parser;
+    private final PitestReportParser parser;
     private final ReportFinder reportFinder;
     private final RulesProfile rulesProfile;
     private final FileSystem fileSystem;
     private final Settings settings;
 
-    public PitestSensor(final Settings settings, final ResultParser parser, final RulesProfile rulesProfile,
+    public PitestSensor(final Settings settings, final PitestReportParser parser, final RulesProfile rulesProfile,
             final ReportFinder reportFinder, final FileSystem fileSystem) {
 
         this.parser = parser;
@@ -300,6 +302,8 @@ public class PitestSensor implements Sensor {
 
             final double minimumKilledMutants = resourceMetrics.getMutationsTotal() * threshold / 100.0;
             final double additionalRequiredMutants = minimumKilledMutants - resourceMetrics.getMutationsKilled();
+
+            // TODO ensure that additional + miniumum > threshold
 
             //@formatter:off
             context.newIssue()

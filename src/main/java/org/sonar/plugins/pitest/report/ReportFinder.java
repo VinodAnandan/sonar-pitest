@@ -17,14 +17,12 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.report;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.sonar.api.BatchExtension;
 
 /**
  * Searches the latest xml file in the reports directory.
@@ -32,7 +30,7 @@ import org.sonar.api.BatchExtension;
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
-public class ReportFinder implements BatchExtension {
+public class ReportFinder {
 
     /**
      * Finds the PIT report in the given report directory.
@@ -54,7 +52,7 @@ public class ReportFinder implements BatchExtension {
                     + " is null, does not exist or is no directory");
         }
 
-        return findMostRecentReport(reportDirectory);
+        return findMostRecentReport(reportDirectory, "*.xml");
     }
 
     /**
@@ -63,13 +61,15 @@ public class ReportFinder implements BatchExtension {
      *
      * @param reportDirectory
      *            the path to the report directory to search the report in
+     * @param pattern
+     *            a globbing pattern, i.e. *.java or *.xml
      * @return the {@link Path} to the most recent report
      * @throws IOException
      */
-    private Path findMostRecentReport(final Path reportDirectory) throws IOException {
+    protected Path findMostRecentReport(final Path reportDirectory, final String pattern) throws IOException {
 
         Path mostRecent = null;
-        try (DirectoryStream<Path> reports = Files.newDirectoryStream(reportDirectory, "*.xml")) {
+        try (DirectoryStream<Path> reports = Files.newDirectoryStream(reportDirectory, pattern)) {
             for (final Path report : reports) {
                 if (mostRecent == null || isNewer(mostRecent, report)) {
                     mostRecent = report;
@@ -83,14 +83,14 @@ public class ReportFinder implements BatchExtension {
      * Determines if the otherPath is newer than the referencePath.
      *
      * @param referencePath
-     *            the path to compare the other path agains
+     *            the path to compare the other path against
      * @param otherPath
      *            the other path to be comapred against the reference path
      * @return <code>true</code> if the otherPath is newer than the referencePath
      * @throws IOException
      */
-    private boolean isNewer(final Path referencePath, final Path otherPath) throws IOException {
+    protected boolean isNewer(final Path referencePath, final Path otherPath) throws IOException {
 
-        return Files.getLastModifiedTime(referencePath).compareTo(Files.getLastModifiedTime(otherPath)) > 0;
+        return Files.getLastModifiedTime(referencePath).compareTo(Files.getLastModifiedTime(otherPath)) < 0;
     }
 }

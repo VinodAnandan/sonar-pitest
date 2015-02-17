@@ -64,4 +64,5 @@ public class MutantHelperTest {
         final MutantBuilder builder = MutantHelper.newMutant();
         assertNotNull(builder);
     }
+
 }

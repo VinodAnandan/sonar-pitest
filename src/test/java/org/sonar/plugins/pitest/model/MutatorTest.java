@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -32,6 +32,42 @@ import java.util.Collection;
 import org.junit.Test;
 
 public class MutatorTest {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMutator_nullId_exception() throws Exception {
+
+        new Mutator(null, "", "", "", new URL("file:///"));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMutator_nullName_exception() throws Exception {
+
+        new Mutator("", null, "", "", new URL("file:///"));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMutator_nullViolationDescription_exception() throws Exception {
+
+        new Mutator("", "", "", null, new URL("file:///"));
+
+    }
+
+    @Test
+    public void testMutator_nullArgument() throws Exception {
+
+        final Mutator mutator = new Mutator("id", "name", null, "violationDescription", null);
+        assertEquals("id", mutator.getId());
+        assertEquals("name", mutator.getName());
+        assertEquals("violationDescription", mutator.getViolationDescription());
+        assertNull(mutator.getClassName());
+        assertNull(mutator.getMutatorDescriptionLocation());
+        assertNotNull(mutator.getMutatorDescription());
+        assertEquals("", mutator.getMutatorDescription());
+        assertNotNull(mutator.getMutatorDescriptionAsStream());
+
+    }
 
     @Test
     public void testFind_knownMutator_byID() throws Exception {
@@ -77,6 +113,7 @@ public class MutatorTest {
         // assert
         assertNotNull(mutators);
         assertFalse(mutators.isEmpty());
+        assertEquals(17, mutators.size());
 
     }
 
@@ -136,13 +173,10 @@ public class MutatorTest {
     }
 
     @Test
-    public void testHashCode() throws Exception {
+    public void testEquals_null_false() throws Exception {
 
         final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
-        final Mutator conditionalsBoundary = Mutator.find("CONDITIONALS_BOUNDARY");
-
-        assertEquals(argumentPropagation.hashCode(), argumentPropagation.hashCode());
-        assertNotEquals(argumentPropagation.hashCode(), conditionalsBoundary.hashCode());
+        assertNotEquals(argumentPropagation, null);
     }
 
     @Test
@@ -150,14 +184,56 @@ public class MutatorTest {
 
         final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
         final Mutator conditionalsBoundary = Mutator.find("CONDITIONALS_BOUNDARY");
-        assertFalse(argumentPropagation.equals(conditionalsBoundary));
+        assertNotEquals(argumentPropagation, conditionalsBoundary);
+    }
+
+    @Test
+    public void testEquals_differentClass_false() throws Exception {
+
+        final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
+        assertNotEquals(argumentPropagation, new Object());
     }
 
     @Test
     public void testEquals_same_true() throws Exception {
 
         final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
-        assertTrue(argumentPropagation.equals(argumentPropagation));
+        assertEquals(argumentPropagation, argumentPropagation);
+    }
+
+    @Test
+    public void testEquals_equalsId_true() throws Exception {
+
+        final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
+        final Mutator other = new Mutator("ARGUMENT_PROPAGATION", "someName", "someClass", "someDescription", new URL(
+                "file:///"));
+        assertEquals(argumentPropagation, other);
+    }
+
+    @Test
+    public void testHashCode_reproducible() throws Exception {
+
+        final Mutator mutator = Mutator.find("ARGUMENT_PROPAGATION");
+        final int expectedHashCode = 31 + mutator.getId().hashCode();
+
+        assertEquals(expectedHashCode, mutator.hashCode());
+
+    }
+
+    @Test
+    public void testHashCode_sameMutator() throws Exception {
+
+        final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
+        assertEquals(argumentPropagation.hashCode(), argumentPropagation.hashCode());
+    }
+
+    @Test
+    public void testHashCode_otherMutatorObject() throws Exception {
+
+        final Mutator argumentPropagation = Mutator.find("ARGUMENT_PROPAGATION");
+        final Mutator conditionalsBoundary = Mutator.find("CONDITIONALS_BOUNDARY");
+
+        assertNotEquals(argumentPropagation.hashCode(), conditionalsBoundary.hashCode());
     }
 
 }

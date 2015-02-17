@@ -28,7 +28,7 @@ import org.junit.Test;
 public class MutantStatusTest {
 
     @Test
-    public void testIsAlive() throws Exception {
+    public void testIsAlive_enumValues() throws Exception {
 
         assertTrue(MutantStatus.NO_COVERAGE.isAlive());
         assertTrue(MutantStatus.UNKNOWN.isAlive());
@@ -39,7 +39,7 @@ public class MutantStatusTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse_enumValues() throws Exception {
 
         assertEquals(MutantStatus.NO_COVERAGE, MutantStatus.parse("NO_COVERAGE"));
         assertEquals(MutantStatus.KILLED, MutantStatus.parse("KILLED"));
@@ -47,6 +47,18 @@ public class MutantStatusTest {
         assertEquals(MutantStatus.MEMORY_ERROR, MutantStatus.parse("MEMORY_ERROR"));
         assertEquals(MutantStatus.TIMED_OUT, MutantStatus.parse("TIMED_OUT"));
         assertEquals(MutantStatus.UNKNOWN, MutantStatus.parse("UNKNOWN"));
+    }
+
+    @Test
+    public void testParse_null_unknown() throws Exception {
+
+        assertEquals(MutantStatus.UNKNOWN, MutantStatus.parse(null));
+    }
+
+    @Test
+    public void testParse_unknown_unknown() throws Exception {
+
+        assertEquals(MutantStatus.UNKNOWN, MutantStatus.parse("xxx"));
     }
 
 }

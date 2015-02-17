@@ -37,7 +37,7 @@ public class MutantBuilder {
     private Mutator mutator;
     private String mutatorSuffix;
     private int index;
-    private String killingTest;
+    private String killingTest = "";
 
     MutantBuilder() {
 
@@ -102,13 +102,19 @@ public class MutantBuilder {
     public MutantBuilder usingMutator(final Mutator mutator) {
 
         this.mutator = mutator;
+        mutatorSuffix = "";
         return this;
     }
 
     public MutantBuilder usingMutator(final String mutatorName) {
 
         mutator = Mutator.find(mutatorName);
-        mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
+
+        if (mutatorName.startsWith(mutator.getClassName())) {
+            mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
+        } else {
+            mutatorSuffix = "";
+        }
 
         if (mutatorSuffix.startsWith("_")) {
             mutatorSuffix = mutatorSuffix.substring(1);

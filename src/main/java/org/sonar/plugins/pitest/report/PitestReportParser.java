@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.report;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -37,7 +37,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.BatchExtension;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantBuilder;
 import org.sonar.plugins.pitest.model.MutantHelper;
@@ -65,12 +64,12 @@ import org.sonar.plugins.pitest.model.MutantHelper;
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
-public class ResultParser implements BatchExtension {
+public class PitestReportParser {
 
     /**
      * SLF4J Logger for this class
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ResultParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PitestReportParser.class);
 
     private static final String ATTR_DETECTED = "detected";
 
@@ -137,16 +136,33 @@ public class ResultParser implements BatchExtension {
             event = reader.next();
             switch (event) {
             case START_ELEMENT:
-                if (ELEMENT_MUTATION.equals(reader.getLocalName())) {
-                    final Mutant mutant = parseMutant(reader);
-                    LOG.debug("Found mutant {}", mutant);
-                    result.add(mutant);
-                }
+                startElement(reader, result);
+                break;
+            default:
                 break;
             }
         }
 
         return result;
+    }
+
+    /**
+     * Is invoked when a new element is detected.
+     *
+     * @param reader
+     *            the reader whose cursor is at the new element's position
+     * @param result
+     *            the collection of mutants. if the new element declares a mutant, a new mutant will be added to the
+     *            collection
+     * @throws XMLStreamException
+     */
+    private void startElement(final XMLStreamReader reader, final Collection<Mutant> result) throws XMLStreamException {
+
+        if (ELEMENT_MUTATION.equals(reader.getLocalName())) {
+            final Mutant mutant = parseMutant(reader);
+            LOG.debug("Found mutant {}", mutant);
+            result.add(mutant);
+        }
     }
 
     /**
@@ -207,9 +223,9 @@ public class ResultParser implements BatchExtension {
             builder.atIndex(Integer.parseInt(reader.getElementText()));
             break;
         case ELEMENT_KILLING_TEST:
-            if (!reader.isStandalone()) {
-                builder.killedBy(reader.getElementText());
-            }
+            builder.killedBy(reader.getElementText());
+            break;
+        default:
             break;
         }
     }

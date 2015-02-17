@@ -83,16 +83,11 @@ public class ResourceMutantMetrics {
         case UNKNOWN:
             mutationsUnknown++;
             break;
+        default:
+            break;
         }
-        updateMutationCoverage();
-    }
-
-    private void updateMutationCoverage() {
-
-        if (mutationsTotal > 0) {
-            mutationCoverage = 100.0 * mutationsKilled / mutationsTotal;
-        }
-
+        // update mutation coverage
+        mutationCoverage = 100.0 * mutationsKilled / mutationsTotal;
     }
 
     public Collection<Mutant> getMutants() {

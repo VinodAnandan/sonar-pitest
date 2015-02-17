@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.pitest.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -89,11 +90,22 @@ public final class Mutator {
             final URL mutatorDescriptionLocation) {
 
         super();
+        checkNotNull(id, name, violationDescription);
         this.id = id;
         this.name = name;
         this.className = className;
         this.violationDescription = violationDescription;
         this.mutatorDescriptionLocation = mutatorDescriptionLocation;
+    }
+
+    private void checkNotNull(final Object... objs) {
+
+        for (final Object o : objs) {
+            if (o == null) {
+                throw new IllegalArgumentException("one or more of the arguments are null");
+            }
+        }
+
     }
 
     /**
@@ -123,9 +135,7 @@ public final class Mutator {
      */
     public static Collection<Mutator> getAllMutators() {
 
-        if (INSTANCES.isEmpty()) {
-            initializeMutatorDefs();
-        }
+        initializeMutatorDefs();
         return Collections.unmodifiableCollection(INSTANCES);
     }
 
@@ -142,9 +152,7 @@ public final class Mutator {
      */
     private static Mutator findMutatorInstance(final String mutatorKey) {
 
-        if (INSTANCES.isEmpty()) {
-            initializeMutatorDefs();
-        }
+        initializeMutatorDefs();
         Mutator result = UNKNOWN;
         for (final Mutator mutator : INSTANCES) {
             if (mutatorKey.equals(mutator.getId())
@@ -162,6 +170,9 @@ public final class Mutator {
      */
     private static void initializeMutatorDefs() {
 
+        if (!INSTANCES.isEmpty()) {
+            return;
+        }
         try {
 
             final NodeList mutatorNodes = (NodeList) XP.evaluate("//mutator",
@@ -213,7 +224,9 @@ public final class Mutator {
      */
     public InputStream getMutatorDescriptionAsStream() throws IOException {
 
-        return mutatorDescriptionLocation.openStream();
+        return mutatorDescriptionLocation != null
+                ? mutatorDescriptionLocation.openStream()
+                : new ByteArrayInputStream(new byte[0]);
     }
 
     public String getViolationDescription() {
@@ -233,6 +246,9 @@ public final class Mutator {
 
     public String getMutatorDescription() {
 
+        if (mutatorDescriptionLocation == null) {
+            return "";
+        }
         try {
             return IOUtils.toString(mutatorDescriptionLocation);
         } catch (final IOException e) {
@@ -244,18 +260,7 @@ public final class Mutator {
     @Override
     public int hashCode() {
 
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (className == null
-                ? 0
-                : className.hashCode());
-        result = prime * result + (id == null
-                ? 0
-                : id.hashCode());
-        result = prime * result + (name == null
-                ? 0
-                : name.hashCode());
-        return result;
+        return 31 + id.hashCode();
     }
 
     @Override
@@ -271,25 +276,7 @@ public final class Mutator {
             return false;
         }
         final Mutator other = (Mutator) obj;
-        if (className == null) {
-            if (other.className != null) {
-                return false;
-            }
-        } else if (!className.equals(other.className)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
+        if (!id.equals(other.id)) {
             return false;
         }
         return true;

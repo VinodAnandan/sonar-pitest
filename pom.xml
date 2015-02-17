@@ -59,12 +59,8 @@
 		<junit.version>4.12</junit.version>
 		<powermock.version>1.6.1</powermock.version>
 		<fest.version>1.4</fest.version>
-		<guava.version>18.0</guava.version>
 		<slf4j.version>1.7.6</slf4j.version>
 		<log4j.version>2.0-rc1</log4j.version>
-		<!-- eat your own dog food -->
-		<sonar.pitest.mode>active</sonar.pitest.mode>
-		<surefireArgLine />
 	</properties>
 
 	<dependencies>
@@ -162,13 +158,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<testNGArtifactName>none:none</testNGArtifactName>
-					<argLine>${surefireArgLine}</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.sonar</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
@@ -199,6 +188,13 @@
 			<build>
 				<plugins>
 					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<testNGArtifactName>none:none</testNGArtifactName>
+							<argLine>${surefireArgLine}</argLine>
+						</configuration>
+					</plugin>
+					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.7.2.201409121644</version>
@@ -216,7 +212,7 @@
 								</goals>
 								<configuration>
 									<destFile>${coverage.unit.test.path}</destFile>
-									<append>false</append>
+									<append>true</append>
 									<propertyName>surefireArgLine</propertyName>
 								</configuration>
 							</execution>
@@ -246,6 +242,7 @@
 								<outputFormat>XML</outputFormat>
 								<outputFormat>HTML</outputFormat>
 							</outputFormats>
+							<timestampedReports>false</timestampedReports>
 						</configuration>
 					</plugin>
 					<plugin>

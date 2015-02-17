@@ -80,7 +80,6 @@ public final class MutantHelper {
                 json.write("mutatedMethod", mutant.getMutatedMethod());
                 json.write("mutator", mutant.getMutator().getId());
                 json.write("violationDescription", mutant.getMutator().getViolationDescription());
-                // json.write("mutatorDescription", mutant.getMutator().getMutatorDescription());
                 json.writeEnd();
             }
 

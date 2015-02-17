@@ -30,6 +30,8 @@ import org.sonar.api.config.Settings;
 import org.sonar.plugins.pitest.metrics.PitestCoverageDecorator;
 import org.sonar.plugins.pitest.metrics.PitestDecorator;
 import org.sonar.plugins.pitest.metrics.PitestMetrics;
+import org.sonar.plugins.pitest.report.PitestReportParser;
+import org.sonar.plugins.pitest.report.ReportFinder;
 import org.sonar.plugins.pitest.ui.PitSourceTab;
 import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 
@@ -90,7 +92,7 @@ public final class PitestPlugin extends SonarPlugin {
     @Override
     public List getExtensions() {
 
-        return Arrays.asList(ResultParser.class, ReportFinder.class, PitestRulesDefinition.class, PitestSensor.class,
+        return Arrays.asList(PitestReportParser.class, ReportFinder.class, PitestRulesDefinition.class, PitestSensor.class,
                 PitestMetrics.class, PitestDecorator.class, PitestCoverageDecorator.class, PitestDashboardWidget.class,
                 PitSourceTab.class);
     }

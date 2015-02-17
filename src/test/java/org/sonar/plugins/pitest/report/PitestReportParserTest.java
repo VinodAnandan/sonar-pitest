@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.report;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -25,39 +25,48 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantStatus;
 import org.sonar.plugins.pitest.model.Mutator;
-import org.sonar.test.TestUtils;
 
-public class ResultParserTest {
+public class PitestReportParserTest {
 
-    private ResultParser subject;
+    private PitestReportParser subject;
 
     @Before
     public void setUp() {
 
-        subject = new ResultParser();
+        subject = new PitestReportParser();
     }
 
     @Test
-    @Ignore
-    public void should_parse_report_and_find_mutants() throws IOException {
+    public void testParseReport_findMutants() throws IOException {
 
-        final Path report = TestUtils.getResource("mutations.xml").toPath();
+        // prepare
+        final Path report = FileUtils.toFile(getClass().getResource("PitestReportParserTest_mutations.xml")).toPath();
+
+        // act
         final Collection<Mutant> mutants = subject.parseMutants(report);
-        assertThat(mutants).isNotEmpty().hasSize(10);
+
+        // assert
+        assertThat(mutants).isNotEmpty().hasSize(3);
 
         //@formatter:off
-        assertThat(mutants).contains(
-                new Mutant(true,MutantStatus.KILLED,"ResourceInjection.java","io.inkstand.scribble.inject.ResourceInjection$ResourceLiteral","authenticationType","()Ljavax/annotation/Resource$AuthenticationType;",164,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"),"",5,"io.inkstand.scribble.inject.ResourceInjectionTest.testByMappedName_match(io.inkstand.scribble.inject.ResourceInjectionTest)"));
-        assertThat(mutants).contains(
-                new Mutant(false, MutantStatus.NO_COVERAGE, "RemoteContentRepository.java","io.inkstand.scribble.rules.jcr.RemoteContentRepository", "after", "()V", 197, Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"), "",5,null));
-        assertThat(mutants).contains(
-                new Mutant(false,MutantStatus.SURVIVED,"ContentRepository.java","io.inkstand.scribble.rules.jcr.ContentRepository","before","()V",63,Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator_EQUAL_IF"),"",5, null));
+        assertThat(mutants).contains( new Mutant(true,MutantStatus.KILLED,"Mutant.java",
+                "org.sonar.plugins.pitest.model.Mutant","equals","(Ljava/lang/Object;)Z",162,
+                Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"),"",
+                5,"org.sonar.plugins.pitest.model.MutantTest.testEquals_different_false(org.sonar.plugins.pitest.model.MutantTest)"));
+        assertThat(mutants).contains(new Mutant(false, MutantStatus.SURVIVED, "Mutant.java",
+                "org.sonar.plugins.pitest.model.Mutant", "equals","(Ljava/lang/Object;)Z", 172,
+                Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"), "",
+                43,""));
+        assertThat(mutants).contains(new Mutant(false,MutantStatus.NO_COVERAGE,"Mutant.java",
+                "org.sonar.plugins.pitest.model.Mutant","equals","(Ljava/lang/Object;)Z",175,
+                Mutator.find("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"),"",
+                55, ""));
         // @formatter:on
         assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.UNKNOWN);
         assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.MEMORY_ERROR);

@@ -31,6 +31,21 @@ import org.sonar.api.measures.Metric;
 public class PitestMetricsTest {
 
     @Test
+    public void testMetricConstants() throws Exception {
+
+        assertNotNull(PitestMetrics.MUTATIONS_COVERAGE);
+        assertNotNull(PitestMetrics.MUTATIONS_DATA);
+        assertNotNull(PitestMetrics.MUTATIONS_DETECTED);
+        assertNotNull(PitestMetrics.MUTATIONS_KILLED);
+        assertNotNull(PitestMetrics.MUTATIONS_MEMORY_ERROR);
+        assertNotNull(PitestMetrics.MUTATIONS_NO_COVERAGE);
+        assertNotNull(PitestMetrics.MUTATIONS_SURVIVED);
+        assertNotNull(PitestMetrics.MUTATIONS_TIMED_OUT);
+        assertNotNull(PitestMetrics.MUTATIONS_TOTAL);
+        assertNotNull(PitestMetrics.MUTATIONS_UNKNOWN);
+    }
+
+    @Test
     public void testGetMetrics() throws Exception {
 
         final List<Metric> metrics = new PitestMetrics<Serializable>().getMetrics();

@@ -57,9 +57,11 @@ public class Mutant {
     public Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
             final String mutatedClass, final String mutatedMethod, final String methodDescription,
             final int lineNumber, final Mutator mutator, final String mutatorSuffix, final int index,
-            final String killingTest) {
+            final String killingTest) { // NOSONAR
 
         super();
+        checkNotNull(mutantStatus, sourceFile, mutatedClass, mutatedMethod, methodDescription, mutator, mutatorSuffix,
+                killingTest);
         this.detected = detected;
         this.mutantStatus = mutantStatus;
         this.sourceFile = sourceFile;
@@ -71,6 +73,16 @@ public class Mutant {
         this.mutatorSuffix = mutatorSuffix;
         this.index = index;
         this.killingTest = killingTest;
+    }
+
+    private void checkNotNull(final Object... objs) {
+
+        for (final Object o : objs) {
+            if (o == null) {
+                throw new IllegalArgumentException("one or more of the arguments are null");
+            }
+        }
+
     }
 
     public boolean isDetected() {
@@ -131,28 +143,32 @@ public class Mutant {
     @Override
     public int hashCode() {
 
+        //@formatter:off
+        return calculateHashCode(1,
+                index,
+                detected ? 1231 : 1237,
+                lineNumber,
+                methodDescription.hashCode(),
+                mutantStatus.hashCode(),
+                mutatedClass.hashCode(),
+                mutatedMethod.hashCode(),
+                mutator.hashCode(),
+                mutatorSuffix.hashCode(),
+                sourceFile.hashCode(),
+                killingTest == null
+                        ? 0
+                        : killingTest.hashCode()
+                );
+        // @formatter:on
+    }
+
+    private int calculateHashCode(final int initial, final int... values) {
+
         final int prime = 31;
-        int result = 1;
-        result = prime * result + index;
-        result = prime * result + lineNumber;
-        result = prime * result + (methodDescription == null
-                ? 0
-                : methodDescription.hashCode());
-        result = prime * result + (mutantStatus == null
-                ? 0
-                : mutantStatus.hashCode());
-        result = prime * result + (mutatedClass == null
-                ? 0
-                : mutatedClass.hashCode());
-        result = prime * result + (mutatedMethod == null
-                ? 0
-                : mutatedMethod.hashCode());
-        result = prime * result + (mutator == null
-                ? 0
-                : mutator.hashCode());
-        result = prime * result + (sourceFile == null
-                ? 0
-                : sourceFile.hashCode());
+        int result = initial;
+        for (final int value : values) {
+            result = prime * result + value;
+        }
         return result;
     }
 
@@ -168,49 +184,42 @@ public class Mutant {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Mutant other = (Mutant) obj;
+        return equalsMutant((Mutant) obj);
+    }
+
+    private boolean equalsMutant(final Mutant other) {
+
+        if (detected != other.detected) {
+            return false;
+        }
         if (index != other.index) {
             return false;
         }
         if (lineNumber != other.lineNumber) {
             return false;
         }
-        if (methodDescription == null) {
-            if (other.methodDescription != null) {
-                return false;
-            }
-        } else if (!methodDescription.equals(other.methodDescription)) {
+        if (!methodDescription.equals(other.methodDescription)) {
             return false;
         }
         if (mutantStatus != other.mutantStatus) {
             return false;
         }
-        if (mutatedClass == null) {
-            if (other.mutatedClass != null) {
-                return false;
-            }
-        } else if (!mutatedClass.equals(other.mutatedClass)) {
+        if (!mutatedClass.equals(other.mutatedClass)) {
             return false;
         }
-        if (mutatedMethod == null) {
-            if (other.mutatedMethod != null) {
-                return false;
-            }
-        } else if (!mutatedMethod.equals(other.mutatedMethod)) {
+        if (!mutatedMethod.equals(other.mutatedMethod)) {
             return false;
         }
-        if (mutator == null) {
-            if (other.mutator != null) {
-                return false;
-            }
-        } else if (!mutator.equals(other.mutator)) {
+        if (!mutator.equals(other.mutator)) {
             return false;
         }
-        if (sourceFile == null) {
-            if (other.sourceFile != null) {
-                return false;
-            }
-        } else if (!sourceFile.equals(other.sourceFile)) {
+        if (!mutatorSuffix.equals(other.mutatorSuffix)) {
+            return false;
+        }
+        if (!sourceFile.equals(other.sourceFile)) {
+            return false;
+        }
+        if (!killingTest.equals(other.killingTest)) {
             return false;
         }
         return true;
