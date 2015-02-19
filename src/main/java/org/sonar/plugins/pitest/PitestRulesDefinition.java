@@ -86,14 +86,29 @@ public class PitestRulesDefinition implements RulesDefinition {
      */
     private final RulesDefinitionXmlLoader xmlLoader;
 
+    /**
+     * The plugin setting.s
+     */
     private final Settings settings;
 
+    /**
+     * Constructor to create the pitest rules definitions and repository. The constructor is invoked by Sonar.
+     * 
+     * @param settings
+     *            the settings of the Pitest-Sensor pluin
+     * @param xmlLoader
+     *            an XML loader to load the rules definitions from the rules def.
+     */
     public PitestRulesDefinition(final Settings settings, final RulesDefinitionXmlLoader xmlLoader) {
 
         this.xmlLoader = xmlLoader;
         this.settings = settings;
     }
 
+    /**
+     * Defines the rules for the pitest rules repository. In addition to the rules defined in the rules.xml the method
+     * created a rule for every mutator.
+     */
     @Override
     public void define(final Context context) {
 

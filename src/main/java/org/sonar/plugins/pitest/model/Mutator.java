@@ -38,6 +38,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.rules.Rule;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -49,7 +50,7 @@ import org.xml.sax.InputSource;
  * itself contains a violation description as well a description of the mutator itself that is copied from the
  * documentation at <a href="http://pitest.org/quickstart/mutators">pitest.org/quickstart/mutators</a>
  *
- * @author gerald.muecke@gmail.com
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public final class Mutator {
@@ -208,11 +209,25 @@ public final class Mutator {
         return new Mutator(id, name, className, violationDescription, mutatorDescriptionLocation);
     }
 
+    /**
+     * The ID of the mutator. The ID is a String that uniquely defines the Mutator, written uppercase, like
+     * {@code ARGUMENT_PROPAGATION}.
+     * 
+     * @return the {@link Mutator} id as a String
+     */
     public String getId() {
 
         return id;
     }
 
+    /**
+     * An URL pointing to the description of the {@link Mutator}. The {@link Mutator} descriptions are stored in the
+     * classpath as resource, for each {@link Mutator} a separate description. The URLs are specified in the
+     * {@code mutator-def.xml} in the classpath. The resources itself are html fragments that can be embedded in a
+     * website.
+     * 
+     * @return URL pointing to the resource containing the description.
+     */
     public URL getMutatorDescriptionLocation() {
 
         return mutatorDescriptionLocation;
@@ -221,6 +236,7 @@ public final class Mutator {
     /**
      * @return A Stream to the content of the mutator description
      * @throws IOException
+     *             when the URL for the description can not be read
      */
     public InputStream getMutatorDescriptionAsStream() throws IOException {
 
@@ -229,21 +245,43 @@ public final class Mutator {
                 : new ByteArrayInputStream(new byte[0]);
     }
 
+    /**
+     * The violation description used for the {@link Mutator} specific {@link Rule} that are violated if the mutation
+     * caused by the {@link Mutator} is not killed.
+     * 
+     * @return the string description the violation.
+     */
     public String getViolationDescription() {
 
         return violationDescription;
     }
 
+    /**
+     * The name of the Mutator. Unlike the Id, it is more a display name.
+     * 
+     * @return the name as a String
+     */
     public String getName() {
 
         return name;
     }
 
+    /**
+     * The fully qualified classname of the {@link Mutator} class.
+     * 
+     * @return the classname
+     */
     public String getClassName() {
 
         return className;
     }
 
+    /**
+     * The description of the {@link Mutator}. The method loads the content defined in the resource that is referred to
+     * by the description URL.
+     * 
+     * @return the description as a string
+     */
     public String getMutatorDescription() {
 
         if (mutatorDescriptionLocation == null) {

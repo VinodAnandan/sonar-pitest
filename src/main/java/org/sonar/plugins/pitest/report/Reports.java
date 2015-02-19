@@ -29,6 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.plugins.pitest.model.Mutant;
 
+/**
+ * Utility class to read a {@link Mutant}s from a report located in a directory.
+ * 
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
+ *
+ */
 public final class Reports {
 
     /**
@@ -40,6 +46,17 @@ public final class Reports {
 
     }
 
+    /**
+     * Reads the {@link Mutant}s from the report in the reports directory. The method searches for the most recent
+     * {@code mutations.xml} report and returns it's contents as a list.
+     *
+     * @param reportsDirectory
+     *            the {@link Path} to the directory containing the report.
+     * @return a collection of all {@link Mutant}s declared in the report or an empty list if neither report was found
+     *         nor it contained any {@link Mutant}s. The method does not return <code>null</code>
+     * @throws IOException
+     *             if the search for the report failed or the report could not be read.
+     */
     public static Collection<Mutant> readMutants(final Path reportsDirectory) throws IOException {
 
         LOG.debug("Searching pit reports in {}", reportsDirectory);

@@ -34,7 +34,8 @@ import org.sonar.api.resources.Resource;
 import com.google.common.collect.Lists;
 
 /**
- * Mutation coverage decorator.
+ * Mutation coverage decorator. The decorator calculates the coverage by deviding the total number of mutants by the
+ * number of covered elements (detected mutants).
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
@@ -47,12 +48,20 @@ public class PitestCoverageDecorator implements Decorator {
         return true;
     }
 
+    /**
+     * @return the MUTATION_COVERAGE metric that specifies the metric this decorator is used for.
+     */
     @DependedUpon
     public Metric<Serializable> getCoverageMetric() {
 
         return PitestMetrics.MUTATIONS_COVERAGE;
     }
 
+    /**
+     * The Metrics this decorator requires to calculate the coverage metric
+     * 
+     * @return the MUTATIONS_TOTAL and MUTATION_DETECTED metrics
+     */
     @SuppressWarnings("unchecked")
     @DependsUpon
     public List<Metric<Serializable>> getBaseMetrics() {

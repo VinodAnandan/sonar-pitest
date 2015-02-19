@@ -20,7 +20,7 @@
 package org.sonar.plugins.pitest.model;
 
 /**
- * Pojo representing a Mutant. The structure mapps to the PIT output:
+ * Pojo representing a Mutant. The structure maps to the PIT output:
  *
  * <pre>
  *  &lt;mutation detected='true' status='KILLED'&gt;
@@ -35,9 +35,7 @@ package org.sonar.plugins.pitest.model;
  * &lt;/mutation&gt;
  * </pre>
  *
- * Mutation information from the pitest report.
- *
- * @author gerald.muecke@gmail.com
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
  */
 public class Mutant {
@@ -54,6 +52,37 @@ public class Mutant {
     private final String killingTest;
     private final String mutatorSuffix;
 
+    /**
+     * Creates a new Mutant pojo. The constructor is not intended to be invoked directly, though it's possible. The
+     * create a Mutant, the {@link MutantBuilder} should be used.
+     *
+     * @param detected
+     *            flag to indicate if the mutant was detected by a test or not
+     * @param mutantStatus
+     *            the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
+     * @param sourceFile
+     *            the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
+     * @param mutatedClass
+     *            the fully qualified class name containing the mutant
+     * @param mutatedMethod
+     *            the name of the method containing the mutant
+     * @param methodDescription
+     *            the description of the method that specifies its signature. see {@link http
+     *            ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
+     * @param lineNumber
+     *            the line number where the mutant was found
+     * @param mutator
+     *            the mutator that was used to create the mutant
+     * @param mutatorSuffix
+     *            the suffix for the mutator. Some mutators like the RemoveConditionalMutator have variants that are
+     *            indicated by a suffix. If no suffix was specified this parameter has to be passes as empty string.
+     *            <code>null</code> is not allowed
+     * @param index
+     *            the index of the mutator. It has no relevance to the sonar results
+     * @param killingTest
+     *            the fully qualified name of the test including the test method that killed the test. If the mutant was
+     *            not killed, this has to be an empty string, <code>null</code> is not allowed.
+     */
     public Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
             final String mutatedClass, final String mutatedMethod, final String methodDescription,
             final int lineNumber, final Mutator mutator, final String mutatorSuffix, final int index,
@@ -85,59 +114,123 @@ public class Mutant {
 
     }
 
+    /**
+     *
+     * @return flag to indicate if the mutant was detected by a test or not
+     *
+     */
     public boolean isDetected() {
 
         return detected;
     }
 
+    /**
+     *
+     * @return the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
+     */
     public MutantStatus getMutantStatus() {
 
         return mutantStatus;
     }
 
+    /**
+     *
+     * @return the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
+     */
     public String getSourceFile() {
 
         return sourceFile;
     }
 
+    /**
+     *
+     * @return the fully qualified class name containing the mutant
+     */
     public String getMutatedClass() {
 
         return mutatedClass;
     }
 
+    /**
+     *
+     * @return the name of the method containing the mutant
+     */
     public String getMutatedMethod() {
 
         return mutatedMethod;
     }
 
+    /**
+     *
+     * @return the description of the method that specifies its signature. see {@link http
+     *         ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
+     */
     public String getMethodDescription() {
 
         return methodDescription;
     }
 
+    /**
+     *
+     * @return the line number where the mutant was found
+     */
     public int getLineNumber() {
 
         return lineNumber;
     }
 
+    /**
+     *
+     * @return the mutator that was used to create the mutant
+     */
     public Mutator getMutator() {
 
         return mutator;
     }
 
+    /**
+     *
+     * @return the suffix for the mutator. Some mutators like the RemoveConditionalMutator have variants that are
+     *         indicated by a suffix. If no suffix was specified this parameter has to be passes as empty string.
+     *         <code>null</code> is not allowed
+     */
     public String getMutatorSuffix() {
 
         return mutatorSuffix;
     }
 
+    /**
+     *
+     * @return the index of the mutator. It has no relevance to the sonar results
+     */
     public int getIndex() {
 
         return index;
     }
 
+    /**
+     *
+     * @return the fully qualified name of the test including the test method that killed the test. If the mutant was
+     *         not killed, this has to be an empty string, <code>null</code> is not allowed.
+     */
     public String getKillingTest() {
 
         return killingTest;
+    }
+
+    /**
+     * As the source file in the mutant reports is without a package path, the method determines the path to the source
+     * file from the fully qualified name of the mutated class.
+     *
+     * @return returns the full path to the source file including the name of file itself. The path is relative to the
+     *         source folder.
+     */
+    public String getPathToSourceFile() {
+
+        final int packageSeparatorPos = mutatedClass.lastIndexOf('.');
+        final String packagePath = mutatedClass.substring(0, packageSeparatorPos).replaceAll("\\.", "/");
+
+        return new StringBuilder(packagePath).append('/').append(sourceFile).toString();
     }
 
     @Override
@@ -245,21 +338,6 @@ public class Mutant {
                 + ", killingTest="
                 + killingTest
                 + "]";
-    }
-
-    /**
-     * As the source file in the mutant reports is without a package path, the method determines the path to the source
-     * file from the fully qualified name of the mutated class.
-     *
-     * @return returns the full path to the source file including the name of file itself. The path is relative to the
-     *         source folder.
-     */
-    public String getPathToSourceFile() {
-
-        final int packageSeparatorPos = mutatedClass.lastIndexOf('.');
-        final String packagePath = mutatedClass.substring(0, packageSeparatorPos).replaceAll("\\.", "/");
-
-        return new StringBuilder(packagePath).append('/').append(sourceFile).toString();
     }
 
 }

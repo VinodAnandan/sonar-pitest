@@ -75,10 +75,29 @@ public class PitestSensor implements Sensor {
      */
     private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
+    /**
+     * the active rules profile containing all the active rules.
+     */
     private final RulesProfile rulesProfile;
+    /**
+     * the FileSystem reference to access the project resources
+     */
     private final FileSystem fileSystem;
+    /**
+     * the Settings for the Pitest Sonar plugin
+     */
     private final Settings settings;
 
+    /**
+     * Constructor that is invoked by Sonar to create the sensor instance.
+     *
+     * @param settings
+     *            the Settings for the Pitest Sonar plugin
+     * @param rulesProfile
+     *            the active rules profile containing all the active rules.
+     * @param fileSystem
+     *            the FileSystem reference to access the project resources
+     */
     public PitestSensor(final Settings settings, final RulesProfile rulesProfile, final FileSystem fileSystem) {
 
         this.fileSystem = fileSystem;
