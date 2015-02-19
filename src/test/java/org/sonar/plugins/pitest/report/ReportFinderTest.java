@@ -76,11 +76,12 @@ public class ReportFinderTest {
         assertThat(report).isNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindReport_nullPath_exception() throws IOException {
+    @Test
+    public void testFindReport_nullPath_nullReportPath() throws IOException {
 
-        subject.findReport(null);
+        final Path report = subject.findReport(null);
 
+        assertNull(report);
     }
 
     @Test

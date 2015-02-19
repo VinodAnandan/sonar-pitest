@@ -24,6 +24,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Searches the latest xml file in the reports directory.
  *
@@ -33,23 +36,25 @@ import java.nio.file.Path;
 public class ReportFinder {
 
     /**
+     * SLF4J Logger for this class
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ReportFinder.class);
+
+    /**
      * Finds the PIT report in the given report directory.
      *
      * @param reportDirectory
      *            the report directory to search for the report. The report directory must not be <code>null</code>,
      *            must exist and must be a directory.
-     * @return the Path to the found PIT report or null, if no report was found
+     * @return the Path to the found PIT report or null, if no report was found or the directory is no valid directory
      * @throws IOException
      *             if the most recent report could not be determined
-     * @throws IllegalArgumentException
-     *             if the reportDirectory is null, does not exist or is no directory
      */
     public Path findReport(final Path reportDirectory) throws IOException {
 
         if (reportDirectory == null || !Files.exists(reportDirectory) || !Files.isDirectory(reportDirectory)) {
-            throw new IllegalArgumentException("ReportDirectory "
-                    + reportDirectory
-                    + " is null, does not exist or is no directory");
+            LOG.warn("ReportDirectory {} is no valid directory", reportDirectory);
+            return null;
         }
 
         return findMostRecentReport(reportDirectory, "*.xml");
