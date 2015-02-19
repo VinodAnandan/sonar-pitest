@@ -187,7 +187,7 @@ public class Mutant {
         return equalsMutant((Mutant) obj);
     }
 
-    private boolean equalsMutant(final Mutant other) {
+    private boolean equalsMutant(final Mutant other) { // NOSONAR
 
         if (detected != other.detected) {
             return false;

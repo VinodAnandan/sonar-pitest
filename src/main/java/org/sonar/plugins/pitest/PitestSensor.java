@@ -247,9 +247,7 @@ public class PitestSensor implements Sensor {
     private void applyRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
             final SensorContext context) {
 
-        if (applyThresholdRule(resourceMetrics, rule, context)) {
-            return;
-        }
+        applyThresholdRule(resourceMetrics, rule, context);
 
         applyMutantRule(resourceMetrics, rule, context);
 
@@ -267,11 +265,11 @@ public class PitestSensor implements Sensor {
      * @return <code>true</code> if the rule was the mutation coverage rule and the rule have been applied or
      *         <code>false</code> if it was another rule
      */
-    private boolean applyThresholdRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
+    private void applyThresholdRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
             final SensorContext context) {
 
         if (!RULE_MUTANT_COVERAGE.equals(rule.getRuleKey())) {
-            return false;
+            return;
         }
         final double actualCoverage = resourceMetrics.getMutationCoverage();
         final double threshold = Double.parseDouble(rule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD));
@@ -294,7 +292,7 @@ public class PitestSensor implements Sensor {
                 .save();
             // @formatter:on
         }
-        return true;
+        return;
     }
 
     /**

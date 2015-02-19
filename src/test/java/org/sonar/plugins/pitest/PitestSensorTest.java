@@ -20,7 +20,6 @@
 package org.sonar.plugins.pitest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -30,18 +29,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_MISSING_COVERAGE;
 import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_SURVIVED_MUTANT;
+import static org.sonar.plugins.pitest.PitestRulesDefinition.PARAM_MUTANT_COVERAGE_THRESHOLD;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -51,6 +47,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.verification.VerificationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -71,6 +68,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.plugins.pitest.metrics.PitestMetrics;
+import org.sonar.plugins.pitest.model.Mutator;
 import org.sonar.plugins.pitest.report.PitestReportParser;
 import org.sonar.plugins.pitest.report.ReportFinder;
 
@@ -113,21 +111,14 @@ public class PitestSensorTest {
     private Project project;
 
     private final ActiveRule negateConditionalsRule = createRuleMock("pitest.mutant.NEGATE_CONDITIONALS");
+    private final ActiveRule conditionalsBoundaryRule = createRuleMock("pitest.mutant.CONDITIONALS_BOUNDARY");
     private final ActiveRule survivedMutantRule = createRuleMock("pitest.mutant.survived");
     private final ActiveRule uncoveredMutantRule = createRuleMock("pitest.mutant.uncovered");
     private final ActiveRule unknownStatusRule = createRuleMock("pitest.mutant.unknownStatus");
+    private final ActiveRule coverageThresholdRule = createRuleMock("pitest.mutant.coverage");
 
     private final Measure<Serializable> measure = createMeasureMock();
     private final Issue issue = createIssueMock();
-
-    @Before
-    public void setUp() {
-
-        // setup filesystem and settings
-        when(fileSystem.baseDir()).thenReturn(folder.getRoot());
-        when(settings.getString("sonar.pitest.reports.directory")).thenReturn("target/pit-reports");
-
-    }
 
     @SuppressWarnings("unchecked")
     private Measure<Serializable> createMeasureMock() {
@@ -166,6 +157,43 @@ public class PitestSensorTest {
         return activeRule;
     }
 
+    @Before
+    public void setUp() {
+
+        // setup filesystem and settings
+        when(fileSystem.baseDir()).thenReturn(folder.getRoot());
+        when(settings.getString("sonar.pitest.reports.directory")).thenReturn("target/pit-reports");
+
+    }
+
+    private void setupEnvironment(final boolean hasJavaFiles, final boolean sensorEnabled) {
+
+        final FilePredicate hasJavaFilesPredicate = mock(FilePredicate.class);
+        when(fileSystem.predicates().hasLanguage("java")).thenReturn(hasJavaFilesPredicate);
+        when(fileSystem.hasFiles(hasJavaFilesPredicate)).thenReturn(hasJavaFiles);
+        when(settings.getBoolean("sonar.pitest.enabled")).thenReturn(sensorEnabled);
+    }
+
+    private void setupSensorTest(final ActiveRule... rules) throws IOException, FileNotFoundException {
+
+        setupEnvironment(true, true);
+        // create input file and filesystem
+        TestUtils.tempFileFromResource(folder, "target/pit-reports/mutations.xml", getClass(),
+                "PitestSensorTest_mutations.xml");
+        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
+        // the rules repository
+        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Arrays.asList(rules));
+        // context measure and issues
+        when(context.newMeasure()).thenReturn(measure);
+        when(context.newIssue()).thenReturn(issue);
+    }
+
+    private void setupSettings(final String settingsKey, final double value) {
+
+        when(settings.getDouble(settingsKey)).thenReturn(Double.valueOf(value));
+
+    }
+
     @Test
     public void testDescribe() throws Exception {
 
@@ -182,12 +210,10 @@ public class PitestSensorTest {
 
     }
 
-    private void setupEnvironment(final boolean hasJavaFiles, final boolean sensorEnabled) {
+    @Test
+    public void testToString() throws Exception {
 
-        final FilePredicate hasJavaFilesPredicate = mock(FilePredicate.class);
-        when(fileSystem.predicates().hasLanguage("java")).thenReturn(hasJavaFilesPredicate);
-        when(fileSystem.hasFiles(hasJavaFilesPredicate)).thenReturn(hasJavaFiles);
-        when(settings.getBoolean("sonar.pitest.enabled")).thenReturn(sensorEnabled);
+        assertEquals("PitestSensor", subject.toString());
     }
 
     @Test
@@ -240,15 +266,8 @@ public class PitestSensorTest {
     public void testExecute_withFilesAndSensorEnabledAndReportExist_noActiveRule_noIssues() throws Exception {
 
         // prepare
-
-        final double EXPECTED_EFFORT_TO_FIX = 12.3;
         setupEnvironment(true, true);
-        tempFileFromResource("target/pit-reports/mutations.xml", "PitestSensorTest_mutations.xml");
-        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Collections.<ActiveRule> emptyList());
-        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
-        when(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT)).thenReturn(Double.valueOf(EXPECTED_EFFORT_TO_FIX));
-        when(context.newMeasure()).thenReturn(measure);
-        when(context.newIssue()).thenReturn(issue);
+        setupSensorTest();
 
         // act
         subject.execute(context);
@@ -261,18 +280,15 @@ public class PitestSensorTest {
     }
 
     @Test
-    public void testExecute_withFilesAndSensorEnabledAndReportExist_mutatorSpecificRuleActive() throws Exception {
+    public void testExecute_mutatorSpecificRuleActive() throws Exception {
 
         // prepare
 
-        final double EXPECTED_EFFORT_TO_FIX = 12.3;
+        final double EXPECTED_EFFORT_TO_FIX = 1.0;
+        final double FACTOR = 2.0;
         setupEnvironment(true, true);
-        tempFileFromResource("target/pit-reports/mutations.xml", "PitestSensorTest_mutations.xml");
-        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Arrays.asList(negateConditionalsRule));
-        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
-        when(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT)).thenReturn(Double.valueOf(EXPECTED_EFFORT_TO_FIX));
-        when(context.newMeasure()).thenReturn(measure);
-        when(context.newIssue()).thenReturn(issue);
+        setupSensorTest(negateConditionalsRule);
+        setupSettings(EFFORT_FACTOR_SURVIVED_MUTANT, FACTOR);
 
         // act
         subject.execute(context);
@@ -280,65 +296,56 @@ public class PitestSensorTest {
         // assert
         // verify issues have been create
         verify(context, times(2)).newIssue();
-        final ArgumentCaptor<RuleKey> captor = forClass(RuleKey.class);
-        verify(issue, times(2)).ruleKey(captor.capture());
-        assertEquals("pitest.mutant.NEGATE_CONDITIONALS", captor.getValue().rule());
+        verifyRuleKey(issue, "pitest.mutant.NEGATE_CONDITIONALS", times(2));
+        // verify the file and the lines of the mutants
         verify(issue, times(2)).onFile(javaFile);
         verify(issue).atLine(172);
         verify(issue).atLine(175);
-        verify(issue, times(2)).message(anyString());
+
+        // verify the violation description
+        verify(issue).message(Mutator.find("NEGATE_CONDITIONALS").getViolationDescription());
+        verify(issue).message(Mutator.find("NEGATE_CONDITIONALS").getViolationDescription() + " (WITH_SUFFIX)");
+
         verify(issue, times(2)).ruleKey(any(RuleKey.class));
-        verify(issue, times(2)).effortToFix(EXPECTED_EFFORT_TO_FIX);
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR, times(2));
         verify(issue, times(2)).save();
 
         verifyMeasures();
     }
 
     @Test
-    public void testExecute_withFilesAndSensorEnabledAndReportExist_SurvivedMutantRuleActive() throws Exception {
+    public void testExecute_survivedMutantRuleActive() throws Exception {
 
         // prepare
-
-        final double EXPECTED_EFFORT_TO_FIX = 12.3;
+        final double EXPECTED_EFFORT_TO_FIX = 1.0;
+        final double FACTOR = 2.0;
         setupEnvironment(true, true);
-        tempFileFromResource("target/pit-reports/mutations.xml", "PitestSensorTest_mutations.xml");
-        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Arrays.asList(survivedMutantRule));
-        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
-        when(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT)).thenReturn(Double.valueOf(EXPECTED_EFFORT_TO_FIX));
-        when(context.newMeasure()).thenReturn(measure);
-        when(context.newIssue()).thenReturn(issue);
+        setupSensorTest(survivedMutantRule);
+        setupSettings(EFFORT_FACTOR_SURVIVED_MUTANT, FACTOR);
 
         // act
         subject.execute(context);
 
         // assert
-        // verify issues have been create
         verify(context).newIssue();
-        final ArgumentCaptor<RuleKey> captor = forClass(RuleKey.class);
-        verify(issue).ruleKey(captor.capture());
-        assertEquals("pitest.mutant.survived", captor.getValue().rule());
+        verifyRuleKey(issue, "pitest.mutant.survived");
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR);
         verify(issue).onFile(javaFile);
         verify(issue).atLine(172);
         verify(issue).message(anyString());
-        verify(issue).effortToFix(EXPECTED_EFFORT_TO_FIX);
         verify(issue).save();
-
         verifyMeasures();
     }
 
     @Test
-    public void testExecute_withFilesAndSensorEnabledAndReportExist_UncoverdMutantRuleActive() throws Exception {
+    public void testExecute_uncoverdMutantRuleActive() throws Exception {
 
         // prepare
-
-        final double EXPECTED_EFFORT_TO_FIX = 12.3;
+        final double EXPECTED_EFFORT_TO_FIX = 1.0;
+        final double FACTOR = 2.0;
         setupEnvironment(true, true);
-        tempFileFromResource("target/pit-reports/mutations.xml", "PitestSensorTest_mutations.xml");
-        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Arrays.asList(uncoveredMutantRule));
-        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
-        when(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT)).thenReturn(Double.valueOf(EXPECTED_EFFORT_TO_FIX));
-        when(context.newMeasure()).thenReturn(measure);
-        when(context.newIssue()).thenReturn(issue);
+        setupSensorTest(uncoveredMutantRule);
+        setupSettings(EFFORT_FACTOR_SURVIVED_MUTANT, FACTOR);
 
         // act
         subject.execute(context);
@@ -346,38 +353,51 @@ public class PitestSensorTest {
         // assert
         // verify issues have been create
         verify(context).newIssue();
-        final ArgumentCaptor<RuleKey> captor = forClass(RuleKey.class);
-        verify(issue).ruleKey(captor.capture());
-        assertEquals("pitest.mutant.uncovered", captor.getValue().rule());
+        verifyRuleKey(issue, "pitest.mutant.uncovered");
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR);
         verify(issue).onFile(javaFile);
         verify(issue).atLine(175);
         verify(issue).message(anyString());
-        verify(issue).effortToFix(EXPECTED_EFFORT_TO_FIX);
         verify(issue).save();
-
-        // verify measures have been recorded
-        verify(context, times(9)).newMeasure();
-        verify(measure, times(9)).onFile(javaFile);
-        verify(measure, times(9)).withValue(any(Serializable.class));
-        for (final Metric m : PitestMetrics.getQuantitativeMetrics()) {
-            verify(measure).forMetric(m);
-        }
-        verify(measure, times(9)).save();
+        verifyMeasures();
     }
 
     @Test
-    public void testExecute_withFilesAndSensorEnabledAndReportExist_UnknownMutantStatusRuleActive() throws Exception {
+    public void testExecute_unknownMutantStatusRuleActive() throws Exception {
 
         // prepare
 
-        final double EXPECTED_EFFORT_TO_FIX = 12.3;
+        final double EXPECTED_EFFORT_TO_FIX = 1.0;
+        final double FACTOR = 2.0;
         setupEnvironment(true, true);
-        tempFileFromResource("target/pit-reports/mutations.xml", "PitestSensorTest_mutations.xml");
-        when(rulesProfile.getActiveRulesByRepository("pitest")).thenReturn(Arrays.asList(unknownStatusRule));
-        when(fileSystem.inputFile(any(FilePredicate.class))).thenReturn(javaFile);
-        when(settings.getDouble(EFFORT_FACTOR_SURVIVED_MUTANT)).thenReturn(Double.valueOf(EXPECTED_EFFORT_TO_FIX));
-        when(context.newMeasure()).thenReturn(measure);
-        when(context.newIssue()).thenReturn(issue);
+        setupSensorTest(unknownStatusRule);
+        setupSettings(EFFORT_FACTOR_SURVIVED_MUTANT, FACTOR);
+
+        // act
+        subject.execute(context);
+
+        // assert
+        verify(context).newIssue();
+        verifyRuleKey(issue, "pitest.mutant.unknownStatus");
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR);
+        verify(issue).onFile(javaFile);
+        verify(issue).atLine(175);
+        verify(issue).message(anyString());
+        verify(issue).save();
+        verifyMeasures();
+    }
+
+    @Test
+    public void testExecute_coverageThresholdRuleActive_belowThreshold_oneMutantMissing() throws Exception {
+
+        // prepare
+
+        final double EXPECTED_EFFORT_TO_FIX = 1.8;
+        final double FACTOR = 2.0;
+        setupEnvironment(true, true);
+        setupSensorTest(coverageThresholdRule);
+        when(coverageThresholdRule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD)).thenReturn("80.0");
+        setupSettings(EFFORT_FACTOR_MISSING_COVERAGE, FACTOR);
 
         // act
         subject.execute(context);
@@ -385,23 +405,100 @@ public class PitestSensorTest {
         // assert
         // verify issues have been create
         verify(context).newIssue();
+        verifyRuleKey(issue, "pitest.mutant.coverage");
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR);
+        verify(issue).onFile(javaFile);
+        verify(issue).message(anyString());
+        verify(issue).save();
+        verifyMeasures();
+    }
+
+    @Test
+    public void testExecute_coverageThresholdRuleActive_belowThreshold_moreMutantsMissing() throws Exception {
+
+        // prepare
+        final double EXPECTED_EFFORT_TO_FIX = 2.4;
+        final double FACTOR = 2.0;
+        setupSensorTest(coverageThresholdRule);
+        when(coverageThresholdRule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD)).thenReturn("90.0");
+        setupSettings(EFFORT_FACTOR_MISSING_COVERAGE, FACTOR);
+
+        // act
+        subject.execute(context);
+
+        // assert
+        // verify issues have been create
+        verify(context).newIssue();
+        verifyRuleKey(issue, "pitest.mutant.coverage");
+        verifyEffortToFix(issue, EXPECTED_EFFORT_TO_FIX * FACTOR);
+        verify(issue).onFile(javaFile);
+        verify(issue).message(anyString());
+        verify(issue).save();
+        verifyMeasures();
+    }
+
+    @Test
+    public void testExecute_coverageThresholdRuleActive_aboveThreshold() throws Exception {
+
+        // prepare
+        setupEnvironment(true, true);
+        setupSensorTest(coverageThresholdRule);
+        when(coverageThresholdRule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD)).thenReturn("20.0");
+
+        // act
+        subject.execute(context);
+
+        // assert
+        verify(context, times(0)).newIssue();
+        verifyMeasures();
+    }
+
+    @Test
+    public void testExecute_coverageThresholdRuleActive_onThreshold() throws Exception {
+
+        // prepare
+        setupEnvironment(true, true);
+        setupSensorTest(coverageThresholdRule);
+        when(coverageThresholdRule.getParameter(PARAM_MUTANT_COVERAGE_THRESHOLD)).thenReturn("50.0");
+
+        // act
+        subject.execute(context);
+
+        // assert
+        verify(context, times(0)).newIssue();
+        verifyMeasures();
+    }
+
+    private void verifyRuleKey(final Issue issue, final String ruleKey) {
+
         final ArgumentCaptor<RuleKey> captor = forClass(RuleKey.class);
         verify(issue).ruleKey(captor.capture());
-        assertEquals("pitest.mutant.unknownStatus", captor.getValue().rule());
-        verify(issue).onFile(javaFile);
-        verify(issue).atLine(175);
-        verify(issue).message(anyString());
-        verify(issue).effortToFix(EXPECTED_EFFORT_TO_FIX);
-        verify(issue).save();
+        assertEquals(ruleKey, captor.getValue().rule());
+    }
 
-        // verify measures have been recorded
-        verify(context, times(9)).newMeasure();
-        verify(measure, times(9)).onFile(javaFile);
-        verify(measure, times(9)).withValue(any(Serializable.class));
-        for (final Metric m : PitestMetrics.getQuantitativeMetrics()) {
-            verify(measure).forMetric(m);
-        }
-        verify(measure, times(9)).save();
+    private void verifyRuleKey(final Issue issue, final String ruleKey, final VerificationMode mode) {
+
+        final ArgumentCaptor<RuleKey> captor = forClass(RuleKey.class);
+        verify(issue, mode).ruleKey(captor.capture());
+        assertEquals(ruleKey, captor.getValue().rule());
+    }
+
+    private void verifyEffortToFix(final Issue issue, final double expectedEffortToFix) {
+
+        final ArgumentCaptor<Double> effortCaptor = forClass(Double.class);
+        verify(issue).effortToFix(effortCaptor.capture());
+        final Double actualEffort = effortCaptor.getValue();
+        assertEquals(expectedEffortToFix, actualEffort, 0.01);
+
+    }
+
+    private void verifyEffortToFix(final Issue issue2, final double expectedEffortToFix, final VerificationMode times) {
+
+        final ArgumentCaptor<Double> effortCaptor = forClass(Double.class);
+        verify(issue, times).effortToFix(effortCaptor.capture());
+        final Double actualEffort = effortCaptor.getValue();
+        assertEquals(expectedEffortToFix, actualEffort, 0.01);
+
     }
 
     private void verifyMeasures() {
@@ -416,212 +513,4 @@ public class PitestSensorTest {
         verify(measure, times(9)).save();
     }
 
-    protected File tempFileFromResource(final String filePath, final String resource) throws IOException,
-            FileNotFoundException {
-
-        final File tempFile = newTempFile(folder, filePath);
-        final URL url = getClass().getResource(resource);
-        assertNotNull("Resource " + resource + " not found", url);
-        copyResourceToFile(url, tempFile);
-        return tempFile;
-    }
-
-    public static void copyResourceToFile(final URL resource, final File tempFile) throws IOException,
-            FileNotFoundException {
-
-        IOUtils.copy(resource.openStream(), new FileOutputStream(tempFile));
-        LOG.info("Created temp file {}", tempFile.getAbsolutePath());
-    }
-
-    /**
-     * Creates a new temporary file in the {@link TemporaryFolder}. The file may be specified as path relative to the
-     * root of the temporary folder
-     *
-     * @param folder
-     *            the temporary folder in which to create the new file
-     * @param filePath
-     *            the name of the file or a relative path to the file to be created
-     * @return the {@link File} reference to the newly created file
-     * @throws IOException
-     */
-    public static File newTempFile(final TemporaryFolder folder, final String filePath) throws IOException {
-
-        String path;
-        String filename;
-        final int lastPathSeparator = filePath.lastIndexOf('/');
-        if (lastPathSeparator != -1) {
-            path = filePath.substring(0, lastPathSeparator);
-            filename = filePath.substring(lastPathSeparator + 1);
-        } else {
-            path = null;
-            filename = filePath;
-        }
-        File tempFile;
-        if (path != null) {
-            final String[] pathSegments = path.split("\\/");
-            final File newFolder = folder.newFolder(pathSegments);
-            tempFile = new File(newFolder, filename);
-        } else {
-            tempFile = folder.newFile(filename);
-        }
-        return tempFile;
-    }
-
-    @Test
-    public void testToString() throws Exception {
-
-        assertEquals("PitestSensor", subject.toString());
-    }
-
-    // @Test
-    // public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
-    //
-    // // given
-    // when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
-    // when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_SKIP);
-    // profileWithActiveRule();
-    // subject = buildSensor();
-    // // when
-    // final boolean sensorExecuted = subject.shouldExecuteOnProject(project);
-    // // then
-    // assertThat(sensorExecuted).isFalse();
-    // }
-    //
-    // @Test
-    // public void should_do_analysis_if_pit_mode_set_to_reuse_report() throws Exception {
-    //
-    // // given
-    // workingConfiguration();
-    // profileWithActiveRule();
-    // subject = buildSensor();
-    // // when
-    // final boolean sensorExecuted = subject.shouldExecuteOnProject(project);
-    // // then
-    // assertThat(sensorExecuted).isTrue();
-    // }
-    //
-    // @Test
-    // public void should_skip_analysis_if_dynamic_analysis_disabled() throws Exception {
-    //
-    // // given
-    // when(project.getAnalysisType()).thenReturn(AnalysisType.STATIC);
-    // when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
-    // profileWithActiveRule();
-    // subject = buildSensor();
-    // // when
-    // final boolean sensorExecuted = subject.shouldExecuteOnProject(project);
-    // // then
-    // assertThat(sensorExecuted).isFalse();
-    // }
-    //
-    // @Test
-    // public void should_not_skip_analysis_when_pitest_rule_not_activated() throws Exception {
-    //
-    // // given
-    // workingConfiguration();
-    // profileWithoutActiveRule();
-    // subject = buildSensor();
-    // // when
-    // subject.analyse(project, context);
-    // // then
-    // verifyMutationsSaved();
-    // }
-    //
-    // @Test
-    // public void should_parse_reports_when_reuse_mode_active() throws Exception {
-    //
-    // // given
-    // workingConfiguration();
-    // profileWithActiveRule();
-    // subject = buildSensor();
-    // // when
-    // subject.analyse(project, context);
-    // // then
-    // verifyIssueRaided();
-    // verifyMutationsSaved();
-    // }
-    //
-    // @Test
-    // public void should_not_fail_when_no_report_found() throws Exception {
-    //
-    // // given
-    // workingConfiguration();
-    // when(fileSystem.baseDir()).thenReturn(TestUtils.getResource("."));
-    // when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
-    // when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
-    // subject = new PitestSensor(configuration, parser, rulesProfile, reportFinder, fileSystem, perspectives);
-    // // when
-    // subject.analyse(project, mock(SensorContext.class));
-    // // then no failure
-    // }
-    //
-    // private void workingConfiguration() {
-    //
-    // when(project.getAnalysisType()).thenReturn(AnalysisType.DYNAMIC);
-    // when(configuration.getString(MODE_KEY, MODE_SKIP)).thenReturn(MODE_REUSE_REPORT);
-    // }
-    //
-    // private void profileWithActiveRule() {
-    //
-    // final ActiveRule fakeActiveRule = mock(ActiveRule.class);
-    // when(fakeActiveRule.getRule()).thenReturn(Rule.create());
-    // when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(
-    // Collections.singletonList(fakeActiveRule));
-    // when(rulesProfile.getName()).thenReturn("fake pit profile");
-    // }
-    //
-    // private void profileWithoutActiveRule() {
-    //
-    // when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.<ActiveRule> emptyList());
-    // when(rulesProfile.getName()).thenReturn("fake pit profile");
-    // }
-    //
-    // private PitestSensor buildSensor() {
-    //
-    // when(fileSystem.baseDir()).thenReturn(TestUtils.getResource("."));
-    // when(configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF)).thenReturn("");
-    // when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(new File("fake-report.xml"));
-    //
-    // final List<Mutant> mutants = new ArrayList<Mutant>();
-    // final Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "survived", 42,
-    // "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
-    // mutants.add(survived);
-    // mutants.add(new Mutant(false, MutantStatus.KILLED, "killed", 10,
-    // "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    // mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "no coverage", -2,
-    // "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    // mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "memory error", 1000, null));
-    // mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "unkwon", 0, null));
-    // when(parser.parse(any(File.class))).thenReturn(mutants);
-    //
-    // when(context.getResource(any(JavaFile.class))).thenAnswer(new Answer<Object>() {
-    //
-    // @Override
-    // public Object answer(final InvocationOnMock invocationOnMock) throws Throwable {
-    //
-    // return javaFile;
-    // }
-    // });
-    // final Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
-    // when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
-    // when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
-    // when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
-    // when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
-    // when(perspectives.as(Issuable.class, javaFile)).thenReturn(issuable);
-    //
-    // subject = new PitestSensor(configuration, parser, rulesProfile, reportFinder, fileSystem, perspectives);
-    // return subject;
-    // }
-    //
-    // private void verifyIssueRaided() {
-    //
-    // verify(perspectives).as(Issuable.class, javaFile);
-    // final ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
-    // verify(issuable, times(1)).addIssue(issueCaptor.capture());
-    // }
-    //
-    // private void verifyMutationsSaved() {
-    //
-    // verify(context).saveMeasure(any(Resource.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(5d));
-    // }
 }

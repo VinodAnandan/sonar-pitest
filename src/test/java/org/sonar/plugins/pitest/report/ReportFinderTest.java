@@ -26,19 +26,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.sonar.test.TestUtils;
+import org.sonar.plugins.pitest.TestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReportFinderTest {
@@ -50,24 +50,24 @@ public class ReportFinderTest {
     private ReportFinder subject;
 
     @Test
-    @Ignore
     public void testFindReport_existingReport() throws IOException {
 
         // prepare
-        final Path xmlFile = TestUtils.getResource("mutations.xml").toPath();
-        final Path directory = xmlFile.getParent();
+        final File reportsFile = TestUtils.tempFileFromResource(folder, "target/pitest-reports/mutations.xml",
+                getClass(), "ReportFinderTest_mutations.xml");
+        final Path directory = reportsFile.toPath().getParent();
 
         // act
         final Path report = subject.findReport(directory);
 
         // assert
-        assertEquals(xmlFile, report);
+        assertEquals(reportsFile.toPath(), report);
     }
 
     @Test
     public void testFindReport_noReportInDirectory() throws IOException {
 
-        final Path directory = TestUtils.getResource("fake_libs").toPath();
+        final Path directory = folder.newFolder().toPath();
 
         // act
         final Path report = subject.findReport(directory);
