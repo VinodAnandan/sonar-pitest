@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +57,7 @@ import org.sonar.plugins.pitest.metrics.ResourceMutantMetrics;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantHelper;
 import org.sonar.plugins.pitest.model.MutantStatus;
-import org.sonar.plugins.pitest.report.PitestReportParser;
-import org.sonar.plugins.pitest.report.ReportFinder;
+import org.sonar.plugins.pitest.report.Reports;
 
 /**
  *
@@ -77,17 +75,12 @@ public class PitestSensor implements Sensor {
      */
     private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-    private final PitestReportParser parser;
-    private final ReportFinder reportFinder;
     private final RulesProfile rulesProfile;
     private final FileSystem fileSystem;
     private final Settings settings;
 
-    public PitestSensor(final Settings settings, final PitestReportParser parser, final RulesProfile rulesProfile,
-            final ReportFinder reportFinder, final FileSystem fileSystem) {
+    public PitestSensor(final Settings settings, final RulesProfile rulesProfile, final FileSystem fileSystem) {
 
-        this.parser = parser;
-        this.reportFinder = reportFinder;
         this.fileSystem = fileSystem;
         this.rulesProfile = rulesProfile;
         this.settings = settings;
@@ -122,7 +115,7 @@ public class PitestSensor implements Sensor {
         }
         try {
             final Collection<Mutant> mutants = readMutants();
-            final Collection<ResourceMutantMetrics> metrics = collectMetrics(mutants, context);
+            final Collection<ResourceMutantMetrics> metrics = collectMetrics(mutants);
             applyRules(metrics, activeRules, context);
             saveMetrics(metrics, context);
         } catch (final IOException e) {
@@ -140,17 +133,7 @@ public class PitestSensor implements Sensor {
      */
     private Collection<Mutant> readMutants() throws IOException {
 
-        final Path reportDirectory = getReportDirectory();
-        LOG.debug("Searching pit reports in {}", reportDirectory);
-        final Path xmlReport = reportFinder.findReport(reportDirectory);
-
-        if (xmlReport == null) {
-            LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
-            LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
-            return Collections.emptyList();
-        }
-
-        return parser.parseMutants(xmlReport);
+        return Reports.readMutants(getReportDirectory());
     }
 
     /**
@@ -171,17 +154,14 @@ public class PitestSensor implements Sensor {
      *
      * @param mutants
      *            the mutants found in by PIT
-     * @param context
-     *            the current sensor context
      * @return
      */
-    private Collection<ResourceMutantMetrics> collectMetrics(final Collection<Mutant> mutants,
-            final SensorContext context) {
+    private Collection<ResourceMutantMetrics> collectMetrics(final Collection<Mutant> mutants) {
 
         final Map<InputFile, ResourceMutantMetrics> metricsByResource = new HashMap<>();
 
         for (final Mutant mutant : mutants) {
-            collectMetricsForMutant(mutant, context, metricsByResource);
+            collectMetricsForMutant(mutant, metricsByResource);
         }
         return metricsByResource.values();
     }
@@ -191,13 +171,11 @@ public class PitestSensor implements Sensor {
      *
      * @param mutant
      *            the {@link Mutant} to be processed
-     * @param context
-     *            the current sensor context
      * @param metricsByResource
      *            a map of all so-far processed resources and their gathered metrics. If multiple mutants are found in
      *            one resource, the metrics are accumulated
      */
-    private void collectMetricsForMutant(final Mutant mutant, final SensorContext context,
+    private void collectMetricsForMutant(final Mutant mutant,
             final Map<InputFile, ResourceMutantMetrics> metricsByResource) {
 
         final InputFile file = getInputFile(mutant);
