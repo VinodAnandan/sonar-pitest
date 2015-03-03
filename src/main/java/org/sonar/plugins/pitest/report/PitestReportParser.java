@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,8 +113,8 @@ public class PitestReportParser {
             final XMLInputFactory inf = XMLInputFactory.newInstance();
             final XMLStreamReader reader = inf.createXMLStreamReader(stream);
             result = readMutants(reader);
-        } catch (FileNotFoundException | XMLStreamException e) {
-            LOG.error("Parsing report failed", e);
+        } catch (NoSuchFileException |FileNotFoundException | XMLStreamException e) {
+            LOG.warn("Parsing report failed: {}", e.getMessage());
             result = Collections.emptyList();
         }
         return result;
