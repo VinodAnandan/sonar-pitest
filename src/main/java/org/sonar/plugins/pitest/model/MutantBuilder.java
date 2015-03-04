@@ -27,193 +27,193 @@ package org.sonar.plugins.pitest.model;
  */
 public class MutantBuilder {
 
-    private boolean detected = false;
-    private MutantStatus mutantStatus;
-    private String sourceFile;
-    private String mutatedClass;
-    private String mutatedMethod;
-    private String methodDescription;
-    private int lineNumber;
-    private Mutator mutator;
-    private String mutatorSuffix;
-    private int index;
-    private String killingTest = "";
+  private boolean detected = false;
+  private MutantStatus mutantStatus;
+  private String sourceFile;
+  private String mutatedClass;
+  private String mutatedMethod;
+  private String methodDescription;
+  private int lineNumber;
+  private Mutator mutator;
+  private String mutatorSuffix;
+  private int index;
+  private String killingTest = "";
 
-    MutantBuilder() {
+  MutantBuilder() {
 
+  }
+
+  /**
+   * @param detected
+   *         flag to indicate if the mutant was detected by a test or not
+   *
+   * @return this builder
+   */
+  public MutantBuilder detected(final boolean detected) {
+
+    this.detected = detected;
+    return this;
+  }
+
+  /**
+   * @param mutantStatus
+   *         the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
+   *
+   * @return this builder
+   */
+  public MutantBuilder mutantStatus(final MutantStatus mutantStatus) {
+
+    this.mutantStatus = mutantStatus;
+    return this;
+  }
+
+  /**
+   * @param statusName
+   *         the {@link MutantStatus} of the mutant as a string. Only killed mutants are good mutants.
+   *
+   * @return this builder
+   */
+  public MutantBuilder mutantStatus(final String statusName) {
+
+    mutantStatus = MutantStatus.parse(statusName);
+    return this;
+
+  }
+
+  /**
+   * @param sourceFile
+   *         the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
+   *
+   * @return this builder
+   */
+  public MutantBuilder inSourceFile(final String sourceFile) {
+
+    this.sourceFile = sourceFile;
+    return this;
+  }
+
+  /**
+   * @param mutatedClass
+   *         the fully qualified class name containing the mutant
+   *
+   * @return this builder
+   */
+  public MutantBuilder inClass(final String mutatedClass) {
+
+    this.mutatedClass = mutatedClass;
+    return this;
+  }
+
+  /**
+   * @param mutatedMethod
+   *         the name of the method containing the mutant
+   *
+   * @return this builder
+   */
+  public MutantBuilder inMethod(final String mutatedMethod) {
+
+    this.mutatedMethod = mutatedMethod;
+    return this;
+  }
+
+  /**
+   * @param methodDescription
+   *         the description of the method that specifies its signature. see {@link http
+   *         ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
+   *
+   * @return this builder
+   */
+  public MutantBuilder withMethodParameters(final String methodDescription) {
+
+    this.methodDescription = methodDescription;
+    return this;
+  }
+
+  /**
+   * @param lineNumber
+   *         the line number where the mutant was found
+   *
+   * @return this builder
+   */
+  public MutantBuilder inLine(final int lineNumber) {
+
+    this.lineNumber = lineNumber;
+    return this;
+  }
+
+  /**
+   * @param mutator
+   *         the mutator that was used to create the mutant
+   *
+   * @return this builder
+   */
+  public MutantBuilder usingMutator(final Mutator mutator) {
+
+    this.mutator = mutator;
+    mutatorSuffix = "";
+    return this;
+  }
+
+  /**
+   * @param mutatorName
+   *         the mutator that was used to create the mutant specified as String. The string may be either the the ID,
+   *         the fully qualified class name or the fully qualified class name and a suffix. If the mutatorName is
+   *         specified with suffix, the mutator suffix is set accordingly, otherwise the empty string is used.
+   *
+   * @return this builder
+   */
+  public MutantBuilder usingMutator(final String mutatorName) {
+
+    mutator = Mutator.find(mutatorName);
+
+    if (mutatorName.startsWith(mutator.getClassName())) {
+      mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
+    } else {
+      mutatorSuffix = "";
     }
 
-    /**
-     * @param detected
-     *         flag to indicate if the mutant was detected by a test or not
-     *
-     * @return this builder
-     */
-    public MutantBuilder detected(final boolean detected) {
-
-        this.detected = detected;
-        return this;
+    if (mutatorSuffix.startsWith("_")) {
+      mutatorSuffix = mutatorSuffix.substring(1);
     }
+    return this;
 
-    /**
-     * @param mutantStatus
-     *         the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
-     *
-     * @return this builder
-     */
-    public MutantBuilder mutantStatus(final MutantStatus mutantStatus) {
+  }
 
-        this.mutantStatus = mutantStatus;
-        return this;
-    }
+  /**
+   * @param index
+   *         the index of the mutator. It has no relevance to the sonar results
+   *
+   * @return this builder
+   */
+  public MutantBuilder atIndex(final int index) {
 
-    /**
-     * @param statusName
-     *         the {@link MutantStatus} of the mutant as a string. Only killed mutants are good mutants.
-     *
-     * @return this builder
-     */
-    public MutantBuilder mutantStatus(final String statusName) {
+    this.index = index;
+    return this;
+  }
 
-        mutantStatus = MutantStatus.parse(statusName);
-        return this;
+  /**
+   * @param killingTest
+   *         the fully qualified name of the test including the test method that killed the test. This method is
+   *         optional and only has to be invoked, if the mutant was actually killed. If not invoked, the the
+   *         killingTest property is passed as empty string
+   *
+   * @return this builder
+   */
+  public MutantBuilder killedBy(final String killingTest) {
 
-    }
+    this.killingTest = killingTest;
+    return this;
+  }
 
-    /**
-     * @param sourceFile
-     *         the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
-     *
-     * @return this builder
-     */
-    public MutantBuilder inSourceFile(final String sourceFile) {
+  /**
+   * Creates a new {@link Mutant} with all the parameters specified. As the {@link Mutant} requires all parameter to
+   * be not-null this method will fail if some parameters are not specified.
+   *
+   * @return a new instance of a {@link Mutant}
+   */
+  public Mutant build() {
 
-        this.sourceFile = sourceFile;
-        return this;
-    }
-
-    /**
-     * @param mutatedClass
-     *         the fully qualified class name containing the mutant
-     *
-     * @return this builder
-     */
-    public MutantBuilder inClass(final String mutatedClass) {
-
-        this.mutatedClass = mutatedClass;
-        return this;
-    }
-
-    /**
-     * @param mutatedMethod
-     *         the name of the method containing the mutant
-     *
-     * @return this builder
-     */
-    public MutantBuilder inMethod(final String mutatedMethod) {
-
-        this.mutatedMethod = mutatedMethod;
-        return this;
-    }
-
-    /**
-     * @param methodDescription
-     *         the description of the method that specifies its signature. see {@link http
-     *         ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
-     *
-     * @return this builder
-     */
-    public MutantBuilder withMethodParameters(final String methodDescription) {
-
-        this.methodDescription = methodDescription;
-        return this;
-    }
-
-    /**
-     * @param lineNumber
-     *         the line number where the mutant was found
-     *
-     * @return this builder
-     */
-    public MutantBuilder inLine(final int lineNumber) {
-
-        this.lineNumber = lineNumber;
-        return this;
-    }
-
-    /**
-     * @param mutator
-     *         the mutator that was used to create the mutant
-     *
-     * @return this builder
-     */
-    public MutantBuilder usingMutator(final Mutator mutator) {
-
-        this.mutator = mutator;
-        mutatorSuffix = "";
-        return this;
-    }
-
-    /**
-     * @param mutatorName
-     *         the mutator that was used to create the mutant specified as String. The string may be either the the ID,
-     *         the fully qualified class name or the fully qualified class name and a suffix. If the mutatorName is
-     *         specified with suffix, the mutator suffix is set accordingly, otherwise the empty string is used.
-     *
-     * @return this builder
-     */
-    public MutantBuilder usingMutator(final String mutatorName) {
-
-        mutator = Mutator.find(mutatorName);
-
-        if (mutatorName.startsWith(mutator.getClassName())) {
-            mutatorSuffix = mutatorName.substring(mutator.getClassName().length());
-        } else {
-            mutatorSuffix = "";
-        }
-
-        if (mutatorSuffix.startsWith("_")) {
-            mutatorSuffix = mutatorSuffix.substring(1);
-        }
-        return this;
-
-    }
-
-    /**
-     * @param index
-     *         the index of the mutator. It has no relevance to the sonar results
-     *
-     * @return this builder
-     */
-    public MutantBuilder atIndex(final int index) {
-
-        this.index = index;
-        return this;
-    }
-
-    /**
-     * @param killingTest
-     *         the fully qualified name of the test including the test method that killed the test. This method is
-     *         optional and only has to be invoked, if the mutant was actually killed. If not invoked, the the
-     *         killingTest property is passed as empty string
-     *
-     * @return this builder
-     */
-    public MutantBuilder killedBy(final String killingTest) {
-
-        this.killingTest = killingTest;
-        return this;
-    }
-
-    /**
-     * Creates a new {@link Mutant} with all the parameters specified. As the {@link Mutant} requires all parameter to
-     * be not-null this method will fail if some parameters are not specified.
-     *
-     * @return a new instance of a {@link Mutant}
-     */
-    public Mutant build() {
-
-        return new Mutant(detected, mutantStatus, sourceFile, mutatedClass, mutatedMethod, methodDescription,
-                lineNumber, mutator, mutatorSuffix, index, killingTest);
-    }
+    return new Mutant(detected, mutantStatus, sourceFile, mutatedClass, mutatedMethod, methodDescription,
+      lineNumber, mutator, mutatorSuffix, index, killingTest);
+  }
 }

@@ -25,67 +25,67 @@ package org.sonar.plugins.pitest.model;
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  */
 public enum MutantStatus {
-    /**
-     * The mutant was not covered by a test (Lurker)
-     */
-    NO_COVERAGE(true),
-    /**
-     * The mutant was killed by a test
-     */
-    KILLED(false),
-    /**
-     * The mutant was covered but not killed by a test (Survivor)
-     */
-    SURVIVED(true),
-    /**
-     * The mutant was killed by a memory error during mutation analysis (i.e. memory leak caused by the mutant)
-     */
-    MEMORY_ERROR(false),
-    /**
-     * The mutant was killed by a time-out during the mutation analysis (i.e. endless loop caused by the mutant)
-     */
-    TIMED_OUT(false),
-    /**
-     * The status of the mutant is unknown.
-     */
-    UNKNOWN(true);
+  /**
+   * The mutant was not covered by a test (Lurker)
+   */
+  NO_COVERAGE(true),
+  /**
+   * The mutant was killed by a test
+   */
+  KILLED(false),
+  /**
+   * The mutant was covered but not killed by a test (Survivor)
+   */
+  SURVIVED(true),
+  /**
+   * The mutant was killed by a memory error during mutation analysis (i.e. memory leak caused by the mutant)
+   */
+  MEMORY_ERROR(false),
+  /**
+   * The mutant was killed by a time-out during the mutation analysis (i.e. endless loop caused by the mutant)
+   */
+  TIMED_OUT(false),
+  /**
+   * The status of the mutant is unknown.
+   */
+  UNKNOWN(true);
 
-    private boolean alive;
+  private boolean alive;
 
-    MutantStatus(final boolean alive) {
+  MutantStatus(final boolean alive) {
 
-        this.alive = alive;
+    this.alive = alive;
+  }
+
+  /**
+   * Indicates whether the status represents an alive or a killed mutant
+   *
+   * @return <code>true</code> if the {@link Mutant} is still alive.
+   */
+  public boolean isAlive() {
+
+    return alive;
+  }
+
+  /**
+   * Parses the String to a MutantStatus.
+   *
+   * @param statusName
+   *         the String representation of the status.
+   *
+   * @return If the statusName is <code>null</code> or does not represent a valid mutant, UNKNOWN is returned,
+   * otherwise the matching status.
+   */
+  public static MutantStatus parse(final String statusName) {
+
+    if (statusName == null) {
+      return UNKNOWN;
     }
-
-    /**
-     * Indicates whether the status represents an alive or a killed mutant
-     *
-     * @return <code>true</code> if the {@link Mutant} is still alive.
-     */
-    public boolean isAlive() {
-
-        return alive;
+    for (final MutantStatus mutantStatus : MutantStatus.values()) {
+      if (mutantStatus.name().equals(statusName)) {
+        return mutantStatus;
+      }
     }
-
-    /**
-     * Parses the String to a MutantStatus.
-     *
-     * @param statusName
-     *         the String representation of the status.
-     *
-     * @return If the statusName is <code>null</code> or does not represent a valid mutant, UNKNOWN is returned,
-     * otherwise the matching status.
-     */
-    public static MutantStatus parse(final String statusName) {
-
-        if (statusName == null) {
-            return UNKNOWN;
-        }
-        for (final MutantStatus mutantStatus : MutantStatus.values()) {
-            if (mutantStatus.name().equals(statusName)) {
-                return mutantStatus;
-            }
-        }
-        return UNKNOWN;
-    }
+    return UNKNOWN;
+  }
 }

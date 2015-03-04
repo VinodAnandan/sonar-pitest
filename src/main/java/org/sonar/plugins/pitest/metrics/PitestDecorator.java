@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
+import java.util.List;
+
 import org.sonar.api.batch.AbstractSumChildrenDecorator;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.measures.Metric;
-
-import java.util.List;
 
 /**
  * Sum children decorator for pitest quantitative metrics.
@@ -32,13 +32,17 @@ import java.util.List;
  */
 public class PitestDecorator extends AbstractSumChildrenDecorator {
 
-    @SuppressWarnings("rawtypes") @DependedUpon @Override public List<Metric> generatesMetrics() {
+  @SuppressWarnings("rawtypes")
+  @DependedUpon
+  @Override
+  public List<Metric> generatesMetrics() {
 
-        return PitestMetrics.getQuantitativeMetrics();
-    }
+    return PitestMetrics.getQuantitativeMetrics();
+  }
 
-    @Override protected boolean shouldSaveZeroIfNoChildMeasures() {
+  @Override
+  protected boolean shouldSaveZeroIfNoChildMeasures() {
 
-        return false;
-    }
+    return false;
+  }
 }

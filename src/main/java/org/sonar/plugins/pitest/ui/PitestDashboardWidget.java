@@ -31,22 +31,28 @@ import org.sonar.api.web.WidgetCategory;
  *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
-@NavigationSection(NavigationSection.RESOURCE) @UserRole(UserRole.USER) @WidgetCategory("Pitest")
-@Description("Pitest mutation coverage report.") public class PitestDashboardWidget extends AbstractRubyTemplate
-        implements RubyRailsWidget {
+@NavigationSection(NavigationSection.RESOURCE)
+@UserRole(UserRole.USER)
+@WidgetCategory("Pitest")
+@Description("Pitest mutation coverage report.")
+public class PitestDashboardWidget extends AbstractRubyTemplate
+  implements RubyRailsWidget {
 
-    @Override public String getId() {
+  @Override
+  public String getId() {
 
-        return "pitest";
-    }
+    return "pitest";
+  }
 
-    @Override public String getTitle() {
+  @Override
+  public String getTitle() {
 
-        return "Pitest report";
-    }
+    return "Pitest report";
+  }
 
-    @Override protected String getTemplatePath() {
+  @Override
+  protected String getTemplatePath() {
 
-        return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
-    }
+    return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
+  }
 }

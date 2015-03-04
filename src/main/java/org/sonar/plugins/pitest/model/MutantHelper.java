@@ -19,13 +19,14 @@
  */
 package org.sonar.plugins.pitest.model;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.io.StringWriter;
+import java.util.Collection;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
-import java.io.StringWriter;
-import java.util.Collection;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Helper class to deal with {@link Mutant}s.
@@ -34,63 +35,63 @@ import java.util.Collection;
  */
 public final class MutantHelper {
 
-    private MutantHelper() {
+  private MutantHelper() {
 
+  }
+
+  /**
+   * Creates a Json representation of the collection of mutants. The Json representation describes an Object
+   * containing an array with an array element for each mutant. Each array element is an object itself, containing the
+   * mutant's properties <ul> <li>detected</li> <li>status</li> <li>sourceFile</li> <li>mutatedClass</li>
+   * <li>mutatedMethod</li> <li>mutator</li> <li>violationDescription</li> <li>mutatorDescription</li> </ul>
+   *
+   * @param mutants
+   *         the mutants to be rendered as JSon
+   *
+   * @return a string containing the json representation of the mutants
+   */
+  public static String toJson(final Collection<Mutant> mutants) {
+
+    final Multimap<Integer, Mutant> mutantsByLine = ArrayListMultimap.create();
+    for (final Mutant mutant : mutants) {
+      mutantsByLine.put(mutant.getLineNumber(), mutant);
     }
 
-    /**
-     * Creates a Json representation of the collection of mutants. The Json representation describes an Object
-     * containing an array with an array element for each mutant. Each array element is an object itself, containing the
-     * mutant's properties <ul> <li>detected</li> <li>status</li> <li>sourceFile</li> <li>mutatedClass</li>
-     * <li>mutatedMethod</li> <li>mutator</li> <li>violationDescription</li> <li>mutatorDescription</li> </ul>
-     *
-     * @param mutants
-     *         the mutants to be rendered as JSon
-     *
-     * @return a string containing the json representation of the mutants
-     */
-    public static String toJson(final Collection<Mutant> mutants) {
-
-        final Multimap<Integer, Mutant> mutantsByLine = ArrayListMultimap.create();
-        for (final Mutant mutant : mutants) {
-            mutantsByLine.put(mutant.getLineNumber(), mutant);
-        }
-
-        final StringWriter writer = new StringWriter();
-        final JsonGenerator json = Json.createGenerator(writer);
+    final StringWriter writer = new StringWriter();
+    final JsonGenerator json = Json.createGenerator(writer);
+    json.writeStartObject();
+    for (final Integer lineNumber : mutantsByLine.keySet()) {
+      json.writeStartArray(lineNumber.toString());
+      for (final Mutant mutant : mutantsByLine.get(lineNumber)) {
         json.writeStartObject();
-        for (final Integer lineNumber : mutantsByLine.keySet()) {
-            json.writeStartArray(lineNumber.toString());
-            for (final Mutant mutant : mutantsByLine.get(lineNumber)) {
-                json.writeStartObject();
-                json.write("detected", mutant.isDetected());
-                json.write("status", mutant.getMutantStatus().name());
-                json.write("sourceFile", mutant.getSourceFile());
-                json.write("mutatedClass", mutant.getMutatedClass());
-                json.write("mutatedMethod", mutant.getMutatedMethod());
-                json.write("mutator", mutant.getMutator().getId());
-                json.write("violationDescription", mutant.getMutator().getViolationDescription());
-                json.writeEnd();
-            }
-
-            json.writeEnd();
-        }
+        json.write("detected", mutant.isDetected());
+        json.write("status", mutant.getMutantStatus().name());
+        json.write("sourceFile", mutant.getSourceFile());
+        json.write("mutatedClass", mutant.getMutatedClass());
+        json.write("mutatedMethod", mutant.getMutatedMethod());
+        json.write("mutator", mutant.getMutator().getId());
+        json.write("violationDescription", mutant.getMutator().getViolationDescription());
         json.writeEnd();
-        json.flush();
+      }
 
-        return writer.toString();
+      json.writeEnd();
     }
+    json.writeEnd();
+    json.flush();
 
-    /**
-     * Creates a new build to define a mutant. As the {@link Mutant} class is designed as being immutable, the builder
-     * allows sequential definition of the {@link Mutant}'s properties instead of passing all at once to the
-     * constructor.
-     *
-     * @return a {@link MutantBuilder} for creating a {@link Mutant}
-     */
-    public static MutantBuilder newMutant() {
+    return writer.toString();
+  }
 
-        return new MutantBuilder();
-    }
+  /**
+   * Creates a new build to define a mutant. As the {@link Mutant} class is designed as being immutable, the builder
+   * allows sequential definition of the {@link Mutant}'s properties instead of passing all at once to the
+   * constructor.
+   *
+   * @return a {@link MutantBuilder} for creating a {@link Mutant}
+   */
+  public static MutantBuilder newMutant() {
+
+    return new MutantBuilder();
+  }
 
 }
