@@ -21,9 +21,8 @@ package org.sonar.plugins.pitest.model;
 
 /**
  * Enumeration of status a {@link Mutant} may have.
- * 
- * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  *
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  */
 public enum MutantStatus {
     /**
@@ -60,7 +59,7 @@ public enum MutantStatus {
 
     /**
      * Indicates whether the status represents an alive or a killed mutant
-     * 
+     *
      * @return <code>true</code> if the {@link Mutant} is still alive.
      */
     public boolean isAlive() {
@@ -70,11 +69,12 @@ public enum MutantStatus {
 
     /**
      * Parses the String to a MutantStatus.
-     * 
+     *
      * @param statusName
-     *            the String representation of the status.
+     *         the String representation of the status.
+     *
      * @return If the statusName is <code>null</code> or does not represent a valid mutant, UNKNOWN is returned,
-     *         otherwise the matching status.
+     * otherwise the matching status.
      */
     public static MutantStatus parse(final String statusName) {
 

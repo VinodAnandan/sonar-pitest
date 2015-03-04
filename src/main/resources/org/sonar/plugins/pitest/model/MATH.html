@@ -1,23 +1,23 @@
 <div id="MATH">
-<h2>Math Mutator (MATH)</h2>
+    <h2>Math Mutator (MATH)</h2>
 
 
-<p>The math mutator replaces binary arithmetic operations for either integer or 
-floating-point arithmetic with another operation. The replacements will be 
-selected according to the table below.</p>
+    <p>The math mutator replaces binary arithmetic operations for either integer or
+        floating-point arithmetic with another operation. The replacements will be
+        selected according to the table below.</p>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th>
-            Original conditional
+                Original conditional
             </th>
             <th>
-            Mutated conditional
+                Mutated conditional
             </th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr>
             <td>+</td>
             <td>-</td>
@@ -62,40 +62,40 @@ selected according to the table below.</p>
             <td>&gt;&gt;&gt;</td>
             <td>&lt;&lt;&lt;</td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<p>For example</p>
+    <p>For example</p>
 
 <pre class="prettyprint lang-java">
 int a = b + c;
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
 int a = b - c;
 </pre>
 
-<p>Keep in mind that the <code>+</code> operator on <code>String</code>s as in</p>
+    <p>Keep in mind that the <code>+</code> operator on <code>String</code>s as in</p>
 
 <pre class="prettyprint lang-java">
 String a = "foo" + "bar";
 </pre>
 
-<p>is <strong>not a mathematical operator</strong> but a string concatenation and will be 
-replaced by the compiler with something like</p>
+    <p>is <strong>not a mathematical operator</strong> but a string concatenation and will be
+        replaced by the compiler with something like</p>
 
 <pre class="prettyprint lang-java">
 String a = new StringBuilder("foo").append("bar").toString();
 </pre>
 
-<p>Please note that the compiler will also use binary arithmetic operations for
-increments, decrements and assignment increments and decrements of non-local
-variables (member variables) although a special <code>iinc</code> opcode for increments 
-exists. This special opcode is restricted to local variables (also called stack
-variables) and cannot be used for member variables. That means the math mutator
-will also mutate</p>
+    <p>Please note that the compiler will also use binary arithmetic operations for
+        increments, decrements and assignment increments and decrements of non-local
+        variables (member variables) although a special <code>iinc</code> opcode for increments
+        exists. This special opcode is restricted to local variables (also called stack
+        variables) and cannot be used for member variables. That means the math mutator
+        will also mutate</p>
 
 <pre class="prettyprint lang-java">
 public class A {
@@ -107,7 +107,7 @@ public class A {
 }
 </pre>
 
-<p>to</p>
+    <p>to</p>
 
 <pre class="prettyprint lang-java">
 public class A {
@@ -118,5 +118,5 @@ public class A {
   }
 }
 </pre>
-<p>see <a href="http://pitest.org/quickstart/mutators#MATH">Pitest Mutators</a></p>
+    <p>see <a href="http://pitest.org/quickstart/mutators#MATH">Pitest Mutators</a></p>
 </div>

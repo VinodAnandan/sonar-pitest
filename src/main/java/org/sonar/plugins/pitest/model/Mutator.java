@@ -19,6 +19,18 @@
  */
 package org.sonar.plugins.pitest.model;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.rules.Rule;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,19 +42,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.api.rules.Rule;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
 /**
  * Representation of a PIT Mutator. The mutators are defined in a classpath located file name
  * <code>mutator-def.xml</code> in the same package. To get an instance of a defined mutator, use the find() method. As
@@ -51,7 +50,6 @@ import org.xml.sax.InputSource;
  * documentation at <a href="http://pitest.org/quickstart/mutators">pitest.org/quickstart/mutators</a>
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public final class Mutator {
 
@@ -114,7 +112,8 @@ public final class Mutator {
      * extended classname, which is the classname with a suffix.
      *
      * @param mutatorKey
-     *            the key to use for searching for the mutator
+     *         the key to use for searching for the mutator
+     *
      * @return a matchin {@link Mutator} or an UNKNOWN mutator
      */
     public static Mutator find(final String mutatorKey) {
@@ -141,14 +140,11 @@ public final class Mutator {
     }
 
     /**
-     * Searches the INSTANCES set for a mutator matching the key. the match is determined by
-     * <ol>
-     * <li>ID</li>
-     * <li>ClassName</li>
-     * <li>ClassName with Suffix</li>
-     * </ol>
+     * Searches the INSTANCES set for a mutator matching the key. the match is determined by <ol> <li>ID</li>
+     * <li>ClassName</li> <li>ClassName with Suffix</li> </ol>
      *
      * @param mutatorKey
+     *
      * @return the mutator for the key or the UNKNOWN mutator, if no matching mutator was found
      */
     private static Mutator findMutatorInstance(final String mutatorKey) {
@@ -156,9 +152,8 @@ public final class Mutator {
         initializeMutatorDefs();
         Mutator result = UNKNOWN;
         for (final Mutator mutator : INSTANCES) {
-            if (mutatorKey.equals(mutator.getId())
-                    || mutatorKey.equals(mutator.getClassName())
-                    || mutatorKey.startsWith(mutator.getClassName())) {
+            if (mutatorKey.equals(mutator.getId()) || mutatorKey.equals(mutator.getClassName()) || mutatorKey
+                    .startsWith(mutator.getClassName())) {
                 result = mutator;
                 break;
             }
@@ -176,8 +171,8 @@ public final class Mutator {
         }
         try {
 
-            final NodeList mutatorNodes = (NodeList) XP.evaluate("//mutator",
-                    new InputSource(MUTATOR_DEF.openStream()), XPathConstants.NODESET);
+            final NodeList mutatorNodes = (NodeList) XP
+                    .evaluate("//mutator", new InputSource(MUTATOR_DEF.openStream()), XPathConstants.NODESET);
             for (int i = 0, len = mutatorNodes.getLength(); i < len; i++) {
                 final Node mutatorNode = mutatorNodes.item(i);
                 INSTANCES.add(toMutator(mutatorNode));
@@ -193,8 +188,10 @@ public final class Mutator {
      * Converts a Mutator from the given {@link Node}
      *
      * @param mutatorNode
-     *            the node to convert to {@link Mutator}
+     *         the node to convert to {@link Mutator}
+     *
      * @return a {@link Mutator} for the {@link Node}
+     *
      * @throws XPathExpressionException
      */
     private static Mutator toMutator(final Node mutatorNode) throws XPathExpressionException {
@@ -203,16 +200,16 @@ public final class Mutator {
         final String className = XP.evaluate("@class", mutatorNode);
         final String name = XP.evaluate("name", mutatorNode);
         final String violationDescription = XP.evaluate("violationDescription", mutatorNode);
-        final URL mutatorDescriptionLocation = Mutator.class.getResource(XP.evaluate("mutatorDescription/@classpath",
-                mutatorNode));
+        final URL mutatorDescriptionLocation = Mutator.class
+                .getResource(XP.evaluate("mutatorDescription/@classpath", mutatorNode));
 
         return new Mutator(id, name, className, violationDescription, mutatorDescriptionLocation);
     }
 
     /**
-     * The ID of the mutator. The ID is a String that uniquely defines the Mutator, written uppercase, like
-     * {@code ARGUMENT_PROPAGATION}.
-     * 
+     * The ID of the mutator. The ID is a String that uniquely defines the Mutator, written uppercase, like {@code
+     * ARGUMENT_PROPAGATION}.
+     *
      * @return the {@link Mutator} id as a String
      */
     public String getId() {
@@ -222,10 +219,9 @@ public final class Mutator {
 
     /**
      * An URL pointing to the description of the {@link Mutator}. The {@link Mutator} descriptions are stored in the
-     * classpath as resource, for each {@link Mutator} a separate description. The URLs are specified in the
-     * {@code mutator-def.xml} in the classpath. The resources itself are html fragments that can be embedded in a
-     * website.
-     * 
+     * classpath as resource, for each {@link Mutator} a separate description. The URLs are specified in the {@code
+     * mutator-def.xml} in the classpath. The resources itself are html fragments that can be embedded in a website.
+     *
      * @return URL pointing to the resource containing the description.
      */
     public URL getMutatorDescriptionLocation() {
@@ -235,20 +231,21 @@ public final class Mutator {
 
     /**
      * @return A Stream to the content of the mutator description
+     *
      * @throws IOException
-     *             when the URL for the description can not be read
+     *         when the URL for the description can not be read
      */
     public InputStream getMutatorDescriptionAsStream() throws IOException {
 
-        return mutatorDescriptionLocation != null
-                ? mutatorDescriptionLocation.openStream()
-                : new ByteArrayInputStream(new byte[0]);
+        return mutatorDescriptionLocation != null ?
+                mutatorDescriptionLocation.openStream() :
+                new ByteArrayInputStream(new byte[0]);
     }
 
     /**
      * The violation description used for the {@link Mutator} specific {@link Rule} that are violated if the mutation
      * caused by the {@link Mutator} is not killed.
-     * 
+     *
      * @return the string description the violation.
      */
     public String getViolationDescription() {
@@ -258,7 +255,7 @@ public final class Mutator {
 
     /**
      * The name of the Mutator. Unlike the Id, it is more a display name.
-     * 
+     *
      * @return the name as a String
      */
     public String getName() {
@@ -268,7 +265,7 @@ public final class Mutator {
 
     /**
      * The fully qualified classname of the {@link Mutator} class.
-     * 
+     *
      * @return the classname
      */
     public String getClassName() {
@@ -279,7 +276,7 @@ public final class Mutator {
     /**
      * The description of the {@link Mutator}. The method loads the content defined in the resource that is referred to
      * by the description URL.
-     * 
+     *
      * @return the description as a string
      */
     public String getMutatorDescription() {
@@ -295,14 +292,12 @@ public final class Mutator {
         }
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
 
         return 31 + id.hashCode();
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @Override public boolean equals(final Object obj) {
 
         if (this == obj) {
             return true;

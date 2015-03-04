@@ -19,20 +19,18 @@
  */
 package org.sonar.plugins.pitest.model;
 
-import java.io.StringWriter;
-import java.util.Collection;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.io.StringWriter;
+import java.util.Collection;
 
 /**
  * Helper class to deal with {@link Mutant}s.
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public final class MutantHelper {
 
@@ -43,20 +41,12 @@ public final class MutantHelper {
     /**
      * Creates a Json representation of the collection of mutants. The Json representation describes an Object
      * containing an array with an array element for each mutant. Each array element is an object itself, containing the
-     * mutant's properties
-     * <ul>
-     * <li>detected</li>
-     * <li>status</li>
-     * <li>sourceFile</li>
-     * <li>mutatedClass</li>
-     * <li>mutatedMethod</li>
-     * <li>mutator</li>
-     * <li>violationDescription</li>
-     * <li>mutatorDescription</li>
-     * </ul>
+     * mutant's properties <ul> <li>detected</li> <li>status</li> <li>sourceFile</li> <li>mutatedClass</li>
+     * <li>mutatedMethod</li> <li>mutator</li> <li>violationDescription</li> <li>mutatorDescription</li> </ul>
      *
      * @param mutants
-     *            the mutants to be rendered as JSon
+     *         the mutants to be rendered as JSon
+     *
      * @return a string containing the json representation of the mutants
      */
     public static String toJson(final Collection<Mutant> mutants) {

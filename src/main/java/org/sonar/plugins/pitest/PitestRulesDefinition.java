@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_MUTANT_KILL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Settings;
@@ -29,12 +27,13 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
 import org.sonar.plugins.pitest.model.Mutator;
 
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_MUTANT_KILL;
+
 /**
  * The definition of pitest rules. A new repository is created for the Pitest plugin and Java language. The rules are
  * defined in the rules.xml file in the classpath. The rule keys are accessible as constants.
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class PitestRulesDefinition implements RulesDefinition {
 
@@ -93,7 +92,7 @@ public class PitestRulesDefinition implements RulesDefinition {
 
     /**
      * Constructor to create the pitest rules definitions and repository. The constructor is invoked by Sonar.
-     * 
+     *
      * @param settings
      *            the settings of the Pitest-Sensor pluin
      * @param xmlLoader
@@ -109,16 +108,15 @@ public class PitestRulesDefinition implements RulesDefinition {
      * Defines the rules for the pitest rules repository. In addition to the rules defined in the rules.xml the method
      * created a rule for every mutator.
      */
-    @Override
-    public void define(final Context context) {
+    @Override public void define(final Context context) {
 
         final NewRepository repository = context.createRepository(REPOSITORY_KEY, "java").setName(REPOSITORY_NAME);
         xmlLoader.load(repository, getClass().getResourceAsStream("rules.xml"), "UTF-8");
         addMutatorRules(repository);
         for (final NewRule rule : repository.rules()) {
             rule.setDebtSubCharacteristic(SubCharacteristics.UNIT_TESTS);
-            rule.setDebtRemediationFunction(rule.debtRemediationFunctions().linearWithOffset(
-                    settings.getString(EFFORT_MUTANT_KILL), "15min"));
+            rule.setDebtRemediationFunction(
+                    rule.debtRemediationFunctions().linearWithOffset(settings.getString(EFFORT_MUTANT_KILL), "15min"));
             rule.setEffortToFixDescription("Effort to kill the mutant(s)");
         }
         repository.done();

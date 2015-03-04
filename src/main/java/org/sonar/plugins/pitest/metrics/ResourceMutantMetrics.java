@@ -19,20 +19,19 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.pitest.model.Mutant;
 import org.sonar.plugins.pitest.model.MutantStatus;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Metrics for Mutants found in a single resource. It is used to collect mutant information for a specific resource.
  *
  * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class ResourceMutantMetrics {
 
@@ -52,7 +51,7 @@ public class ResourceMutantMetrics {
      * Constructor for creating a new metrics holder for the given resource
      *
      * @param resource
-     *            the Sonar resource for which mutation information should be collected
+     *         the Sonar resource for which mutation information should be collected
      */
     public ResourceMutantMetrics(final InputFile resource) {
 
@@ -63,7 +62,7 @@ public class ResourceMutantMetrics {
      * Associates the {@link Mutant} with the resource. Invoking this method will update the metrics
      *
      * @param mutant
-     *            the mutant to be added
+     *         the mutant to be added
      */
     public void addMutant(final Mutant mutant) {
 
@@ -99,7 +98,6 @@ public class ResourceMutantMetrics {
     }
 
     /**
-     *
      * @return all mutants collected so for the resource
      */
     public Collection<Mutant> getMutants() {
@@ -109,7 +107,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The total amount of {@link Mutant} added to the metric.
-     * 
+     *
      * @return number of all mutations found in the resource
      */
     public int getMutationsTotal() {
@@ -119,7 +117,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The number of {@link Mutant}s added whose {@link MutantStatus} was {code NO_COVERAGE}.
-     * 
+     *
      * @return number of mutations that are not covered
      */
     public int getMutationsNoCoverage() {
@@ -129,7 +127,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The number of {@link Mutant}s added whose {@link MutantStatus} was {@code KILLED}
-     * 
+     *
      * @return number of mutation killed by a test
      */
     public int getMutationsKilled() {
@@ -139,7 +137,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The number of {@link Mutant}s added whose {@link MutantStatus} was {@code SURVIVED}.
-     * 
+     *
      * @return number of mutations that survived a test
      */
     public int getMutationsSurvived() {
@@ -149,7 +147,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The number of {@link Mutant}s added whose {@link MutantStatus} was {@code MEMORY_ERROR}.
-     * 
+     *
      * @return number of mutations killed by a memory error
      */
     public int getMutationsMemoryError() {
@@ -159,7 +157,7 @@ public class ResourceMutantMetrics {
 
     /**
      * The number of {@link Mutant}s added whose {@link MutantStatus} was {@code TIMED_OUT}.
-     * 
+     *
      * @return number of mutations killed by a timeout
      */
     public int getMutationsTimedOut() {
@@ -168,7 +166,6 @@ public class ResourceMutantMetrics {
     }
 
     /**
-     *
      * @return number of mutations with unknown status
      */
     public int getMutationsUnknown() {
@@ -177,7 +174,6 @@ public class ResourceMutantMetrics {
     }
 
     /**
-     *
      * @return the number of mutations detected at all
      */
     public int getMutationsDetected() {
@@ -186,7 +182,6 @@ public class ResourceMutantMetrics {
     }
 
     /**
-     *
      * @return the mutation coverage in percent, that is a value between 0.0 and 100.0
      */
     public double getMutationCoverage() {

@@ -19,16 +19,6 @@
  */
 package org.sonar.plugins.pitest.ui;
 
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_DETECTED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_KILLED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_MEMORY_ERROR_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_NO_COVERAGE_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_SURVIVED_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_TIMED_OUT_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_TOTAL_KEY;
-import static org.sonar.plugins.pitest.metrics.PitestMetrics.MUTATIONS_UNKNOWN_KEY;
-
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.web.AbstractRubyTemplate;
 import org.sonar.api.web.DefaultTab;
@@ -37,11 +27,11 @@ import org.sonar.api.web.ResourceQualifier;
 import org.sonar.api.web.RubyRailsPage;
 import org.sonar.api.web.UserRole;
 
-@NavigationSection(NavigationSection.RESOURCE_TAB)
-@ResourceQualifier({
-    Qualifiers.FILE
-})
-@DefaultTab(metrics = {
+import static org.sonar.plugins.pitest.metrics.PitestMetrics.*;
+
+@NavigationSection(NavigationSection.RESOURCE_TAB) @ResourceQualifier({
+        Qualifiers.FILE
+}) @DefaultTab(metrics = {
         MUTATIONS_TOTAL_KEY,
         MUTATIONS_COVERAGE_KEY,
         MUTATIONS_DETECTED_KEY,
@@ -51,24 +41,19 @@ import org.sonar.api.web.UserRole;
         MUTATIONS_SURVIVED_KEY,
         MUTATIONS_TIMED_OUT_KEY,
         MUTATIONS_UNKNOWN_KEY
-})
-@UserRole(UserRole.CODEVIEWER)
-public class PitSourceTab extends AbstractRubyTemplate implements RubyRailsPage {
+}) @UserRole(UserRole.CODEVIEWER) public class PitSourceTab extends AbstractRubyTemplate implements RubyRailsPage {
 
-    @Override
-    protected String getTemplatePath() {
+    @Override protected String getTemplatePath() {
 
         return "/org/sonar/plugins/pitest/pitest_source_tab.rb";
     }
 
-    @Override
-    public String getId() {
+    @Override public String getId() {
 
         return "Mutations Coverage";
     }
 
-    @Override
-    public String getTitle() {
+    @Override public String getTitle() {
 
         return "Mutations Coverage";
     }

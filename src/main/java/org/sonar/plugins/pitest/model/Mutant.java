@@ -21,7 +21,7 @@ package org.sonar.plugins.pitest.model;
 
 /**
  * Pojo representing a Mutant. The structure maps to the PIT output:
- *
+ * <p/>
  * <pre>
  *  &lt;mutation detected='true' status='KILLED'&gt;
  *      &lt;sourceFile&gt;ResourceInjection.java&lt;/sourceFile&gt;
@@ -36,7 +36,6 @@ package org.sonar.plugins.pitest.model;
  * </pre>
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class Mutant {
 
@@ -84,9 +83,8 @@ public class Mutant {
      *            not killed, this has to be an empty string, <code>null</code> is not allowed.
      */
     public Mutant(final boolean detected, final MutantStatus mutantStatus, final String sourceFile,
-            final String mutatedClass, final String mutatedMethod, final String methodDescription,
-            final int lineNumber, final Mutator mutator, final String mutatorSuffix, final int index,
-            final String killingTest) { // NOSONAR
+            final String mutatedClass, final String mutatedMethod, final String methodDescription, final int lineNumber,
+            final Mutator mutator, final String mutatorSuffix, final int index, final String killingTest) { // NOSONAR
 
         super();
         checkNotNull(mutantStatus, sourceFile, mutatedClass, mutatedMethod, methodDescription, mutator, mutatorSuffix,
@@ -233,8 +231,7 @@ public class Mutant {
         return new StringBuilder(packagePath).append('/').append(sourceFile).toString();
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
 
         //@formatter:off
         return calculateHashCode(1,
@@ -265,8 +262,7 @@ public class Mutant {
         return result;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @Override public boolean equals(final Object obj) {
 
         if (this == obj) {
             return true;
@@ -318,8 +314,7 @@ public class Mutant {
         return true;
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
 
         return "Mutant [sourceFile="
                 + sourceFile

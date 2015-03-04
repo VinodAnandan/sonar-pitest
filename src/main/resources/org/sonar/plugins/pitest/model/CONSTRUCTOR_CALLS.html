@@ -1,8 +1,8 @@
 <div id="CONSTRUCTOR_CALLS">
-<h2>Constructor Call Mutator (CONSTRUCTOR_CALLS)</h2>
+    <h2>Constructor Call Mutator (CONSTRUCTOR_CALLS)</h2>
 
-<p>The constructor call mutator replaces constructor calls with <code>null</code> values. For
-example</p>
+    <p>The constructor call mutator replaces constructor calls with <code>null</code> values. For
+        example</p>
 
 <pre class="prettyprint lang-java">
 public Object foo() {
@@ -11,7 +11,7 @@ public Object foo() {
 }
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
 public Object foo() {
@@ -20,12 +20,16 @@ public Object foo() {
 }
 </pre>
 
-<p>Please note that this mutation is fairly unstable and likely to cause <strong><code>NullPointerException</code>s</strong> even
-with weak test suites.</p>
+    <p>Please note that this mutation is fairly unstable and likely to cause <strong><code>NullPointerException</code>s</strong>
+        even
+        with weak test suites.</p>
 
-<p>This mutator does not affect non constructor method calls. See <a href="http://pitest.org/quickstart/mutators#VOID_METHOD_CALL">Void Method Call Mutator</a> for 
-mutations of void methods and
-<a href="http://pitest.org/quickstart/mutators#NON_VOID_METHOD_CALL">Non Void Method Call Mutator</a> for mutations of non void
-methods.</p>
-<p>see <a href="http://pitest.org/quickstart/mutators#CONSTRUCTOR_CALLS">Pitest Mutators</a></p>
+    <p>This mutator does not affect non constructor method calls. See <a
+            href="http://pitest.org/quickstart/mutators#VOID_METHOD_CALL">Void Method Call Mutator</a> for
+        mutations of void methods and
+        <a href="http://pitest.org/quickstart/mutators#NON_VOID_METHOD_CALL">Non Void Method Call Mutator</a> for
+        mutations of non void
+        methods.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#CONSTRUCTOR_CALLS">Pitest Mutators</a></p>
 </div>

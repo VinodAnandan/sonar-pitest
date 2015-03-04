@@ -1,20 +1,21 @@
 <div id="NEGATE_CONDITIONALS">
-<h2>Negate Conditionals Mutator (NEGATE_CONDITIONALS)</h2>
-<p>The negate conditionals mutator will mutate all conditionals found according
-to the replacement table below.</p>
+    <h2>Negate Conditionals Mutator (NEGATE_CONDITIONALS)</h2>
 
-<table class="table">
-    <thead>
+    <p>The negate conditionals mutator will mutate all conditionals found according
+        to the replacement table below.</p>
+
+    <table class="table">
+        <thead>
         <tr>
             <th>
-            Original conditional
+                Original conditional
             </th>
             <th>
-            Mutated conditional
+                Mutated conditional
             </th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr>
             <td>==</td>
             <td>!=</td>
@@ -40,10 +41,10 @@ to the replacement table below.</p>
             <td>&lt;=</td>
         </tr>
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<p>For example</p>
+    <p>For example</p>
 
 <pre class="prettyprint lang-java">
 if (a == b) {
@@ -51,7 +52,7 @@ if (a == b) {
 }
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
 if (a != b) {
@@ -59,7 +60,9 @@ if (a != b) {
 }
 </pre>
 
-<p>This mutator overlaps to a degree with the conditionals boundary mutator, but is less <strong>stable</strong> i.e these
-mutations are generally easier for a test suite to detect.</p>
-<p>see <a href="http://pitest.org/quickstart/mutators#NEGATE_CONDITIONALS">Pitest Mutators</a></p>
+    <p>This mutator overlaps to a degree with the conditionals boundary mutator, but is less <strong>stable</strong> i.e
+        these
+        mutations are generally easier for a test suite to detect.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#NEGATE_CONDITIONALS">Pitest Mutators</a></p>
 </div>

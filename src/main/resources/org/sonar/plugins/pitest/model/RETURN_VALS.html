@@ -1,18 +1,20 @@
 <div id="RETURN_VALS">
-<h2>Return Values Mutator (RETURN_VALS)</h2>
+    <h2>Return Values Mutator (RETURN_VALS)</h2>
 
 
-<p>The return values mutator mutates the return values of method calls. Depending
-on the return type of the method another mutation is used.<a href="#fn4"><sup>4</sup></a> <a name="fnref4" id="fnref4"></a></p>
+    <p>The return values mutator mutates the return values of method calls. Depending
+        on the return type of the method another mutation is used.<a href="#fn4"><sup>4</sup></a> <a name="fnref4"
+                                                                                                     id="fnref4"></a>
+    </p>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th>Return Type</th>
             <th>Mutation</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr>
             <td><code>boolean</code></td>
             <td>
@@ -49,10 +51,10 @@ on the return type of the method another mutation is used.<a href="#fn4"><sup>4<
                 would return <code>null</code>
             </td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<p>For example</p>
+    <p>For example</p>
 
 <pre class="prettyprint lang-java">
 public Object foo() {
@@ -60,7 +62,7 @@ public Object foo() {
 }
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
 public Object foo() {
@@ -68,5 +70,5 @@ public Object foo() {
   return null;
 }
 </pre>
-<p>see <a href="http://pitest.org/quickstart/mutators#RETURN_VALS">Pitest Mutators</a></p>
+    <p>see <a href="http://pitest.org/quickstart/mutators#RETURN_VALS">Pitest Mutators</a></p>
 </div>

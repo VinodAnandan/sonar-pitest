@@ -19,25 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_MISSING_COVERAGE;
-import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_SURVIVED_MUTANT;
-import static org.sonar.plugins.pitest.PitestPlugin.REPORT_DIRECTORY_KEY;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.MUTANT_RULES_PREFIX;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.PARAM_MUTANT_COVERAGE_THRESHOLD;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.REPOSITORY_KEY;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.RULE_MUTANT_COVERAGE;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.RULE_SURVIVED_MUTANT;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.RULE_UNCOVERED_MUTANT;
-import static org.sonar.plugins.pitest.PitestRulesDefinition.RULE_UNKNOWN_MUTANT_STATUS;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
@@ -59,14 +40,25 @@ import org.sonar.plugins.pitest.model.MutantHelper;
 import org.sonar.plugins.pitest.model.MutantStatus;
 import org.sonar.plugins.pitest.report.Reports;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_MISSING_COVERAGE;
+import static org.sonar.plugins.pitest.PitestPlugin.EFFORT_FACTOR_SURVIVED_MUTANT;
+import static org.sonar.plugins.pitest.PitestPlugin.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestRulesDefinition.*;
+
 /**
- *
  * Sonar sensor for pitest mutation coverage analysis.
  *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class PitestSensor implements Sensor {
 
@@ -106,8 +98,7 @@ public class PitestSensor implements Sensor {
 
     }
 
-    @Override
-    public void describe(final SensorDescriptor descriptor) {
+    @Override public void describe(final SensorDescriptor descriptor) {
 
         descriptor.name("PIT");
         descriptor.provides(PitestMetrics.getSensorMetrics().toArray(new Metric[0]));
@@ -117,8 +108,7 @@ public class PitestSensor implements Sensor {
 
     }
 
-    @Override
-    public void execute(final SensorContext context) {
+    @Override public void execute(final SensorContext context) {
 
         if (!(fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java")) && settings
                 .getBoolean(PitestPlugin.SENSOR_ENABLED))) {
@@ -130,7 +120,8 @@ public class PitestSensor implements Sensor {
         if (activeRules.isEmpty()) {
             // ignore violations from report, if rule not activated in Sonar
             LOG.warn("/!\\ PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
-            LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
+            LOG.warn(
+                    "Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
         }
         try {
             final Collection<Mutant> mutants = readMutants();
@@ -316,21 +307,16 @@ public class PitestSensor implements Sensor {
 
     /**
      * Applies mutant specific rule on each mutant captured in the resource metric. For each mutant assigned to the
-     * resource, it is checked if it violates:
-     * <ul>
-     * <li>the survived mutant rule</li>
-     * <li>the uncovered mutant rule</li>
-     * <li>the unknown mutator status rule</li>
-     * <li>any of the mutator specific rules</li>
-     * </ul>
+     * resource, it is checked if it violates: <ul> <li>the survived mutant rule</li> <li>the uncovered mutant rule</li>
+     * <li>the unknown mutator status rule</li> <li>any of the mutator specific rules</li> </ul>
      *
      * @param resourceMetrics
-     *            the resource metric containing the resource that might have an issue and all mutants found for that
-     *            resource
+     *         the resource metric containing the resource that might have an issue and all mutants found for that
+     *         resource
      * @param rule
-     *            the rule that might be violated
+     *         the rule that might be violated
      * @param context
-     *            the current sensor context
+     *         the current sensor context
      */
     private void applyMutantRule(final ResourceMutantMetrics resourceMetrics, final ActiveRule rule,
             final SensorContext context) {
@@ -357,24 +343,26 @@ public class PitestSensor implements Sensor {
      * Checks if the active rule is a mutator-specific rule and if the mutant violates it.
      *
      * @param rule
-     *            the rule to verify
+     *         the rule to verify
      * @param mutant
-     *            the mutant that might violate the rule
+     *         the mutant that might violate the rule
+     *
      * @return <code>true</code> if the rule is violated
      */
     private boolean violatesMutatorRule(final ActiveRule rule, final Mutant mutant) {
 
-        return rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId())
-                && mutant.getMutantStatus().isAlive();
+        return rule.getRuleKey().equals(MUTANT_RULES_PREFIX + mutant.getMutator().getId()) && mutant.getMutantStatus()
+                .isAlive();
     }
 
     /**
      * Checks if the rule is the Unknown Mutator Status rule and if the mutant violates it
      *
      * @param rule
-     *            the rule to verify
+     *         the rule to verify
      * @param mutant
-     *            the mutant that might violate the rule
+     *         the mutant that might violate the rule
+     *
      * @return <code>true</code> if the rule is violated
      */
     private boolean violatesUnknownMutantStatusRule(final ActiveRule rule, final Mutant mutant) {
@@ -386,9 +374,10 @@ public class PitestSensor implements Sensor {
      * Checks if the rule is the Uncovered Mutant rule and if the mutant violates it
      *
      * @param rule
-     *            the rule to verify
+     *         the rule to verify
      * @param mutant
-     *            the mutant that might violate the rule
+     *         the mutant that might violate the rule
+     *
      * @return <code>true</code> if the rule is violated
      */
     private boolean violatesUncoveredMutantRule(final ActiveRule rule, final Mutant mutant) {
@@ -400,9 +389,10 @@ public class PitestSensor implements Sensor {
      * Checks if the rule if the Survived Mutant rule and if the mutant violates it
      *
      * @param rule
-     *            the rule to verify
+     *         the rule to verify
      * @param mutant
-     *            the mutant that might violate the rule
+     *         the mutant that might violate the rule
+     *
      * @return <code>true</code> if the rule is violated
      */
     private boolean violatesSurvivedMutantRule(final ActiveRule rule, final Mutant mutant) {
@@ -414,7 +404,8 @@ public class PitestSensor implements Sensor {
      * Gets the mutant specific violation description of the mutator of the mutant
      *
      * @param mutant
-     *            the mutant to receive the violation description
+     *         the mutant to receive the violation description
+     *
      * @return the description as string
      */
     private String getViolationDescription(final Mutant mutant) {
@@ -430,9 +421,9 @@ public class PitestSensor implements Sensor {
      * Saves the information of the mutants the sensors context.
      *
      * @param mutants
-     *            the mutant information parsed from the PIT report
+     *         the mutant information parsed from the PIT report
      * @param context
-     *            the current {@link SensorContext}
+     *         the current {@link SensorContext}
      */
     private void saveMetrics(final Collection<ResourceMutantMetrics> metrics, final SensorContext context) {
 
@@ -444,11 +435,10 @@ public class PitestSensor implements Sensor {
     /**
      * Saves the {@link Mutant} metrics for the given resource in the SonarContext
      *
-     *
      * @param resourceMetrics
-     *            the actual metrics for the resource to persist
+     *         the actual metrics for the resource to persist
      * @param context
-     *            the context to register the metrics
+     *         the context to register the metrics
      */
     private void saveResourceMetrics(final ResourceMutantMetrics resourceMetrics, final SensorContext context) {
 
@@ -474,8 +464,7 @@ public class PitestSensor implements Sensor {
 
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
 
         return getClass().getSimpleName();
     }

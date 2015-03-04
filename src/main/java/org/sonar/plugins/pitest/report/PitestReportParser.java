@@ -19,9 +19,15 @@
  */
 package org.sonar.plugins.pitest.report;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.plugins.pitest.model.Mutant;
+import org.sonar.plugins.pitest.model.MutantBuilder;
+import org.sonar.plugins.pitest.model.MutantHelper;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,20 +38,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.plugins.pitest.model.Mutant;
-import org.sonar.plugins.pitest.model.MutantBuilder;
-import org.sonar.plugins.pitest.model.MutantHelper;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 /**
  * Parser for PIT reports to read the mutants in the file into a {@link Collection} of {@link Mutant}s. The format of
  * the PIT reports is like
- *
+ * <p/>
  * <pre>
  * &lt;mutations&gt;
  *   &lt;mutation detected='true' status='KILLED'&gt;
@@ -63,7 +62,6 @@ import org.sonar.plugins.pitest.model.MutantHelper;
  * </pre>
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class PitestReportParser {
 
@@ -100,10 +98,12 @@ public class PitestReportParser {
      * Parses the contents of the report file into a list of {@link Mutant}s. The report file must be a PIT report.
      *
      * @param report
-     *            the {@link Path} to the PIT report file to be parsed
+     *         the {@link Path} to the PIT report file to be parsed
+     *
      * @return a {@link Collection} of {@link Mutant}s
+     *
      * @throws IOException
-     *             if the report file could not be read
+     *         if the report file could not be read
      */
     public Collection<Mutant> parseMutants(final Path report) throws IOException {
 
@@ -113,7 +113,7 @@ public class PitestReportParser {
             final XMLInputFactory inf = XMLInputFactory.newInstance();
             final XMLStreamReader reader = inf.createXMLStreamReader(stream);
             result = readMutants(reader);
-        } catch (NoSuchFileException |FileNotFoundException | XMLStreamException e) {
+        } catch (NoSuchFileException | FileNotFoundException | XMLStreamException e) {
             LOG.warn("Parsing report failed: {}", e.getMessage());
             result = Collections.emptyList();
         }
@@ -125,8 +125,10 @@ public class PitestReportParser {
      * and then parses the element's contents into a {@link Mutant} instance.
      *
      * @param reader
-     *            the XMLStream to read
+     *         the XMLStream to read
+     *
      * @return a {@link Collection} of {@link Mutant}s found on the stream
+     *
      * @throws XMLStreamException
      */
     private Collection<Mutant> readMutants(final XMLStreamReader reader) throws XMLStreamException {
@@ -151,10 +153,11 @@ public class PitestReportParser {
      * Is invoked when a new element is detected.
      *
      * @param reader
-     *            the reader whose cursor is at the new element's position
+     *         the reader whose cursor is at the new element's position
      * @param result
-     *            the collection of mutants. if the new element declares a mutant, a new mutant will be added to the
-     *            collection
+     *         the collection of mutants. if the new element declares a mutant, a new mutant will be added to the
+     *         collection
+     *
      * @throws XMLStreamException
      */
     private void startElement(final XMLStreamReader reader, final Collection<Mutant> result) throws XMLStreamException {
@@ -170,7 +173,9 @@ public class PitestReportParser {
      * The method assumes, the reader is at the start element position of a <code>&lt;mutation&gt;</code> element.
      *
      * @param reader
+     *
      * @return
+     *
      * @throws XMLStreamException
      */
     private Mutant parseMutant(final XMLStreamReader reader) throws XMLStreamException {
@@ -194,9 +199,10 @@ public class PitestReportParser {
      * elements
      *
      * @param reader
-     *            the reader to read the elements from the XML stream
+     *         the reader to read the elements from the XML stream
      * @param builder
-     *            the builder for the current {@link Mutant} whose builder methods are invoked
+     *         the builder for the current {@link Mutant} whose builder methods are invoked
+     *
      * @throws XMLStreamException
      */
     private void buildMutant(final XMLStreamReader reader, final MutantBuilder builder) throws XMLStreamException {
@@ -235,8 +241,8 @@ public class PitestReportParser {
      * Reads the status of {@link Mutant} from the XMLStream.
      *
      * @param reader
-     *            the {@link XMLStreamReader} whose cursor is at the start element position of a &lt;mutation&gt;
-     *            element
+     *         the {@link XMLStreamReader} whose cursor is at the start element position of a &lt;mutation&gt; element
+     *
      * @return the mutant status as a string
      */
     private String getMutantStatus(final XMLStreamReader reader) {
@@ -248,8 +254,8 @@ public class PitestReportParser {
      * Checks if the mutant was detected or not
      *
      * @param reader
-     *            the {@link XMLStreamReader} whose cursor is at the start element position of a &lt;mutation&gt;
-     *            element
+     *         the {@link XMLStreamReader} whose cursor is at the start element position of a &lt;mutation&gt; element
+     *
      * @return <code>true</code> if the mutant was detected
      */
     private boolean isMutantDetected(final XMLStreamReader reader) {

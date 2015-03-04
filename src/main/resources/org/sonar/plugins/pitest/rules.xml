@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules>
-	<rule>
-		<key>pitest.mutant.survived</key>
-		<name>Survived Mutants</name>
-		<description>
-	       <![CDATA[<h2>Survived mutant</h2>
+    <rule>
+        <key>pitest.mutant.survived</key>
+        <name>Survived Mutants</name>
+        <description>
+            <![CDATA[<h2>Survived mutant</h2>
 	       <p>A mutant of a class has not been killed although appearing to be covered by a test.</p>
 	       <p>If you don't want to active any mutator specific rule, you may use this rule which is triggered by
 	       any Mutator. You should not active this rule, when you use mutator specific rules, as it may result
@@ -12,17 +12,17 @@
 	       <p>
 	       For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>
 	       </p>]]>
-		</description>
-		<tag>pit</tag>
-		<tag>test</tag>
-		<tag>test-quality</tag>
-		<tag>mutation</tag>
-	</rule>
-	<rule>
-		<key>pitest.mutant.uncovered</key>
-		<name>Uncovered Mutants</name>
-		<description>
-	       <![CDATA[
+        </description>
+        <tag>pit</tag>
+        <tag>test</tag>
+        <tag>test-quality</tag>
+        <tag>mutation</tag>
+    </rule>
+    <rule>
+        <key>pitest.mutant.uncovered</key>
+        <name>Uncovered Mutants</name>
+        <description>
+            <![CDATA[
 	       <h2>Uncovered mutant</h2>
 	       <p>A mutant of a class has not been covered by a test at all.</p>
 	       <p>An uncovered mutant is also a survived mutant. If you activate this rule, it will produce more issues
@@ -32,44 +32,44 @@
 	       <p>For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>
 	       </p>
 	       ]]>
-		</description>
-		<tag>pit</tag>
-		<tag>test</tag>
-		<tag>test-quality</tag>
-		<tag>mutation</tag>
-	</rule>
-	<rule>
-		<key>pitest.mutant.coverage</key>
-		<name>Mutation Coverage below threshold</name>
-		<description>
-	       <![CDATA[The coverage of mutations killed by tests is below the configured threshold.]]>
-		</description>
-		<tag>pit</tag>
-		<tag>test</tag>
-		<tag>test-quality</tag>
-		<tag>mutation</tag>
-		<tag>coverage</tag>
-		<param>
-			<key>pitest.mutant.coverage.threshold</key>
-			<description>
-         	<![CDATA[
+        </description>
+        <tag>pit</tag>
+        <tag>test</tag>
+        <tag>test-quality</tag>
+        <tag>mutation</tag>
+    </rule>
+    <rule>
+        <key>pitest.mutant.coverage</key>
+        <name>Mutation Coverage below threshold</name>
+        <description>
+            <![CDATA[The coverage of mutations killed by tests is below the configured threshold.]]>
+        </description>
+        <tag>pit</tag>
+        <tag>test</tag>
+        <tag>test-quality</tag>
+        <tag>mutation</tag>
+        <tag>coverage</tag>
+        <param>
+            <key>pitest.mutant.coverage.threshold</key>
+            <description>
+                <![CDATA[
          	Mutation coverage is calculated by the ratio of killed mutants and total number of mutants.
          	If the ratio (in percent) is below this threshold value, an issue for the resource is.]]>
-			</description>
-			<defaultValue>80.0</defaultValue>
-		</param>
-	</rule>
-	<rule>
-		<key>pitest.mutant.unknownStatus</key>
-		<name>Mutant with unknown Status</name>
-		<description>
-	       <![CDATA[The Status of a mutant is unknown.]]>
-		</description>
-		<severity>MINOR</severity>
-		<tag>pit</tag>
-		<tag>test</tag>
-		<tag>test-quality</tag>
-		<tag>mutation</tag>
-	</rule>
+            </description>
+            <defaultValue>80.0</defaultValue>
+        </param>
+    </rule>
+    <rule>
+        <key>pitest.mutant.unknownStatus</key>
+        <name>Mutant with unknown Status</name>
+        <description>
+            <![CDATA[The Status of a mutant is unknown.]]>
+        </description>
+        <severity>MINOR</severity>
+        <tag>pit</tag>
+        <tag>test</tag>
+        <tag>test-quality</tag>
+        <tag>mutation</tag>
+    </rule>
 
 </rules>

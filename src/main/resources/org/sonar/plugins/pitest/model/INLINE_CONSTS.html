@@ -1,8 +1,8 @@
 <div id="INLINE_CONSTS">
-<h2>Inline Constant Mutator (INLINE_CONSTS)</h2>
+    <h2>Inline Constant Mutator (INLINE_CONSTS)</h2>
 
-<p>The inline constant mutator mutates inline constants. An inline constant is a
-literal value assigned to a non-final variable, for example</p>
+    <p>The inline constant mutator mutates inline constants. An inline constant is a
+        literal value assigned to a non-final variable, for example</p>
 
 <pre class="prettyprint lang-java">
 public void foo() {
@@ -11,18 +11,18 @@ public void foo() {
 }
 </pre>
 
-<p>Depending on the type of the inline constant another mutation is used. The rules
-are a little complex due to the different ways that apparently similar Java statements
-are converted to byte code.</p>
+    <p>Depending on the type of the inline constant another mutation is used. The rules
+        are a little complex due to the different ways that apparently similar Java statements
+        are converted to byte code.</p>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th>Constant Type</th>
             <th>Mutation</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr>
             <td><code>boolean</code></td>
             <td>
@@ -35,7 +35,8 @@ are converted to byte code.</p>
             <td>
                 replace the unmutated value <code>1</code> with <code>0</code>,
                 <code>-1</code> with <code>1</code>, <code>5</code> with <code>-1</code>
-                or otherwise increment the unmutated value by one. <a href="#fn1"><sup>1</sup></a> <a name="fnref1" id="fnref1"></a>
+                or otherwise increment the unmutated value by one. <a href="#fn1"><sup>1</sup></a> <a name="fnref1"
+                                                                                                      id="fnref1"></a>
             </td>
         </tr>
         <tr>
@@ -49,20 +50,22 @@ are converted to byte code.</p>
             <td><code>float</code></td>
             <td>
                 replace the unmutated values <code>1.0</code> and <code>2.0</code>
-                with <code>0.0</code> and replace any other value with <code>1.0</code> <a href="#fn2"><sup>2</sup></a> <a name="fnref2" id="fnref2"></a>
+                with <code>0.0</code> and replace any other value with <code>1.0</code> <a href="#fn2"><sup>2</sup></a>
+                <a name="fnref2" id="fnref2"></a>
             </td>
         </tr>
         <tr>
             <td><code>double</code></td>
             <td>
                 replace the unmutated value <code>1.0</code> with <code>0.0</code>
-                and replace any other value with <code>1.0</code> <a href="#fn3"><sup>3</sup></a> <a name="fnref3" id="fnref3"></a>
+                and replace any other value with <code>1.0</code> <a href="#fn3"><sup>3</sup></a> <a name="fnref3"
+                                                                                                     id="fnref3"></a>
             </td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<p>For example</p>
+    <p>For example</p>
 
 <pre class="prettyprint lang-java">
 public int foo() {
@@ -71,7 +74,7 @@ public int foo() {
 }
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
 public int foo() {
@@ -80,9 +83,9 @@ public int foo() {
 }
 </pre>
 
-<p>Please note that the compiler might optimize the use of final variables 
-(regardless whether those are stack variables or member variables). For example
-the following code</p>
+    <p>Please note that the compiler might optimize the use of final variables
+        (regardless whether those are stack variables or member variables). For example
+        the following code</p>
 
 <pre class="prettyprint lang-java">
 public class A {
@@ -95,7 +98,7 @@ public class A {
 }
 </pre>
 
-<p>will be changed/optimized by the compiler to</p>
+    <p>will be changed/optimized by the compiler to</p>
 
 <pre class="prettyprint lang-java">
 public class A {
@@ -105,6 +108,7 @@ public class A {
 }
 </pre>
 
-<p>In such situations the mutation engine can not mutate any variable.</p>
-<p>see <a href="http://pitest.org/quickstart/mutators#INLINE_CONSTS">Pitest Mutators</a></p>
+    <p>In such situations the mutation engine can not mutate any variable.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#INLINE_CONSTS">Pitest Mutators</a></p>
 </div>

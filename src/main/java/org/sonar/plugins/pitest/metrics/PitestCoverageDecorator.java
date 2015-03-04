@@ -19,9 +19,7 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.sonar.api.batch.Decorator;
 import org.sonar.api.batch.DecoratorContext;
 import org.sonar.api.batch.DependedUpon;
@@ -31,7 +29,8 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 
-import com.google.common.collect.Lists;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Mutation coverage decorator. The decorator calculates the coverage by deviding the total number of mutants by the
@@ -42,8 +41,7 @@ import com.google.common.collect.Lists;
  */
 public class PitestCoverageDecorator implements Decorator {
 
-    @Override
-    public boolean shouldExecuteOnProject(final Project project) {
+    @Override public boolean shouldExecuteOnProject(final Project project) {
 
         return true;
     }
@@ -51,32 +49,28 @@ public class PitestCoverageDecorator implements Decorator {
     /**
      * @return the MUTATION_COVERAGE metric that specifies the metric this decorator is used for.
      */
-    @DependedUpon
-    public Metric<Serializable> getCoverageMetric() {
+    @DependedUpon public Metric<Serializable> getCoverageMetric() {
 
         return PitestMetrics.MUTATIONS_COVERAGE;
     }
 
     /**
      * The Metrics this decorator requires to calculate the coverage metric
-     * 
+     *
      * @return the MUTATIONS_TOTAL and MUTATION_DETECTED metrics
      */
-    @SuppressWarnings("unchecked")
-    @DependsUpon
-    public List<Metric<Serializable>> getBaseMetrics() {
+    @SuppressWarnings("unchecked") @DependsUpon public List<Metric<Serializable>> getBaseMetrics() {
 
         return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
     }
 
-    @Override
-    public void decorate(final Resource resource, final DecoratorContext context) {
+    @Override public void decorate(final Resource resource, final DecoratorContext context) {
 
         final Double elements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_TOTAL), 0.0);
 
         if (elements > 0.0) {
-            final Double coveredElements = MeasureUtils.getValue(context.getMeasure(PitestMetrics.MUTATIONS_DETECTED),
-                    0.0);
+            final Double coveredElements = MeasureUtils
+                    .getValue(context.getMeasure(PitestMetrics.MUTATIONS_DETECTED), 0.0);
             context.saveMeasure(PitestMetrics.MUTATIONS_COVERAGE, 100.0 * coveredElements / elements);
         }
     }

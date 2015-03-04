@@ -24,7 +24,6 @@ package org.sonar.plugins.pitest.model;
  * {@link Mutant} class itself is for immutable instances and therefore needs all parameters at construction time.
  *
  * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
- *
  */
 public class MutantBuilder {
 
@@ -46,7 +45,8 @@ public class MutantBuilder {
 
     /**
      * @param detected
-     *            flag to indicate if the mutant was detected by a test or not
+     *         flag to indicate if the mutant was detected by a test or not
+     *
      * @return this builder
      */
     public MutantBuilder detected(final boolean detected) {
@@ -56,9 +56,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param mutantStatus
-     *            the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
+     *         the {@link MutantStatus} of the mutant. Only killed mutants are good mutants.
+     *
      * @return this builder
      */
     public MutantBuilder mutantStatus(final MutantStatus mutantStatus) {
@@ -68,9 +68,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param statusName
-     *            the {@link MutantStatus} of the mutant as a string. Only killed mutants are good mutants.
+     *         the {@link MutantStatus} of the mutant as a string. Only killed mutants are good mutants.
+     *
      * @return this builder
      */
     public MutantBuilder mutantStatus(final String statusName) {
@@ -81,9 +81,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param sourceFile
-     *            the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
+     *         the path to the sourceFile that contains the mutant. The sourceFile is relative to the project path.
+     *
      * @return this builder
      */
     public MutantBuilder inSourceFile(final String sourceFile) {
@@ -93,9 +93,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param mutatedClass
-     *            the fully qualified class name containing the mutant
+     *         the fully qualified class name containing the mutant
+     *
      * @return this builder
      */
     public MutantBuilder inClass(final String mutatedClass) {
@@ -105,9 +105,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param mutatedMethod
-     *            the name of the method containing the mutant
+     *         the name of the method containing the mutant
+     *
      * @return this builder
      */
     public MutantBuilder inMethod(final String mutatedMethod) {
@@ -117,10 +117,10 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param methodDescription
-     *            the description of the method that specifies its signature. see {@link http
-     *            ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
+     *         the description of the method that specifies its signature. see {@link http
+     *         ://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.3}
+     *
      * @return this builder
      */
     public MutantBuilder withMethodParameters(final String methodDescription) {
@@ -130,9 +130,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param lineNumber
-     *            the line number where the mutant was found
+     *         the line number where the mutant was found
+     *
      * @return this builder
      */
     public MutantBuilder inLine(final int lineNumber) {
@@ -142,9 +142,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param mutator
-     *            the mutator that was used to create the mutant
+     *         the mutator that was used to create the mutant
+     *
      * @return this builder
      */
     public MutantBuilder usingMutator(final Mutator mutator) {
@@ -155,11 +155,11 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param mutatorName
-     *            the mutator that was used to create the mutant specified as String. The string may be either the the
-     *            ID, the fully qualified class name or the fully qualified class name and a suffix. If the mutatorName
-     *            is specified with suffix, the mutator suffix is set accordingly, otherwise the empty string is used.
+     *         the mutator that was used to create the mutant specified as String. The string may be either the the ID,
+     *         the fully qualified class name or the fully qualified class name and a suffix. If the mutatorName is
+     *         specified with suffix, the mutator suffix is set accordingly, otherwise the empty string is used.
+     *
      * @return this builder
      */
     public MutantBuilder usingMutator(final String mutatorName) {
@@ -180,9 +180,9 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param index
-     *            the index of the mutator. It has no relevance to the sonar results
+     *         the index of the mutator. It has no relevance to the sonar results
+     *
      * @return this builder
      */
     public MutantBuilder atIndex(final int index) {
@@ -192,11 +192,11 @@ public class MutantBuilder {
     }
 
     /**
-     *
      * @param killingTest
-     *            the fully qualified name of the test including the test method that killed the test. This method is
-     *            optional and only has to be invoked, if the mutant was actually killed. If not invoked, the the
-     *            killingTest property is passed as empty string
+     *         the fully qualified name of the test including the test method that killed the test. This method is
+     *         optional and only has to be invoked, if the mutant was actually killed. If not invoked, the the
+     *         killingTest property is passed as empty string
+     *
      * @return this builder
      */
     public MutantBuilder killedBy(final String killingTest) {
@@ -208,7 +208,7 @@ public class MutantBuilder {
     /**
      * Creates a new {@link Mutant} with all the parameters specified. As the {@link Mutant} requires all parameter to
      * be not-null this method will fail if some parameters are not specified.
-     * 
+     *
      * @return a new instance of a {@link Mutant}
      */
     public Mutant build() {

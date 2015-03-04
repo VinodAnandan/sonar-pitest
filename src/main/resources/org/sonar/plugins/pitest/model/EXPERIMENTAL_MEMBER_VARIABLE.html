@@ -1,21 +1,21 @@
 <div id="EXPERIMENTAL_MEMBER_VARIABLE">
-<h2>Experimental Member Variable Mutator (EXPERIMENTAL<em>MEMBER</em>VARIABLE)</h2>
+    <h2>Experimental Member Variable Mutator (EXPERIMENTAL<em>MEMBER</em>VARIABLE)</h2>
 
-<p>The experimental member variable mutator mutates classes by removing assignments
-to member variables. The mutator can even remove assignments to final members.
-The members will be initialized with their Java Default Value for the specific
-type. See the table below.</p>
+    <p>The experimental member variable mutator mutates classes by removing assignments
+        to member variables. The mutator can even remove assignments to final members.
+        The members will be initialized with their Java Default Value for the specific
+        type. See the table below.</p>
 
-<p>Table: Java Default Values for Primitives and Reference Types</p>
+    <p>Table: Java Default Values for Primitives and Reference Types</p>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th>Type</th>
             <th>Default Value</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr>
             <td>
                 <code>boolean</code>
@@ -50,10 +50,10 @@ type. See the table below.</p>
             </td>
             <td>`null`</td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<p>For example</p>
+    <p>For example</p>
 
 <pre class="prettyprint lang-java">
 public class MutateMe {
@@ -62,7 +62,7 @@ public class MutateMe {
 }
 </pre>
 
-<p>will be mutated to</p>
+    <p>will be mutated to</p>
 
 <pre class="prettyprint lang-java">
   public class MutateMe {
@@ -71,14 +71,14 @@ public class MutateMe {
   }
 </pre>
 
-<p><strong>Please Note: This mutator is likely to create equivalent mutations</strong> if a
-member variable is <strong>explicitly</strong> initialized with the Java default value for 
-the specific type of the member variable as in</p>
+    <p><strong>Please Note: This mutator is likely to create equivalent mutations</strong> if a
+        member variable is <strong>explicitly</strong> initialized with the Java default value for
+        the specific type of the member variable as in</p>
 
 <pre class="prettyprint lang-java">
 public class EquivalentMutant {
     private int x = 0;
 }
 </pre>
-<p>see <a href="http://pitest.org/quickstart/mutators#EXPERIMENTAL_MEMBER_VARIABLE">Pitest Mutators</a></p>
+    <p>see <a href="http://pitest.org/quickstart/mutators#EXPERIMENTAL_MEMBER_VARIABLE">Pitest Mutators</a></p>
 </div>

@@ -19,12 +19,9 @@
  */
 package org.sonar.plugins.pitest.metrics;
 
-import static org.sonar.api.measures.Metric.DIRECTION_BETTER;
-import static org.sonar.api.measures.Metric.DIRECTION_NONE;
-import static org.sonar.api.measures.Metric.DIRECTION_WORST;
-import static org.sonar.api.measures.Metric.ValueType.DATA;
-import static org.sonar.api.measures.Metric.ValueType.INT;
-import static org.sonar.api.measures.Metric.ValueType.PERCENT;
+import org.sonar.api.measures.Metric;
+import org.sonar.api.measures.Metric.Builder;
+import org.sonar.api.measures.Metrics;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,9 +29,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.sonar.api.measures.Metric;
-import org.sonar.api.measures.Metric.Builder;
-import org.sonar.api.measures.Metrics;
+import static org.sonar.api.measures.Metric.DIRECTION_BETTER;
+import static org.sonar.api.measures.Metric.DIRECTION_NONE;
+import static org.sonar.api.measures.Metric.DIRECTION_WORST;
+import static org.sonar.api.measures.Metric.ValueType.DATA;
+import static org.sonar.api.measures.Metric.ValueType.INT;
+import static org.sonar.api.measures.Metric.ValueType.PERCENT;
 
 /**
  * Metrics for the sonar pitest plugin.
@@ -55,10 +55,8 @@ public class PitestMetrics<T extends Serializable> implements Metrics {
     public static final String MUTATIONS_UNKNOWN_KEY = "pitest_mutations_unknown";
     public static final String MUTATIONS_COVERAGE_KEY = "pitest_mutations_coverage";
 
-    @SuppressWarnings("rawtypes")
-    private static final List<Metric> METRICS;
-    @SuppressWarnings("rawtypes")
-    private static final List<Metric> QUANTITATIVE_METRICS;
+    @SuppressWarnings("rawtypes") private static final List<Metric> METRICS;
+    @SuppressWarnings("rawtypes") private static final List<Metric> QUANTITATIVE_METRICS;
 
     public static final String PITEST_DOMAIN = "Mutation analysis";
 
@@ -133,9 +131,7 @@ public class PitestMetrics<T extends Serializable> implements Metrics {
     /**
      * @see Metrics#getMetrics()
      */
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<Metric> getMetrics() {
+    @SuppressWarnings("rawtypes") @Override public List<Metric> getMetrics() {
 
         return METRICS;
     }
@@ -145,8 +141,7 @@ public class PitestMetrics<T extends Serializable> implements Metrics {
      *
      * @return {@link List<Metric>} The pitest quantitative metrics list.
      */
-    @SuppressWarnings("rawtypes")
-    public static List<Metric> getQuantitativeMetrics() {
+    @SuppressWarnings("rawtypes") public static List<Metric> getQuantitativeMetrics() {
 
         return QUANTITATIVE_METRICS;
     }
@@ -156,8 +151,7 @@ public class PitestMetrics<T extends Serializable> implements Metrics {
      *
      * @return {@link List<Metric>} The pitest sensor metrics list.
      */
-    @SuppressWarnings("rawtypes")
-    public static List<Metric> getSensorMetrics() {
+    @SuppressWarnings("rawtypes") public static List<Metric> getSensorMetrics() {
 
         return METRICS;
     }

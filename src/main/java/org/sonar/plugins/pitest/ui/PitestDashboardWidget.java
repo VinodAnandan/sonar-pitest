@@ -28,29 +28,24 @@ import org.sonar.api.web.WidgetCategory;
 
 /**
  * Sonar user widget for pitest metrics.
- * 
+ *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
-@NavigationSection(NavigationSection.RESOURCE)
-@UserRole(UserRole.USER)
-@WidgetCategory("Pitest")
-@Description("Pitest mutation coverage report.")
-public class PitestDashboardWidget extends AbstractRubyTemplate implements RubyRailsWidget {
+@NavigationSection(NavigationSection.RESOURCE) @UserRole(UserRole.USER) @WidgetCategory("Pitest")
+@Description("Pitest mutation coverage report.") public class PitestDashboardWidget extends AbstractRubyTemplate
+        implements RubyRailsWidget {
 
-    @Override
-    public String getId() {
+    @Override public String getId() {
 
         return "pitest";
     }
 
-    @Override
-    public String getTitle() {
+    @Override public String getTitle() {
 
         return "Pitest report";
     }
 
-    @Override
-    protected String getTemplatePath() {
+    @Override protected String getTemplatePath() {
 
         return "/org/sonar/plugins/pitest/pitest_dashboard_widget.html.erb";
     }
