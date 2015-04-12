@@ -36,8 +36,7 @@
     <mutator id="INLINE_CONSTS"
              class="org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator">
         <name>Inline Constant Mutator</name>
-        <violationDescription>Alive Mutant: An inline constant has been changed without being detected by a test.
-        </violationDescription>
+        <violationDescription>Alive Mutant: An inline constant has been changed without being detected by a test.</violationDescription>
         <mutatorDescription classpath="INLINE_CONSTS.html"/>
     </mutator>
     <mutator id="INVERT_NEGS"
@@ -81,9 +80,7 @@
     <mutator id="RETURN_VALS"
              class="org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator">
         <name>Return Vals Mutator</name>
-        <violationDescription>Alive Mutant: The return value of a method call has been replaced without being detected
-            by a test.
-        </violationDescription>
+        <violationDescription>Alive Mutant: The return value of a method call has been replaced without being detected by a test.</violationDescription>
         <mutatorDescription classpath="RETURN_VALS.html"/>
     </mutator>
     <mutator id="VOID_METHOD_CALLS"
