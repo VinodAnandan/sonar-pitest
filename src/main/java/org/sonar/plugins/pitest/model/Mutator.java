@@ -19,6 +19,10 @@
  */
 package org.sonar.plugins.pitest.model;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,11 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -200,7 +199,7 @@ public final class Mutator {
     final String id = XP.evaluate("@id", mutatorNode);
     final String className = XP.evaluate("@class", mutatorNode);
     final String name = XP.evaluate("name", mutatorNode);
-    final String violationDescription = XP.evaluate("violationDescription", mutatorNode);
+    final String violationDescription = XP.evaluate("violationDescription", mutatorNode).trim();
     final URL mutatorDescriptionLocation = Mutator.class
       .getResource(XP.evaluate("mutatorDescription/@classpath", mutatorNode));
 
