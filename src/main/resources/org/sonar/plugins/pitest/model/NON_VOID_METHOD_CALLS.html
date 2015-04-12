@@ -1,0 +1,105 @@
+<div id="NON_VOID_METHOD_CALLS">
+    <h2>Non Void Method Call Mutator (NON<em>VOID</em>METHOD_CALLS)</h2>
+
+    <p>The non void method call mutator removes method calls to non void methods.
+        Their return value is replaced by the Java Default Value for that specific
+        type. See the table below.</p>
+
+    <p>Table: Java Default Values for Primitives and Reference Types</p>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Default Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td><code>int</code> <code>byte</code> <code>short</code> <code>long</code></td>
+            <td><code>0</code></td>
+        </tr>
+        <tr>
+            <td><code>float</code> <code>double</code></td>
+            <td><code>0.0</code></td>
+        </tr>
+        <tr>
+            <td><code>char</code></td>
+            <td><code>'\u0000'</code></td>
+        </tr>
+        <tr>
+            <td><code>Object</code></td>
+            <td><code>null</code></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>For example</p>
+
+<pre class="prettyprint lang-java">
+public int someNonVoidMethod() {
+  return 5;
+}
+
+public void foo() {
+  int i = someNonVoidMethod();
+  // do more stuff with i
+}
+</pre>
+
+    <p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public int someNonVoidMethod() {
+  return 5;
+}
+
+public void foo() {
+  int i = 0;
+  // do more stuff with i
+}
+</pre>
+
+    <p>and for method calls returning an object type the call</p>
+
+<pre class="prettyprint lang-java">
+public Object someNonVoidMethod() {
+  return new Object();
+}
+
+public void foo() {
+  Object o = someNonVoidMethod();
+  // do more stuff with o
+}
+</pre>
+
+    <p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public Object someNonVoidMethod() {
+  return new Object();
+}
+
+public void foo() {
+  Object o = null;
+  // do more stuff with o
+}
+</pre>
+
+    <p>Please note that this mutation is fairly unstable for some types (especially Objects where
+        <strong><code>NullPointerException</code>s</strong> are likely) and may also create equivalent mutations if
+        it replaces a method that already returns one of the default values without also having
+        a side effect.</p>
+
+    <p>This mutator does not affect void methods or constructor calls. See
+        <a href="http://pitest.org/quickstart/mutators#VOID_METHOD_CALL">Void Method Call Mutator</a> for mutations of
+        void methods and
+        <a href="http://pitest.org/quickstart/mutators#CONSTRUCTOR_CALL">Constructor Call Mutator</a> for mutations of
+        constructors.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#NON_VOID_METHOD_CALLS">Pitest Mutators</a></p>
+</div>

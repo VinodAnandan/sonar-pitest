@@ -1,0 +1,55 @@
+<div id="CONDITIONALS_BOUNDARY">
+    <h2>Conditionals Boundary Mutator (CONDITIONALS_BOUNDARY)</h2>
+
+    <p>The conditionals boundary mutator replaces the relational operators <code>&lt;, &lt;=, &gt;, &gt;=</code></p>
+
+    <p>with their boundary counterpart as per the table below.</p>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                Original conditional
+            </th>
+            <th>
+                Mutated conditional
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>&lt;</td>
+            <td>&lt;=</td>
+        </tr>
+        <tr>
+            <td>&lt;=</td>
+            <td>&lt;</td>
+        </tr>
+        <tr>
+            <td>&gt;</td>
+            <td>&gt;=</td>
+        </tr>
+        <tr>
+            <td>&gt;=</td>
+            <td>&gt;</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>For example</p>
+
+<pre class="prettyprint lang-java">
+if (a &lt; b) {
+  // do something
+}
+</pre>
+
+    <p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+if (a &lt;= b) {
+  // do something
+}
+</pre>
+    <p>see <a href="http://pitest.org/quickstart/mutators#CONDITIONALS_BOUNDARY">Pitest Mutators</a></p>
+</div>

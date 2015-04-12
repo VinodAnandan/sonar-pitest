@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2015 SonarCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -19,43 +19,79 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
-
+import java.util.Arrays;
 import java.util.List;
 
-import org.sonar.api.Extension;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
-
-import com.google.common.collect.Lists;
+import org.sonar.api.config.Settings;
+import org.sonar.plugins.pitest.metrics.PitestCoverageDecorator;
+import org.sonar.plugins.pitest.metrics.PitestDecorator;
+import org.sonar.plugins.pitest.metrics.PitestMetrics;
+import org.sonar.plugins.pitest.report.PitestReportParser;
+import org.sonar.plugins.pitest.report.ReportFinder;
+import org.sonar.plugins.pitest.ui.PitSourceTab;
+import org.sonar.plugins.pitest.ui.PitestDashboardWidget;
 
 /**
- * This class is the entry point for all PIT extensions
+ * This class is the entry point for all PIT extensions. The properties define, which {@link Settings} are configurable
+ * for the plugin.
+ *
+ * @author <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
+ * @author <a href="mailto:gerald.muecke@gmail.com">Gerald Muecke</a>
  */
 @Properties({
-  @Property(key = MODE_KEY, defaultValue = MODE_SKIP,
-    name = "PIT activation mode", description = "Possible values:  empty (means skip) and 'reuseReport'", global = true,
-    project = true),
-  @Property(key = REPORT_DIRECTORY_KEY, defaultValue = REPORT_DIRECTORY_DEF,
-    name = "Output directory for the PIT reports", description = "This property is needed when the 'reuseReport' mode is activated and the reports are not located in the default directory (i.e. target/pit-reports)", global = true,
+  @Property(key = PitestPlugin.SENSOR_ENABLED,
+    name = "Active PIT Sensor",
+    description = "Possible values:  empty or 'skip'",
+    type = PropertyType.BOOLEAN,
+    defaultValue = "true",
+    global = true,
+    project = true), @Property(key = PitestPlugin.REPORT_DIRECTORY_KEY,
+    defaultValue = PitestPlugin.REPORT_DIRECTORY_DEF,
+    name = "Output directory for the PIT reports",
+    description = "This property is needed when the 'reuseReport' mode is activated and the reports are not located in the default directory (i.e. target/pit-reports)",
+    global = true,
+    project = true), @Property(key = PitestPlugin.EFFORT_MUTANT_KILL,
+    defaultValue = "15min",
+    name = "Effort: Kill a mutant",
+    description = "Effort to kill a single mutant. Values may be hours, i.e. '1h' or minutes '30min'.",
+    type = PropertyType.STRING,
+    global = true,
+    project = true), @Property(key = PitestPlugin.EFFORT_FACTOR_MISSING_COVERAGE,
+    defaultValue = "1.0",
+    name = "Effort Factor: Missing Coverage",
+    description = "Factor that is multiplied by the minimally additional required mutants to be killed to get required mutation coverage.",
+    type = PropertyType.FLOAT,
+    global = true,
+    project = true), @Property(key = PitestPlugin.EFFORT_FACTOR_SURVIVED_MUTANT,
+    defaultValue = "1.0",
+    name = "Effort Factor: Survived Mutant ",
+    description = "Factor that is applied to any of the survived mutant rule to calculate effort to fix",
+    type = PropertyType.FLOAT,
+    global = true,
     project = true)
 })
 public final class PitestPlugin extends SonarPlugin {
 
-  // This is where you're going to declare all your Sonar extensions
-  @SuppressWarnings("unchecked")
-  public List<Class<? extends Extension>> getExtensions() {
-    return Lists.newArrayList(
-        ResultParser.class,
-        ReportFinder.class,
-        PitestRuleRepository.class,
-        PitestSensor.class,
-        PitestMetrics.class,
-        PitestDecorator.class,
-        PitestCoverageDecorator.class,
-        PitestDashboardWidget.class,
-        PitSourceTab.class
-    );
+  public static final String SENSOR_ENABLED = "sonar.pitest.enabled";
+
+  public static final String EFFORT_MUTANT_KILL = "sonar.pitest.effort.mutantKill";
+  public static final String EFFORT_FACTOR_MISSING_COVERAGE = "sonar.pitest.effort.missingCoverage";
+  public static final String EFFORT_FACTOR_SURVIVED_MUTANT = "sonar.pitest.effort.survivedMutant";
+  public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reports.directory";
+  public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
+
+  @SuppressWarnings("rawtypes")
+  @Override
+  public List getExtensions() {
+
+    return Arrays
+      .asList(PitestReportParser.class, ReportFinder.class, PitestRulesDefinition.class, PitestSensor.class,
+              PitestMetrics.class, PitestDecorator.class, PitestCoverageDecorator.class, PitestDashboardWidget.class,
+              PitSourceTab.class);
   }
+
 }

@@ -1,0 +1,39 @@
+<div id="VOID_METHOD_CALLS">
+    <h2>Void Method Call Mutator (VOID<em>METHOD</em>CALLS)</h2>
+
+    <p>The void method call mutator removes method calls to void methods. For example</p>
+
+<pre class="prettyprint lang-java">
+public void someVoidMethod(int i) {
+  // does something
+}
+
+public int foo() {
+  int i = 5;
+  doSomething(i);
+  return i;
+}
+</pre>
+
+    <p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public void someVoidMethod(int i) {
+  // does something
+}
+
+public int foo() {
+  int i = 5;
+  return i;
+}
+</pre>
+
+    <p>Please note that constructor calls are <strong>not considered void method calls</strong>.
+        See the <a href="http://pitest.org/quickstart/mutators#CONSTRUCTOR_CALL">Constructor Call Mutator</a> for
+        mutations of
+        constructors or the <a href="http://pitest.org/quickstart/mutators#NON_VOID_METHOD_CALL">Non Void Method Call
+            Mutator</a> for
+        mutations of non void methods.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#VOID_METHOD_CALLS">Pitest Mutators</a></p>
+</div>

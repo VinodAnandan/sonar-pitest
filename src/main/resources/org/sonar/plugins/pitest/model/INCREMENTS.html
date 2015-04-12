@@ -1,0 +1,31 @@
+<div id="INCREMENTS">
+    <h2>Increments Mutator (INCREMENTS)</h2>
+
+    <p>The increments mutator will mutate increments, decrements and assignment
+        increments and decrements of local variables (stack variables). It will replace
+        increments with decrements and vice versa.</p>
+
+    <p>For example</p>
+
+<pre class="prettyprint lang-java">
+public int method(int i) {
+  i++;
+  return i;
+}
+</pre>
+
+    <p>will be mutated to</p>
+
+<pre class="prettyprint lang-java">
+public int method(int i) {
+  i--;
+  return i;
+}
+</pre>
+
+    <p>Please note that the increments mutator will be applied to increments of
+        <strong>local variables only</strong>. Increments and decrements of member variables will be
+        covered by the <a href="http://pitest.org/quickstart/mutators#MATH">Math Mutator</a>.</p>
+
+    <p>see <a href="http://pitest.org/quickstart/mutators#INCREMENTS">Pitest Mutators</a></p>
+</div>
