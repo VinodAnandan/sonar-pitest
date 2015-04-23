@@ -23,6 +23,8 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -73,6 +75,7 @@ public class Mutant {
     return mutantStatus;
   }
 
+  @Deprecated
   public String getSonarJavaFileKey() {
     if (sonarJavaFileKey == null) {
       if (className.indexOf('$') > -1) {
@@ -82,6 +85,12 @@ public class Mutant {
       }
     }
     return sonarJavaFileKey;
+  }
+
+  public String sourceRelativePath() {
+    Splitter splitter = Splitter.on('$');
+    String classNameFiltered = splitter.split(className).iterator().next();
+    return classNameFiltered.replace('.', '/') + ".java";
   }
 
   public int getLineNumber() {

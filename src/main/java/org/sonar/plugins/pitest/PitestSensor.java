@@ -19,26 +19,24 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FilePredicate;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.scan.filesystem.FileQuery;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -57,30 +55,33 @@ public class PitestSensor implements Sensor {
 
   private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-  private JavaFileMutants noResourceMetrics = new JavaFileMutants();
+  //private JavaFileMutants noResourceMetrics = new JavaFileMutants();
 
-  private final Configuration configuration;
+  private final Settings settings;
   private final ResultParser parser;
   private final ReportFinder reportFinder;
   private final String executionMode;
   private final RulesProfile rulesProfile;
-  private final ModuleFileSystem fileSystem;
+  private final FileSystem fileSystem;
+  private final FilePredicate mainFilePredicate;
   private final ResourcePerspectives perspectives;
 
-  public PitestSensor(Configuration configuration, ResultParser parser, RulesProfile rulesProfile, ReportFinder reportFinder, ModuleFileSystem fileSystem, ResourcePerspectives perspectives) {
-    this.configuration = configuration;
+  public PitestSensor(Settings settings, ResultParser parser, RulesProfile rulesProfile, ReportFinder reportFinder, FileSystem fileSystem, ResourcePerspectives perspectives) {
+    this.settings = settings;
     this.parser = parser;
     this.reportFinder = reportFinder;
     this.fileSystem = fileSystem;
     this.perspectives = perspectives;
-    this.executionMode = configuration.getString(MODE_KEY, MODE_SKIP);
+    this.executionMode = settings.getString(MODE_KEY);
     this.rulesProfile = rulesProfile;
+
+    this.mainFilePredicate = fileSystem.predicates().and(
+      fileSystem.predicates().hasType(InputFile.Type.MAIN),
+      fileSystem.predicates().hasLanguage("java"));
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return project.getAnalysisType().isDynamic(true)
-        && !fileSystem.files(FileQuery.onSource().onLanguage("java")).isEmpty()
-        && !MODE_SKIP.equals(executionMode);
+    return fileSystem.hasFiles(mainFilePredicate) && !MODE_SKIP.equals(executionMode);
   }
 
   public void analyse(Project project, SensorContext context) {
@@ -90,11 +91,11 @@ public class PitestSensor implements Sensor {
       LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
     }
 
-    File projectDirectory = fileSystem.baseDir();
-    String reportDirectoryPath = configuration.getString(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
+    java.io.File projectDirectory = fileSystem.baseDir();
+    String reportDirectoryPath = settings.getString(REPORT_DIRECTORY_KEY);
 
-    File reportDirectory = new File(projectDirectory, reportDirectoryPath);
-    File xmlReport = reportFinder.findReport(reportDirectory);
+    java.io.File reportDirectory = new java.io.File(projectDirectory, reportDirectoryPath);
+    java.io.File xmlReport = reportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
       LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
       LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
@@ -105,13 +106,13 @@ public class PitestSensor implements Sensor {
   }
 
   private void saveMutantsInfo(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
-    Map<Resource<?>, JavaFileMutants> metrics = collectMetrics(mutants, context, activeRules);
-    for (Entry<Resource<?>, JavaFileMutants> entry : metrics.entrySet()) {
+    Map<InputFile, JavaFileMutants> metrics = collectMetrics(mutants, activeRules);
+    for (Entry<InputFile, JavaFileMutants> entry : metrics.entrySet()) {
       saveMetricsInfo(context, entry.getKey(), entry.getValue());
     }
   }
 
-  private void saveMetricsInfo(SensorContext context, Resource<?> resource, JavaFileMutants metricsInfo) {
+  private void saveMetricsInfo(SensorContext context, InputFile resource, JavaFileMutants metricsInfo) {
     double detected = metricsInfo.getMutationsDetected();
     double total = metricsInfo.getMutationsTotal();
     context.saveMeasure(resource, PitestMetrics.MUTATIONS_TOTAL, total);
@@ -125,7 +126,7 @@ public class PitestSensor implements Sensor {
     saveData(context, resource, metricsInfo.getMutants());
   }
 
-  private void saveData(SensorContext context, Resource<?> resource, List<Mutant> mutants) {
+  private void saveData(SensorContext context, InputFile resource, List<Mutant> mutants) {
     if ((mutants != null) && (!mutants.isEmpty())) {
       String json = Mutant.toJSON(mutants);
       Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, json);
@@ -133,22 +134,28 @@ public class PitestSensor implements Sensor {
     }
   }
 
-  private Map<Resource<?>, JavaFileMutants> collectMetrics(Collection<Mutant> mutants, SensorContext context, List<ActiveRule> activeRules) {
-    Map<Resource<?>, JavaFileMutants> metricsByResource = new HashMap<Resource<?>, JavaFileMutants>();
+  private Map<InputFile, JavaFileMutants> collectMetrics(Collection<Mutant> mutants, List<ActiveRule> activeRules) {
+    Map<InputFile, JavaFileMutants> metricsByResource = new HashMap<InputFile, JavaFileMutants>();
     Rule rule = getSurvivedRule(activeRules); // Currently, only survived rule is applied
-    Resource resource;
+
     for (Mutant mutant : mutants) {
-        JavaFile file = new JavaFile(mutant.getSonarJavaFileKey());
+      FilePredicate filePredicate =
+        fileSystem.predicates().and(
+          fileSystem.predicates().hasType(InputFile.Type.MAIN),
+          fileSystem.predicates().matchesPathPattern("**/" + mutant.sourceRelativePath())
+        );
+      InputFile inputFile = fileSystem.inputFile(filePredicate);
+        //JavaFile file = new JavaFile(mutant.getSonarJavaFileKey());
       //context.index(file);
 
-      resource = context.getResource(file);
-      if (resource == null) {
-        LOG.warn("Mutation in an unknown resource: {}", mutant.getSonarJavaFileKey());
+      //resource = context.getResource(file);
+      if (inputFile == null) {
+        LOG.warn("Mutation in an unknown resource: {}", mutant.sourceRelativePath());
         LOG.debug("Mutant: {}", mutant);
-        processMutant(mutant, noResourceMetrics, resource, context, rule);
+        //processMutant(mutant, noResourceMetrics, resource, context, rule);
       }
       else {
-        processMutant(mutant, getMetricsInfo(metricsByResource, resource), resource, context, rule);
+        processMutant(mutant, getMetricsInfo(metricsByResource, inputFile), inputFile, rule);
       }
     }
     return metricsByResource;
@@ -162,7 +169,7 @@ public class PitestSensor implements Sensor {
     return rule;
   }
 
-  private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, Resource resource, SensorContext context, Rule rule) {
+  private void processMutant(Mutant mutant, JavaFileMutants resourceMetricsInfo, InputFile resource, Rule rule) {
     resourceMetricsInfo.addMutant(mutant);
     if (resource != null && rule != null && MutantStatus.SURVIVED.equals(mutant.getMutantStatus())) {
       // Only survived mutations are saved as violations
@@ -180,7 +187,7 @@ public class PitestSensor implements Sensor {
     }
   }
 
-  private static JavaFileMutants getMetricsInfo(Map<Resource<?>, JavaFileMutants> metrics, Resource<?> resource) {
+  private static JavaFileMutants getMetricsInfo(Map<InputFile, JavaFileMutants> metrics, InputFile resource) {
     JavaFileMutants metricsInfo = null;
     if (resource != null) {
       metricsInfo = metrics.get(resource);

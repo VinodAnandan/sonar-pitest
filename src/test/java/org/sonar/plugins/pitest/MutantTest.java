@@ -27,11 +27,14 @@ import com.google.common.collect.Lists;
 
 public class MutantTest {
 
+  public static final String INLINE_CONSTANT_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator";
+  public static final String RETURN_VALS_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator";
+
   @Test
   public void should_generate_a_json_string() {
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar", 17, "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.qix", 17, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator");
+    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar", 17, INLINE_CONSTANT_MUTATOR);
+    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.qix", 17, RETURN_VALS_MUTATOR);
+    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar", 42, INLINE_CONSTANT_MUTATOR);
 
     String result = Mutant.toJSON(Lists.newArrayList(m1, m2, m3));
     assertThat(result)
@@ -42,5 +45,25 @@ public class MutantTest {
       		"\"42\":[" +
       		"{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\"  }" +
       		"]}");
+  }
+
+  @Test
+  public void should_get_path_to_source_file() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR);
+    // when
+    String path = mutant.sourceRelativePath();
+    //then
+    assertThat(path).isEqualTo("com/foo/Bar.java");
+  }
+
+  @Test
+  public void should_get_path_to_source_file_for_an_anonymous_inner_class() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", 17, INLINE_CONSTANT_MUTATOR);
+    // when
+    String path = mutant.sourceRelativePath();
+    //then
+    assertThat(path).isEqualTo("com/foo/Bar.java");
   }
 }

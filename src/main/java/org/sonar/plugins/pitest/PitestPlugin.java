@@ -49,7 +49,7 @@ public final class PitestPlugin extends SonarPlugin {
     return Lists.newArrayList(
         ResultParser.class,
         ReportFinder.class,
-        PitestRuleRepository.class,
+        PitestRulesDefinition.class,
         PitestSensor.class,
         PitestMetrics.class,
         PitestDecorator.class,
