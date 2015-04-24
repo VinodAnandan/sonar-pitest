@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class ResultParserTest {
 				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
 		assertThat(mutants).contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
 				"org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"));
-		assertThat(mutants).onProperty("lineNumber").contains(166);
-		assertThat(mutants).onProperty("mutantStatus").excludes(MutantStatus.UNKNOWN);
+		assertThat(mutants).extracting("lineNumber").contains(166);
+		assertThat(mutants).extracting("mutantStatus").doesNotContain(MutantStatus.UNKNOWN);
 	}
 }

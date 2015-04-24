@@ -26,7 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -36,20 +35,17 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.sonar.plugins.pitest.PitestConstants.*;
@@ -57,7 +53,9 @@ import static org.sonar.plugins.pitest.PitestConstants.*;
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
 
+  private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
   private PitestSensor sensor;
+
   @Mock
   private RulesProfile rulesProfile;
   @Mock
@@ -66,10 +64,9 @@ public class PitestSensorTest {
   private Settings settings;
   @Mock
   private Project project;
+
   @Mock
   private ReportFinder reportFinder;
-
-  private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
   @Mock
   private ResourcePerspectives perspectives;
   @Mock
@@ -78,11 +75,6 @@ public class PitestSensorTest {
   private Issuable issuable;
   @Mock
   private InputFile javaFile;
-
-  @Before
-  public void setUp() {
-    //when(fileSystem.files(any(FileQuery.class))).thenReturn(asList(new File("whatever")));
-  }
 
   @Test
   public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
@@ -186,7 +178,6 @@ public class PitestSensorTest {
   }
 
   private PitestSensor buildSensor() {
-    //when(fileSystem.baseDir()).thenReturn(TestUtils.getResource("."));
     when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn(REPORT_DIRECTORY_DEF);
     when(reportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
@@ -198,13 +189,8 @@ public class PitestSensorTest {
     mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.MemoryErrorClazz", 1000, null));
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.UnknownClazz", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
-/*
-    when(context.getResource(any(JavaFile.class))).thenAnswer(new Answer<Object>() {
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        return javaFile;
-      }
-    });
-    */
+
+
     Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
     when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
     when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);

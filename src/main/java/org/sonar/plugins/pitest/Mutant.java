@@ -24,7 +24,6 @@ import java.util.List;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -32,60 +31,24 @@ import com.google.common.collect.Multimap;
 /**
  * Mutation information from the pitest report.
  *
- * @version Added metrics info by <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>. Also, it has been moved to the gwt
- *          client package to avoid code duplications.
+ * @author Jaime Porras
  */
 public class Mutant {
 
-  private final boolean detected;
-
-  private final MutantStatus mutantStatus;
-
-  private final String className;
-
-  private final int lineNumber;
-
-  private final Mutator mutator;
-
-  private transient String sonarJavaFileKey;
+  public final boolean detected;
+  public final MutantStatus mutantStatus;
+  public final String className;
+  public final int lineNumber;
+  public final Mutator mutator;
 
   public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey) {
-    this(detected, mutantStatus, className, lineNumber, Mutator.parse(mutatorKey));
-  }
-
-  private Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, Mutator mutator) {
     this.detected = detected;
     this.mutantStatus = mutantStatus;
     this.className = className;
     this.lineNumber = lineNumber;
-    this.mutator = mutator;
+    this.mutator = Mutator.parse(mutatorKey);
   }
 
-  /**
-   * @return the detected
-   */
-  public boolean isDetected() {
-    return detected;
-  }
-
-  /**
-   * @return the mutantStatus
-   */
-  public MutantStatus getMutantStatus() {
-    return mutantStatus;
-  }
-
-  @Deprecated
-  public String getSonarJavaFileKey() {
-    if (sonarJavaFileKey == null) {
-      if (className.indexOf('$') > -1) {
-        sonarJavaFileKey = className.substring(0, className.indexOf('$'));
-      } else {
-        sonarJavaFileKey = className;
-      }
-    }
-    return sonarJavaFileKey;
-  }
 
   public String sourceRelativePath() {
     Splitter splitter = Splitter.on('$');
@@ -93,11 +56,7 @@ public class Mutant {
     return classNameFiltered.replace('.', '/') + ".java";
   }
 
-  public int getLineNumber() {
-    return lineNumber;
-  }
-
-  public String getViolationDescription() {
+  public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";
   }
 
@@ -128,36 +87,7 @@ public class Mutant {
 
   @Override
   public String toString() {
-    return toJSON();
-  }
-
-  public static String toJSON(List<Mutant> mutants) {
-    Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
-
-    for (Mutant mutant : mutants) {
-      mutantsByLine.put(mutant.getLineNumber(), mutant.toJSON());
-    }
-
-    StringBuilder builder = new StringBuilder();
-    builder.append("{");
-    boolean first = true;
-    for (int line : mutantsByLine.keySet()) {
-      if (!first) {
-        builder.append(",");
-      }
-      first = false;
-      builder.append("\"");
-      builder.append(line);
-      builder.append("\":[");
-      builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
-      builder.append("]");
-    }
-    builder.append("}");
-
-    return builder.toString();
-  }
-
-  private String toJSON() {
     return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\"  }";
   }
+
 }

@@ -19,10 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.sonar.api.rules.Rule;
 import org.sonar.api.server.rule.RulesDefinition;
-
-import java.util.Collections;
 
 public class PitestRulesDefinition implements RulesDefinition {
 
