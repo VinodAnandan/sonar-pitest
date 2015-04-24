@@ -26,12 +26,12 @@ import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReportFinderTest {
+public class XmlReportFinderTest {
 
   @Test
   public void should_find_report_file() {
     // given
-    ReportFinder finder = new ReportFinder();
+    XmlReportFinder finder = new XmlReportFinder();
     File xmlFile = TestUtils.getResource("mutations.xml");
     File directory = xmlFile.getParentFile();
 
@@ -45,7 +45,7 @@ public class ReportFinderTest {
   @Test
   public void should_return_null_if_no_report() {
     // given
-    ReportFinder finder = new ReportFinder();
+    XmlReportFinder finder = new XmlReportFinder();
     File directory = TestUtils.getResource("fake_libs");
 
     // when
@@ -58,7 +58,7 @@ public class ReportFinderTest {
   @Test
   public void should_return_null_if_directory_does_not_exist() {
     // given
-    ReportFinder finder = new ReportFinder();
+    XmlReportFinder finder = new XmlReportFinder();
     File directory = TestUtils.getResource("imaginary");
 
     // when

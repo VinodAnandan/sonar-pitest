@@ -25,7 +25,7 @@ import org.sonar.api.BatchExtension;
 import java.io.File;
 import java.util.Collection;
 
-public class ReportFinder implements BatchExtension {
+public class XmlReportFinder implements BatchExtension {
 
   public File findReport(File reportDirectory) {
     if (reportDirectory== null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {

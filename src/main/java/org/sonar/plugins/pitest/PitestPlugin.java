@@ -47,8 +47,8 @@ public final class PitestPlugin extends SonarPlugin {
   @SuppressWarnings("unchecked")
   public List<Class<? extends Extension>> getExtensions() {
     return Lists.newArrayList(
-        ResultParser.class,
-        ReportFinder.class,
+        XmlReportParser.class,
+        XmlReportFinder.class,
         PitestRulesDefinition.class,
         PitestSensor.class,
         PitestMetrics.class,

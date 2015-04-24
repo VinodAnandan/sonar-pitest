@@ -48,7 +48,7 @@ enum Mutator {
   private String name;
   private String description;
 
-  private Mutator(String key, String name, String description) {
+  Mutator(String key, String name, String description) {
     this.key = key;
     this.name = name;
     this.description = description;

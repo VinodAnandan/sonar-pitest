@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -59,14 +58,14 @@ public class PitestSensorTest {
   @Mock
   private RulesProfile rulesProfile;
   @Mock
-  private ResultParser parser;
+  private XmlReportParser parser;
   @Mock
   private Settings settings;
   @Mock
   private Project project;
 
   @Mock
-  private ReportFinder reportFinder;
+  private XmlReportFinder xmlReportFinder;
   @Mock
   private ResourcePerspectives perspectives;
   @Mock
@@ -130,8 +129,8 @@ public class PitestSensorTest {
     // given
     workingConfiguration();
     when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn("");
-    when(reportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
-    sensor = new PitestSensor(settings, parser, rulesProfile, reportFinder, fileSystem, perspectives);
+    when(xmlReportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
+    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem, perspectives);
     // when
     sensor.analyse(project, mock(SensorContext.class));
     // then no failure
@@ -179,7 +178,7 @@ public class PitestSensorTest {
 
   private PitestSensor buildSensor() {
     when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn(REPORT_DIRECTORY_DEF);
-    when(reportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
+    when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
     List<Mutant> mutants = new ArrayList<Mutant>();
     Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "com.foo.SurvivedClazz", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
@@ -198,7 +197,7 @@ public class PitestSensorTest {
     when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
     when(perspectives.as(Issuable.class, createInputFile("SurvivedClazz"))).thenReturn(issuable);
 
-    sensor = new PitestSensor(settings, parser, rulesProfile, reportFinder, fileSystem, perspectives);
+    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem, perspectives);
     return sensor;
   }
 

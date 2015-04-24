@@ -20,17 +20,21 @@
 package org.sonar.plugins.pitest;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Mutants for a given java source file
  */
-public class SourceFileMutants {
-	public final List<Mutant> mutants = new ArrayList<Mutant>();
+public class SourceFileReport {
+	public final String sourceFileRelativePath;
+	private final List<Mutant> mutants = new ArrayList<Mutant>();
 	private double mutationsNoCoverage = 0;
 	private double mutationsKilled = 0;
 	private double mutationsSurvived = 0;
@@ -38,6 +42,10 @@ public class SourceFileMutants {
 	private double mutationsTimedOut = 0;
 	private double mutationsUnknown = 0;
 	private double mutationsDetected = 0;
+
+	public SourceFileReport(String sourceFileRelativePath) {
+		this.sourceFileRelativePath = sourceFileRelativePath;
+	}
 
 	public String toJSON() {
 		if (mutants.isEmpty()) {
@@ -71,6 +79,7 @@ public class SourceFileMutants {
 
 
 	public void addMutant(Mutant mutant) {
+		Preconditions.checkArgument(sourceFileRelativePath.equals(mutant.sourceRelativePath()));
 		mutants.add(mutant);
 		if (mutant.detected) {
 			mutationsDetected++;
@@ -95,6 +104,10 @@ public class SourceFileMutants {
 				mutationsUnknown++;
 				break;
 		}
+	}
+
+	public Collection<Mutant> getMutants() {
+		return Collections.unmodifiableList(mutants);
 	}
 
 	public double getMutationsTotal() {
