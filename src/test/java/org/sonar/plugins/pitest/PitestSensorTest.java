@@ -41,7 +41,6 @@ import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,7 +78,7 @@ public class PitestSensorTest {
   public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
     // given
     when(settings.getString(MODE_KEY)).thenReturn(MODE_SKIP);
-    profileWithActiveRule();
+    profileWithMutantRule();
     sensor = buildSensor();
     // when
     boolean sensorExecuted = sensor.shouldExecuteOnProject(project);
@@ -91,7 +90,7 @@ public class PitestSensorTest {
   public void should_do_analysis_if_pit_mode_set_to_reuse_report() throws Exception {
     // given
     workingConfiguration();
-    profileWithActiveRule();
+    profileWithMutantRule();
     sensor = buildSensor();
     // when
     boolean sensorExecuted = sensor.shouldExecuteOnProject(project);
@@ -103,7 +102,6 @@ public class PitestSensorTest {
   public void should_not_skip_analysis_when_pitest_rule_not_activated() throws Exception {
     // given
     workingConfiguration();
-    profileWithoutActiveRule();
     sensor = buildSensor();
     // when
     sensor.analyse(project, context);
@@ -112,16 +110,41 @@ public class PitestSensorTest {
   }
 
   @Test
-  public void should_parse_reports_when_reuse_mode_active() throws Exception {
+  public void should_raise_issue_when_reuse_mode_active_and_mutation_rule_active() throws Exception {
     // given
     workingConfiguration();
-    profileWithActiveRule();
+    profileWithMutantRule();
     sensor = buildSensor();
     // when
     sensor.analyse(project, context);
     // then
     verifyIssueRaided();
     verifyMutationsSaved();
+  }
+
+  @Test
+  public void should_raise_issue_when_reuse_mode_active_and_coverage_rule_active() throws Exception {
+    // given
+    workingConfiguration();
+    profileWithCoverageRule();
+    sensor = buildSensor();
+    // when
+    sensor.analyse(project, context);
+    // then
+    verifyIssueRaided();
+    verifyMutationsSaved();
+  }
+
+  @Test
+  public void should_not_raise_issue_when_coverage_above_rule_threshold() throws Exception {
+    // given
+    workingConfiguration();
+    profileWithLowCoverageRule();
+    sensor = buildSensor();
+    // when
+    sensor.analyse(project, context);
+    // then
+    verifyNoIssueRaided();
   }
 
   @Test
@@ -140,39 +163,38 @@ public class PitestSensorTest {
     when(settings.getString(MODE_KEY)).thenReturn(MODE_REUSE_REPORT);
     fileSystem
       .add(
-        createInputFile("SurvivedClazz")
-      )
-      .add(
-        createInputFile("KilledClazz")
-      )
-      .add(
-        createInputFile("NoCoverageClazz")
-      )
-    .add(
-        createInputFile("MemoryErrorClazz")
-    )
-    .add(
-      createInputFile("UnknownClazz")
-    );
+        createInputFile()
+      );
   }
 
-  private DefaultInputFile createInputFile(String className) {
+  private DefaultInputFile createInputFile() {
 
-    return new DefaultInputFile("module.key", "com/foo/" + className + ".java")
+    return new DefaultInputFile("module.key", "com/foo/Bar.java")
       .setType(InputFile.Type.MAIN)
       .setModuleBaseDir(TestUtils.getResource(".").toPath())
       .setLanguage("java");
   }
 
-  private void profileWithActiveRule() {
+  private void profileWithMutantRule() {
     ActiveRule fakeActiveRule = mock(ActiveRule.class);
     when(fakeActiveRule.getRule()).thenReturn(Rule.create());
-    when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.singletonList(fakeActiveRule));
+    when(rulesProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY)).thenReturn(fakeActiveRule);
     when(rulesProfile.getName()).thenReturn("fake pit profile");
   }
 
-  private void profileWithoutActiveRule() {
-    when(rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY)).thenReturn(Collections.<ActiveRule>emptyList());
+  private void profileWithCoverageRule() {
+    ActiveRule fakeActiveRule = mock(ActiveRule.class);
+    when(fakeActiveRule.getParameter(COVERAGE_RATIO_PARAM)).thenReturn("100");
+    when(fakeActiveRule.getRule()).thenReturn(Rule.create());
+    when(rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)).thenReturn(fakeActiveRule);
+    when(rulesProfile.getName()).thenReturn("fake pit profile");
+  }
+
+  private void profileWithLowCoverageRule() {
+    ActiveRule fakeActiveRule = mock(ActiveRule.class);
+    when(fakeActiveRule.getParameter(COVERAGE_RATIO_PARAM)).thenReturn("10");
+    when(fakeActiveRule.getRule()).thenReturn(Rule.create());
+    when(rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)).thenReturn(fakeActiveRule);
     when(rulesProfile.getName()).thenReturn("fake pit profile");
   }
 
@@ -181,12 +203,12 @@ public class PitestSensorTest {
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
     List<Mutant> mutants = new ArrayList<Mutant>();
-    Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "com.foo.SurvivedClazz", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
+    Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
     mutants.add(survived);
-    mutants.add(new Mutant(false, MutantStatus.KILLED, "com.foo.KilledClazz", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.NoCoverageClazz", -2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.MemoryErrorClazz", 1000, null));
-    mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.UnknownClazz", 0, null));
+    mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", -2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
+    mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
 
@@ -195,19 +217,25 @@ public class PitestSensorTest {
     when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
     when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
     when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
-    when(perspectives.as(Issuable.class, createInputFile("SurvivedClazz"))).thenReturn(issuable);
+    when(perspectives.as(Issuable.class, createInputFile())).thenReturn(issuable);
 
     sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem, perspectives);
     return sensor;
   }
 
   private void verifyIssueRaided() {
-    verify(perspectives).as(Issuable.class, createInputFile("SurvivedClazz"));
+    verify(perspectives).as(Issuable.class, createInputFile());
     ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
     verify(issuable, times(1)).addIssue(issueCaptor.capture());
   }
 
+  private void verifyNoIssueRaided() {
+    verify(perspectives).as(Issuable.class, createInputFile());
+    ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
+    verify(issuable, never()).addIssue(issueCaptor.capture());
+  }
+
   private void verifyMutationsSaved() {
-    verify(context, times(5)).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(1d));
+    verify(context, times(1)).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(5d));
   }
 }

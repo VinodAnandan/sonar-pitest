@@ -21,18 +21,25 @@ package org.sonar.plugins.pitest;
 
 import org.sonar.api.server.rule.RulesDefinition;
 
+import static org.sonar.plugins.pitest.PitestConstants.*;
+
 public class PitestRulesDefinition implements RulesDefinition {
 
   public void define(Context context) {
     NewRepository repository = context
-      .createRepository(PitestConstants.REPOSITORY_KEY, "java")
-      .setName(PitestConstants.REPOSITORY_NAME);
+      .createRepository(REPOSITORY_KEY, "java")
+      .setName(REPOSITORY_NAME);
 
-
-    repository.createRule(PitestConstants.RULE_KEY)
+    repository.createRule(SURVIVED_MUTANT_RULE_KEY)
       .setHtmlDescription("Survived mutant. For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>")
       .setName("Survived mutant");
 
+    repository.createRule(INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)
+      .setHtmlDescription("An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
+      .setName("Insufficient mutation coverage")
+      .createParam(COVERAGE_RATIO_PARAM)
+      .setDefaultValue("65")
+      .setDescription("The minimum required mutation coverage ratio");
 
     repository.done();
   }

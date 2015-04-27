@@ -36,7 +36,11 @@ public final class PitestConstants {
   public static final String REPOSITORY_KEY = "pitest";
   public static final String REPOSITORY_NAME = "Pitest";
 
-  public static final String RULE_KEY = "pitest.survived.mutant";
+  public static final String SURVIVED_MUTANT_RULE_KEY = "pitest.survived.mutant";
+
+  public static final String INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY = "pitest.insufficient.mutation.coverage";
+
+  public static final String COVERAGE_RATIO_PARAM = "minimumMutationCoverageRatio";
 
   public static final String MODE_KEY = "sonar.pitest.mode";
 

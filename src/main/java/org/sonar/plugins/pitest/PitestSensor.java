@@ -79,16 +79,6 @@ public class PitestSensor implements Sensor {
   }
 
   public void analyse(Project project, SensorContext context) {
-    List<ActiveRule> activeRules = rulesProfile.getActiveRulesByRepository(REPOSITORY_KEY);
-    final boolean generateViolations;
-    if (activeRules.isEmpty()) { // ignore violations from report, if rule not activated in Sonar
-      LOG.warn("/!\\ PIT rule needs to be activated in the \"{}\" profile.", rulesProfile.getName());
-      LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
-      generateViolations = false;
-    } else {
-      generateViolations = true;
-    }
-
     java.io.File projectDirectory = fileSystem.baseDir();
     String reportDirectoryPath = settings.getString(REPORT_DIRECTORY_KEY);
 
@@ -100,12 +90,15 @@ public class PitestSensor implements Sensor {
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
       ProjectReport projectReport = ProjectReport.buildFromMutants(mutants);
-      processProjectReport(projectReport, context, generateViolations);
+      processProjectReport(projectReport, context);
     }
   }
 
-  private void processProjectReport(ProjectReport projectReport, SensorContext context, boolean generateViolations) {
+  private void processProjectReport(ProjectReport projectReport, SensorContext context) {
     Collection<SourceFileReport> sourceFileReports = projectReport.getSourceFileReports();
+    ActiveRule mutantRule = rulesProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY);
+    ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
+
     for (SourceFileReport sourceFileReport : sourceFileReports) {
       InputFile inputFile = locateFile(sourceFileReport.sourceFileRelativePath);
       if (inputFile == null) {
@@ -115,10 +108,20 @@ public class PitestSensor implements Sensor {
         }
       }
       else {
-        if (generateViolations) {
-          saveFileViolations(inputFile, sourceFileReport);
-        }
+        generateViolations(inputFile, sourceFileReport, mutantRule, coverageRule);
         saveFileMeasures(context, inputFile, sourceFileReport);
+      }
+    }
+  }
+
+  private void generateViolations(InputFile inputFile, SourceFileReport sourceFileReport, ActiveRule mutantRule, ActiveRule coverageRule) {
+    Issuable issuable = perspectives.as(Issuable.class, inputFile);
+    if (issuable != null) {
+      if (mutantRule != null) {
+        generateMutantViolations(issuable, sourceFileReport);
+      }
+      if (coverageRule != null) {
+        generateCoverageViolations(issuable, sourceFileReport, coverageRule);
       }
     }
   }
@@ -140,22 +143,35 @@ public class PitestSensor implements Sensor {
     context.saveMeasure(inputFile, measure);
   }
 
-  private void saveFileViolations(InputFile inputFile, SourceFileReport sourceFileReport) {
+  private void generateCoverageViolations(Issuable issuable, SourceFileReport sourceFileReport, ActiveRule coverageRule) {
+    int detected = new Double(sourceFileReport.getMutationsDetected()).intValue();
+    int total = sourceFileReport.getMutationsTotal();
+    int threshold = Integer.parseInt(coverageRule.getParameter(COVERAGE_RATIO_PARAM));
+    if (detected * 100d / total < threshold) {
+      int missingMutants = Math.max(1, total * threshold / 100 - detected);
+      String issueMsg
+        = missingMutants + " more mutants need to be covered by unit tests to reach the minimum threshold of "
+        + threshold + "% mutant coverage";
+      Issue issue
+        = issuable.newIssueBuilder()
+        .ruleKey(RuleKey.of(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY))
+        .message(issueMsg)
+        .build();
+      issuable.addIssue(issue);
+    }
+  }
+
+  private void generateMutantViolations(Issuable issuable, SourceFileReport sourceFileReport) {
     Collection<Mutant> mutants = sourceFileReport.getMutants();
     for (Mutant mutant : mutants) {
       if (MutantStatus.SURVIVED.equals(mutant.mutantStatus)) {
-        // Only survived mutations are saved as violations
-        Issuable issuable = perspectives.as(Issuable.class, inputFile);
-        if (issuable != null) {
-          // can be used
-          Issue issue
-            = issuable.newIssueBuilder()
-            .ruleKey(RuleKey.of(PitestConstants.REPOSITORY_KEY, PitestConstants.RULE_KEY))
-            .line(mutant.lineNumber)
-            .message(mutant.violationDescription())
-            .build();
-          issuable.addIssue(issue);
-        }
+        Issue issue
+          = issuable.newIssueBuilder()
+          .ruleKey(RuleKey.of(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY))
+          .line(mutant.lineNumber)
+          .message(mutant.violationDescription())
+          .build();
+        issuable.addIssue(issue);
       }
     }
   }

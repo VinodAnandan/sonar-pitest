@@ -35,13 +35,13 @@ import java.util.List;
 public class SourceFileReport {
 	public final String sourceFileRelativePath;
 	private final List<Mutant> mutants = new ArrayList<Mutant>();
-	private double mutationsNoCoverage = 0;
-	private double mutationsKilled = 0;
-	private double mutationsSurvived = 0;
-	private double mutationsMemoryError = 0;
-	private double mutationsTimedOut = 0;
-	private double mutationsUnknown = 0;
-	private double mutationsDetected = 0;
+	private int mutationsNoCoverage = 0;
+	private int mutationsKilled = 0;
+	private int mutationsSurvived = 0;
+	private int mutationsMemoryError = 0;
+	private int mutationsTimedOut = 0;
+	private int mutationsUnknown = 0;
+	private int mutationsDetected = 0;
 
 	public SourceFileReport(String sourceFileRelativePath) {
 		this.sourceFileRelativePath = sourceFileRelativePath;
@@ -110,7 +110,7 @@ public class SourceFileReport {
 		return Collections.unmodifiableList(mutants);
 	}
 
-	public double getMutationsTotal() {
+	public int getMutationsTotal() {
 		return mutants.size();
 	}
 
