@@ -60,7 +60,8 @@ By default SonarQube will search the latest PIT report in "target/pit-reports". 
 You will find below the list of all the available configuration parameters. 
 
 ### Basic configuration properties
-Below the exhaustive list of configuration properties of the SonarQube pitest plugin.
+Below the exhaustive list of configuration properties of the SonarQube pitest plugin:
+
 | Name | Key | Default value | Description |
 |------|-----|---------------|-------------|
 | Pitest activation mode | sonar.pitest.mode | skip | Possible values : 'skip' and 'reuseReport' |
