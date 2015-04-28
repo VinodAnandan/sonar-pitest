@@ -21,7 +21,6 @@ package org.sonar.plugins.pitest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
@@ -51,20 +50,18 @@ import static org.sonar.plugins.pitest.PitestConstants.*;
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
 
-  private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
-  private PitestSensor sensor;
-
   @Mock
   private RulesProfile rulesProfile;
+
   @Mock
   private XmlReportParser parser;
   @Mock
   private Settings settings;
   @Mock
   private Project project;
-
   @Mock
   private XmlReportFinder xmlReportFinder;
+
   @Mock
   private ResourcePerspectives perspectives;
   @Mock
@@ -72,7 +69,13 @@ public class PitestSensorTest {
   @Mock
   private Issuable issuable;
   @Mock
+  private Issuable.IssueBuilder issueBuilder;
+  @Mock
   private InputFile javaFile;
+
+  private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
+  private PitestSensor sensor;
+  private Mutant survivedMutant;
 
   @Test
   public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
@@ -118,8 +121,9 @@ public class PitestSensorTest {
     // when
     sensor.analyse(project, context);
     // then
-    verifyIssueRaided();
     verifyMutationsSaved();
+    verifyIssueRaided();
+    verify(issueBuilder).message(survivedMutant.violationDescription());
   }
 
   @Test
@@ -131,8 +135,9 @@ public class PitestSensorTest {
     // when
     sensor.analyse(project, context);
     // then
-    verifyIssueRaided();
     verifyMutationsSaved();
+    verifyIssueRaided();
+    verify(issueBuilder).message(startsWith("4 more mutants need to be covered"));
   }
 
   @Test
@@ -203,16 +208,14 @@ public class PitestSensorTest {
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
     List<Mutant> mutants = new ArrayList<Mutant>();
-    Mutant survived = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
-    mutants.add(survived);
+    survivedMutant = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
+    mutants.add(survivedMutant);
     mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", -2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
-
-    Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
     when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
     when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
     when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
@@ -225,17 +228,22 @@ public class PitestSensorTest {
 
   private void verifyIssueRaided() {
     verify(perspectives).as(Issuable.class, createInputFile());
-    ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
-    verify(issuable, times(1)).addIssue(issueCaptor.capture());
+    verify(issuable).addIssue(any(Issue.class));
   }
 
   private void verifyNoIssueRaided() {
     verify(perspectives).as(Issuable.class, createInputFile());
-    ArgumentCaptor<Issue> issueCaptor = ArgumentCaptor.forClass(Issue.class);
-    verify(issuable, never()).addIssue(issueCaptor.capture());
+    verify(issuable, never()).addIssue(any(Issue.class));
   }
 
   private void verifyMutationsSaved() {
-    verify(context, times(1)).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(5d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(5d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_DETECTED), eq(1d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_KILLED), eq(1d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_MEMORY_ERROR), eq(1d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_SURVIVED), eq(1d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_UNKNOWN), eq(1d));
+    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_NO_COVERAGE), eq(1d));
+
   }
 }

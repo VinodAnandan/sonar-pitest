@@ -56,31 +56,6 @@ public class Mutant {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hashCode(className, detected, lineNumber, mutantStatus, mutator);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Mutant other = (Mutant) obj;
-
-    return Objects.equal(className, other.className)
-      && Objects.equal(detected, other.detected)
-      && Objects.equal(lineNumber, other.lineNumber)
-      && Objects.equal(mutantStatus, other.mutantStatus)
-      && Objects.equal(mutator, other.mutator);
-  }
-
-  @Override
   public String toString() {
     return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\"  }";
   }

@@ -68,17 +68,17 @@ enum Mutator {
 
   static Mutator parse(String mutatorKey) {
     if (mutatorKey == null) {
-      return unknown(mutatorKey);
+      return unknown();
     }
     for (Mutator mutantStatus : Mutator.values()) {
       if (mutantStatus.getKey().equals(mutatorKey)) {
         return mutantStatus;
       }
     }
-    return unknown(mutatorKey);
+    return unknown();
   }
 
-  private static Mutator unknown(String statusName) {
+  private static Mutator unknown() {
     return UNKNOWN;
   }
 }

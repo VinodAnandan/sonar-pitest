@@ -48,13 +48,13 @@ public class XmlReportParserTest {
 		// then
 		assertThat(mutants).hasSize(39);
 
-		assertThat(mutants).contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", 87,
-				"org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-		assertThat(mutants).contains(new Mutant(false, MutantStatus.NO_COVERAGE, "org.sonar.plugins.csharp.gallio.GallioSensor", 162,
+		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", 87,
+			"org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.NO_COVERAGE, "org.sonar.plugins.csharp.gallio.GallioSensor", 162,
 				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
-		assertThat(mutants).contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", 166,
+		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", 166,
 				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
-		assertThat(mutants).contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
+		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
 				"org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"));
 		assertThat(mutants).extracting("lineNumber").contains(166);
 		assertThat(mutants).extracting("mutantStatus").doesNotContain(MutantStatus.UNKNOWN);
