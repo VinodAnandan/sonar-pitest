@@ -1,6 +1,8 @@
 Sonar Pitest Plugin
 ===================
 
+**Because of codehaus shutting down, release of new version 0.6 has been delayed. However you can already download the binaries of upcomming version 0.6, compatible with sonarqube 5.1 from the [maven snapshot repository](http://repository-sonarplugins.forge.cloudbees.com/snapshot/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6-SNAPSHOT/sonar-pitest-plugin-0.6-SNAPSHOT-sources.jar)**
+
 Description / Features
 ----------------------
 PIT is a mutation testing tool for java. You can check out the official pitest web site for more details on mutation testing and PIT. 
