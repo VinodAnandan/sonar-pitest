@@ -3,6 +3,14 @@ Sonar Pitest Plugin
 
 **Because of codehaus shutting down, release of new version 0.6 has been delayed. However you can already download the binaries of upcomming version 0.6, compatible with sonarqube 5.1 from the [maven snapshot repository](http://repository-sonarplugins.forge.cloudbees.com/snapshot/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6-SNAPSHOT/sonar-pitest-plugin-0.6-SNAPSHOT-sources.jar)**
 
+Compatibility Matrix
+--------------------
+| Sonarqube version | Pitest plugin version |
+|-------------------|-----------------------|
+| Sonarqube 5.1.X  | see above, sonar pitest 0.6-SNAPSHOT  ([download](http://repository-sonarplugins.forge.cloudbees.com/snapshot/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6-SNAPSHOT/sonar-pitest-plugin-0.6-SNAPSHOT-sources.jar)) |
+| Sonarqube 4.5.X  | **sonar pitest 0.4** ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.4/sonar-pitest-plugin-0.4.jar)) |
+| Sonar 3.7  | sonar pitest 0.5 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.5/sonar-pitest-plugin-0.5.jar)) |
+
 Description / Features
 ----------------------
 PIT is a mutation testing tool for java. You can check out the official pitest web site for more details on mutation testing and PIT. 
@@ -13,9 +21,9 @@ Even if PIT detects "survived mutants" on uncovered lines of code, these mutants
 Usage
 -----
 ### Limitations of mutation testing
-This section is not specific to PIT but since mutation testing is not yet a mainstream method... Here are a couple of general advises and warnings:
-Mutation testing is very CPU time expensive. It is really important to control the scope of mutation testing in order to keep acceptable SonarQube analysis times. See below for tips on analysis time.
-Mutation testing works on true unit tests. Do not try to use it on integration tests, you might mess up your database, file system, whatever external system used by your integration tests.  
+This section is not specific to PIT but since mutation testing is not yet a mainstream method... Here are a couple of general advises and warnings:  
+Mutation testing is very CPU time expensive. It is really important to control the scope of mutation testing in order to keep acceptable SonarQube analysis times. See below for tips on analysis time.  
+Mutation testing works on true unit tests. Do not try to use it on integration tests, you might mess up your database, file system, whatever external system used by your integration tests.   
 
 
 Henri Coles, creator of PIT, gave very useful tips on the PIT mailing list to help reduce PIT execution time:
@@ -52,11 +60,14 @@ Pit needs to be configured in order to generate XML reports. Be aware that PIT d
     </plugin>
     
 inScopeClasses and targetClasses parameters indicated the classes of the system under test where mutations can be performed. In the example above, all the classes from the com.acme.tools.commons package and sub packages may be altered.  
-Once configured in the maven pom file, you need to run PITusing the following command "mvn org.pitest:pitest-maven:mutationCoverage". 
+Once configured in the maven pom file, you need to run PITusing the following command:  
+
+    mvn org.pitest:pitest-maven:mutationCoverage
+    
 Note : Of course, all the configuration options are clearly explained in the official pitest documentation. 
 Last but not least, you need to run a SonarQube analysis with the PIT plugin activated in "reuseReport" mode. The following command would do the job:
 
-    "mvn sonar:sonar -Dsonar.pitest.mode=reuseReport"
+    mvn sonar:sonar -Dsonar.pitest.mode=reuseReport
 
 By default SonarQube will search the latest PIT report in "target/pit-reports". You can specify another location using property "sonar.pitest.reportsDirectory". 
 You will find below the list of all the available configuration parameters. 
