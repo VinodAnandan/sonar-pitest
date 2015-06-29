@@ -1,14 +1,12 @@
 Sonar Pitest Plugin
 ===================
-
-**Because of codehaus shutting down, release of new version 0.6 has been delayed. However you can already download the binaries of upcomming version 0.6, compatible with sonarqube 5.1 from the [maven snapshot repository](http://repository-sonarplugins.forge.cloudbees.com/snapshot/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6-SNAPSHOT/sonar-pitest-plugin-0.6-SNAPSHOT-sources.jar)**
-
+ 
 Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
 |-------------------|-----------------------|
-| Sonarqube 5.1.X  | see above, sonar pitest 0.6-SNAPSHOT  ([download](http://repository-sonarplugins.forge.cloudbees.com/snapshot/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6-SNAPSHOT/sonar-pitest-plugin-0.6-SNAPSHOT-sources.jar)) |
-| Sonarqube 4.5.X  | **sonar pitest 0.4** ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.4/sonar-pitest-plugin-0.4.jar)) |
+| Sonarqube 5.1.X  | sonar pitest 0.6  ([download](http://downloads.sonarsource.com/plugins/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6/sonar-pitest-plugin-0.6.jar)) |
+| Sonarqube 4.5.X  | sonar pitest 0.4 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.4/sonar-pitest-plugin-0.4.jar)) |
 | Sonar 3.7  | sonar pitest 0.5 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.5/sonar-pitest-plugin-0.5.jar)) |
 
 Description / Features
