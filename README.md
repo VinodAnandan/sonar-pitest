@@ -1,5 +1,7 @@
 Sonar Pitest Plugin
 ===================
+[![Nemo Quality Gate status](https://nemo.sonarqube.org/api/badges/gate?key=org.codehaus.sonar-plugins%3Asonar-pitest-plugin)](https://nemo.sonarqube.org/overview?id=org.codehaus.sonar-plugins%3Asonar-pitest-plugin)
+
  
 Compatibility Matrix
 --------------------
