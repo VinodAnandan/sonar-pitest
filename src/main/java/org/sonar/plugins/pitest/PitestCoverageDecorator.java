@@ -37,6 +37,7 @@ import com.google.common.collect.Lists;
  *
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
+@Deprecated
 public class PitestCoverageDecorator implements Decorator {
 
 	public boolean shouldExecuteOnProject(Project project) {

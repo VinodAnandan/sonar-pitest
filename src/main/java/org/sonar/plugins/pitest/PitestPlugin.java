@@ -19,16 +19,17 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
 import java.util.List;
 
-import org.sonar.api.Extension;
+import com.google.common.collect.Lists;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
-
-import com.google.common.collect.Lists;
 
 /**
  * This class is the entry point for all PIT extensions
@@ -45,15 +46,15 @@ public final class PitestPlugin extends SonarPlugin {
 
   // This is where you're going to declare all your Sonar extensions
   @SuppressWarnings("unchecked")
-  public List<Class<? extends Extension>> getExtensions() {
+  public List<Class<?>> getExtensions() {
     return Lists.newArrayList(
         XmlReportParser.class,
         XmlReportFinder.class,
         PitestRulesDefinition.class,
         PitestSensor.class,
         PitestMetrics.class,
-        PitestDecorator.class,
-        PitestCoverageDecorator.class,
+        PitestComputer.class,
+        PitestCoverageComputer.class,
         PitestDashboardWidget.class,
         PitSourceTab.class
     );
