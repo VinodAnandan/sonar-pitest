@@ -17,7 +17,8 @@
   <inceptionYear>2009</inceptionYear>
 
   <organization>
-    <name>Sonar Community</name>
+    <name>SonarQubeCommunity</name>
+    <url>https://github.com/SonarQubeCommunity</url>
   </organization>
 
   <issueManagement>
@@ -41,12 +42,13 @@
   </scm>
 
   <properties>
-    <license.owner>Alexandre Victoor</license.owner>
+    <license.owner>${project.organization.name}</license.owner>
+    <license.mailto>dev@sonar.codehaus.org</license.mailto>
     <sonar.buildVersion>5.3</sonar.buildVersion>
-    <sonar-java.version>2.5.1</sonar-java.version>
+    <sonar-java.version>3.4</sonar-java.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.min.version>1.5</jdk.min.version>
+    <jdk.min.version>1.7</jdk.min.version>
     <junit.version>4.10</junit.version>
     <powermock.version>1.4.10</powermock.version>
     <fest.version>1.4</fest.version>
@@ -69,6 +71,12 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
       <version>2.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
+      <version>${sonar-java.version}</version>
       <scope>provided</scope>
     </dependency>
 

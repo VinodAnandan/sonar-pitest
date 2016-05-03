@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,9 +13,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
 
@@ -24,9 +24,9 @@ import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
+import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.SonarPlugin;
@@ -47,7 +47,7 @@ public final class PitestPlugin extends SonarPlugin {
   // This is where you're going to declare all your Sonar extensions
   @SuppressWarnings("unchecked")
   public List<Class<?>> getExtensions() {
-    return Lists.newArrayList(
+    return Arrays.asList(
         XmlReportParser.class,
         XmlReportFinder.class,
         PitestRulesDefinition.class,
