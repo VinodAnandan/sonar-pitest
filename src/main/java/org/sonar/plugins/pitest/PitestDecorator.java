@@ -30,6 +30,7 @@ import org.sonar.api.measures.Metric;
  * 
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
+@Deprecated
 public class PitestDecorator extends AbstractSumChildrenDecorator {
 
 	@DependedUpon
