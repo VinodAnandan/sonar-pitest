@@ -41,7 +41,6 @@
 
   <properties>
     <license.owner>Alexandre Victoor</license.owner>
-    <lic
     <sonar.buildVersion>5.3</sonar.buildVersion>
     <sonar-java.version>2.5.1</sonar-java.version>
 
