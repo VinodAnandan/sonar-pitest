@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,19 +13,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
+import com.google.common.collect.Lists;
 import org.codehaus.staxmate.SMInputFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
@@ -33,8 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.utils.MessageException;
-
-import com.google.common.collect.Lists;
 
 /**
  * Pitest report file parser to obtain the mutants collection.

@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,16 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import org.junit.Test;
 
 
 public class MutantTest {

@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,12 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.sonar.api.batch.Decorator;
@@ -30,7 +31,6 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 
-import com.google.common.collect.Lists;
 
 /**
  * Mutation coverage decorator.
@@ -51,7 +51,7 @@ public class PitestCoverageDecorator implements Decorator {
 
 	@DependsUpon
 	public List<Metric> getBaseMetrics() {
-		return Lists.newArrayList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
+		return Arrays.asList(PitestMetrics.MUTATIONS_DETECTED, PitestMetrics.MUTATIONS_TOTAL);
 	}
 
 	public void decorate(Resource resource, DecoratorContext context) {
