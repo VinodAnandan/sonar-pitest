@@ -19,8 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
-import com.google.common.base.Splitter;
-
+import java.util.StringTokenizer;
 
 /**
  * Mutation information from the pitest report.
@@ -45,8 +44,9 @@ public class Mutant {
 
 
   public String sourceRelativePath() {
-    Splitter splitter = Splitter.on('$');
-    String classNameFiltered = splitter.split(className).iterator().next();
+
+    final StringTokenizer tok = new StringTokenizer(className, "$");
+    final String classNameFiltered = tok.nextToken();
     return classNameFiltered.replace('.', '/') + ".java";
   }
 

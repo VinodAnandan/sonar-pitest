@@ -26,9 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-
 /**
  * Mutants for a given java source file
  */
@@ -71,7 +68,10 @@ public class SourceFileReport {
 			builder.append("\"");
 			builder.append(line);
 			builder.append("\":[");
-			builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
+			for(String mutant : mutantsByLine.get(line)) {
+				builder.append(mutant).append(',');
+			}
+			builder.deleteCharAt(builder.length()-1); //remove last ','
 			builder.append("]");
 		}
 		builder.append("}");
@@ -81,7 +81,12 @@ public class SourceFileReport {
 
 
 	public void addMutant(Mutant mutant) {
-		Preconditions.checkArgument(sourceFileRelativePath.equals(mutant.sourceRelativePath()));
+		if(!sourceFileRelativePath.equals(mutant.sourceRelativePath())){
+			throw new IllegalArgumentException("Relative paths do not match: "
+					                                   + sourceFileRelativePath
+					                                   + " vs "
+					                                   + mutant.sourceRelativePath());
+		}
 		mutants.add(mutant);
 		if (mutant.detected) {
 			mutationsDetected++;
