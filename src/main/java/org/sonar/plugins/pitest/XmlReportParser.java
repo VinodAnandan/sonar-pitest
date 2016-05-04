@@ -22,10 +22,10 @@ package org.sonar.plugins.pitest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.codehaus.staxmate.SMInputFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
@@ -54,8 +54,8 @@ public class XmlReportParser implements BatchExtension {
 		String localPart, statusName, mutatedClass, mutator;
 		int lineNumber;
 		SMInputCursor mutationDetailsCursor ;
-		List<Mutant> mutants = Lists.newArrayList();
-		SMInputFactory inf = new SMInputFactory(XMLInputFactory.newInstance());
+		final List<Mutant> mutants = new ArrayList<>();
+		final SMInputFactory inf = new SMInputFactory(XMLInputFactory.newInstance());
 		try {
 			SMHierarchicCursor rootCursor = inf.rootElementCursor(report);
 			rootCursor.advance();
