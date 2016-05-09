@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.codehaus.sonar-plugins</groupId>
+    <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>18</version>
+    <version>31</version>
   </parent>
 
   <artifactId>sonar-pitest-plugin</artifactId>
@@ -13,9 +13,11 @@
   <version>0.7-SNAPSHOT</version>
   <name>Sonar Pitest Plugin</name>
   <description>Plugin for the mutation testing tool Pitest</description>
+  <inceptionYear>2009</inceptionYear>
 
   <organization>
-    <name>Alexandre Victoor</name>
+    <name>SonarQubeCommunity</name>
+    <url>https://github.com/SonarQubeCommunity</url>
   </organization>
 
   <issueManagement>
@@ -39,12 +41,13 @@
   </scm>
 
   <properties>
-    <license.owner>Alexandre Victoor</license.owner>
-    <sonar.buildVersion>5.1</sonar.buildVersion>
-    <sonar-java.version>2.5.1</sonar-java.version>
+    <license.owner>${project.organization.name}</license.owner>
+    <license.mailto>dev@sonar.codehaus.org</license.mailto>
+    <sonar.buildVersion>5.3</sonar.buildVersion>
+    <sonar-java.version>3.4</sonar-java.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.min.version>1.5</jdk.min.version>
+    <jdk.min.version>1.7</jdk.min.version>
     <junit.version>4.10</junit.version>
     <powermock.version>1.4.10</powermock.version>
     <fest.version>1.4</fest.version>
@@ -56,16 +59,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
+      <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar-plugins.java</groupId>
-      <artifactId>sonar-java-plugin</artifactId>
-      <type>sonar-plugin</type>
-      <version>${sonar-java.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -74,6 +70,12 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
       <version>2.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.java</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
+      <version>${sonar-java.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -100,7 +102,7 @@
 
     <!-- unit tests -->
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
+      <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-testing-harness</artifactId>
       <version>${sonar.buildVersion}</version>
       <scope>test</scope>
@@ -122,9 +124,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.sonar</groupId>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.15</version>
         <extensions>true</extensions>
         <configuration>
           <pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>

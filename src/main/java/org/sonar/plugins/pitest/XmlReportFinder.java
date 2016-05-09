@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,32 +13,72 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
 
-import org.apache.commons.io.FileUtils;
-import org.sonar.api.BatchExtension;
-
 import java.io.File;
-import java.util.Collection;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class XmlReportFinder implements BatchExtension {
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.BatchSide;
+
+@BatchSide
+@ExtensionPoint
+public class XmlReportFinder  {
 
   public File findReport(File reportDirectory) {
     if (reportDirectory== null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
       return null;
     }
-    Collection<File> reports = FileUtils.listFiles(reportDirectory, new String[]{"xml"}, true);
-    File latestReport = null;
-    for (File report : reports) {
-      if (latestReport == null || FileUtils.isFileNewer(report, latestReport)) {
-        latestReport = report;
-      }
+    final AtomicReference<Path> latestReport = new AtomicReference<>();
+    try {
+      Files.walkFileTree(reportDirectory.toPath(), new FileVisitor<Path>() {
+
+        @Override
+        public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+
+          return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+          if(Files.isRegularFile(file)
+              && file.toString().endsWith(".xml")
+              && (latestReport.get() == null
+                  || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0)){
+              latestReport.set(file);
+            }
+          return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
+
+          return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
+
+          return FileVisitResult.CONTINUE;
+        }
+      });
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return latestReport;
+    if(latestReport.get() != null){
+      return latestReport.get().toFile();
+    }
+    return null;
   }
 
 }

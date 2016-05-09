@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009 Alexandre Victoor
+ * Copyright (C) 2009-2016 SonarQubeCommunity
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -13,21 +13,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mutants for a given java source file
@@ -51,11 +48,13 @@ public class SourceFileReport {
 		if (mutants.isEmpty()) {
 			return null;
 		}
-
-		Multimap<Integer, String> mutantsByLine = ArrayListMultimap.create();
+		Map<Integer,List<String>> mutantsByLine = new HashMap<Integer,List<String>>();
 
 		for (Mutant mutant : mutants) {
-			mutantsByLine.put(mutant.lineNumber, mutant.toString());
+			if(!mutantsByLine.containsKey(mutant.lineNumber)){
+				mutantsByLine.put(mutant.lineNumber, new ArrayList<String>());
+			}
+			mutantsByLine.get(mutant.lineNumber).add(mutant.toString());
 		}
 
 		StringBuilder builder = new StringBuilder();
@@ -69,7 +68,10 @@ public class SourceFileReport {
 			builder.append("\"");
 			builder.append(line);
 			builder.append("\":[");
-			builder.append(Joiner.on(",").join(mutantsByLine.get(line)));
+			for(String mutant : mutantsByLine.get(line)) {
+				builder.append(mutant).append(',');
+			}
+			builder.deleteCharAt(builder.length()-1); //remove last ','
 			builder.append("]");
 		}
 		builder.append("}");
@@ -79,7 +81,12 @@ public class SourceFileReport {
 
 
 	public void addMutant(Mutant mutant) {
-		Preconditions.checkArgument(sourceFileRelativePath.equals(mutant.sourceRelativePath()));
+		if(!sourceFileRelativePath.equals(mutant.sourceRelativePath())){
+			throw new IllegalArgumentException("Relative paths do not match: "
+					                                   + sourceFileRelativePath
+					                                   + " vs "
+					                                   + mutant.sourceRelativePath());
+		}
 		mutants.add(mutant);
 		if (mutant.detected) {
 			mutationsDetected++;
