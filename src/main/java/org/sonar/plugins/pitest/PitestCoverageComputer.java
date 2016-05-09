@@ -41,8 +41,9 @@ public class PitestCoverageComputer implements MeasureComputer {
         final Measure mutationsTotal = context.getMeasure(PitestMetricsKeys.MUTATIONS_TOTAL_KEY);
         if(mutationsTotal != null)  {
             final Integer elements = mutationsTotal.getIntValue();
-            if (elements > 0) {
-                final Integer coveredElements = context.getMeasure(PitestMetricsKeys.MUTATIONS_DETECTED_KEY).getIntValue();
+            final Measure detected = context.getMeasure(PitestMetricsKeys.MUTATIONS_DETECTED_KEY);
+            if (elements > 0 && detected != null) {
+                final Integer coveredElements = detected.getIntValue();
                 final Double coverage = 100.0 * coveredElements / elements;
                 context.addMeasure(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY, coverage);
             }
