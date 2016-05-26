@@ -13,14 +13,15 @@
   <version>0.7-SNAPSHOT</version>
   <name>Sonar Pitest Plugin</name>
   <description>Plugin for the mutation testing tool Pitest</description>
+  <url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
 
   <organization>
     <name>Alexandre Victoor</name>
   </organization>
 
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/15475</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/SonarQubeCommunity/sonar-pitest/issues</url>
   </issueManagement>
 
   <licenses>
@@ -32,9 +33,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarCommunity/sonar-pitest.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-pitest.git</developerConnection>
-    <url>https://github.com/SonarCommunity/sonar-pitest</url>
+    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</developerConnection>
+    <url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
     <tag>HEAD</tag>
   </scm>
 
