@@ -35,32 +35,32 @@ import org.sonar.api.measures.Metric;
  */
 public class PitestComputer implements MeasureComputer {
 
-    public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
+  public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
-        return defContext.newDefinitionBuilder()
-                         .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
-                         .build();
-    }
+    return defContext.newDefinitionBuilder()
+      .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
+      .build();
+  }
 
-    public void compute(final MeasureComputerContext context) {
-        for (String metricKey : getQuantitativeKeys()) {
-            if (context.getMeasure(metricKey) == null) {
-                Integer sum = 0;
-                for( Measure m : context.getChildrenMeasures(metricKey)) {
-                    sum += m.getIntValue();
-                }
-                if(sum > 0) {
-                    context.addMeasure(metricKey, sum);
-                }
-            }
+  public void compute(final MeasureComputerContext context) {
+    for (String metricKey : getQuantitativeKeys()) {
+      if (context.getMeasure(metricKey) == null) {
+        Integer sum = 0;
+        for( Measure m : context.getChildrenMeasures(metricKey)) {
+          sum += m.getIntValue();
         }
-    }
-
-    public List<String> getQuantitativeKeys(){
-        final List<String> result = new ArrayList<String>();
-        for(Metric m : PitestMetrics.getQuantitativeMetrics()){
-            result.add(m.getKey());
+        if(sum > 0) {
+          context.addMeasure(metricKey, sum);
         }
-        return result;
+      }
     }
+  }
+
+  public List<String> getQuantitativeKeys() {
+    final List<String> result = new ArrayList<String>();
+    for(Metric m : PitestMetrics.getQuantitativeMetrics()){
+      result.add(m.getKey());
+    }
+    return result;
+  }
 }

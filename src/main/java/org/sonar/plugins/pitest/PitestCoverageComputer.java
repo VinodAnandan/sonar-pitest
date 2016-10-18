@@ -29,24 +29,24 @@ import org.sonar.api.ce.measure.MeasureComputer;
  */
 public class PitestCoverageComputer implements MeasureComputer {
 
-    public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
+  public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
-        return defContext.newDefinitionBuilder()
-                         .setInputMetrics(PitestMetricsKeys.MUTATIONS_DETECTED_KEY, PitestMetricsKeys.MUTATIONS_TOTAL_KEY)
-                         .setOutputMetrics(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY)
-                         .build();
-    }
+    return defContext.newDefinitionBuilder()
+      .setInputMetrics(PitestMetricsKeys.MUTATIONS_DETECTED_KEY, PitestMetricsKeys.MUTATIONS_TOTAL_KEY)
+      .setOutputMetrics(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY)
+      .build();
+  }
 
-    public void compute(final MeasureComputerContext context) {
-        final Measure mutationsTotal = context.getMeasure(PitestMetricsKeys.MUTATIONS_TOTAL_KEY);
-        if(mutationsTotal != null)  {
-            final Integer elements = mutationsTotal.getIntValue();
-            final Measure detected = context.getMeasure(PitestMetricsKeys.MUTATIONS_DETECTED_KEY);
-            if (elements > 0 && detected != null) {
-                final Integer coveredElements = detected.getIntValue();
-                final Double coverage = 100.0 * coveredElements / elements;
-                context.addMeasure(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY, coverage);
-            }
-        }
+  public void compute(final MeasureComputerContext context) {
+    final Measure mutationsTotal = context.getMeasure(PitestMetricsKeys.MUTATIONS_TOTAL_KEY);
+    if(mutationsTotal != null)  {
+      final Integer elements = mutationsTotal.getIntValue();
+      final Measure detected = context.getMeasure(PitestMetricsKeys.MUTATIONS_DETECTED_KEY);
+      if (elements > 0 && detected != null) {
+        final Integer coveredElements = detected.getIntValue();
+        final Double coverage = 100.0 * coveredElements / elements;
+        context.addMeasure(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY, coverage);
+      }
     }
+  }
 }
