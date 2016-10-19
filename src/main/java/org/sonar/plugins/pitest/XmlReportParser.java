@@ -19,77 +19,127 @@
  */
 package org.sonar.plugins.pitest;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.codehaus.staxmate.SMInputFactory;
-import org.codehaus.staxmate.in.SMHierarchicCursor;
-import org.codehaus.staxmate.in.SMInputCursor;
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.BatchExtension;
-import org.sonar.api.utils.MessageException;
 
-/**
- * Pitest report file parser to obtain the mutants collection.
- * 
- * @author Jaime Porras L&oacute;pez
- */
-public class XmlReportParser implements BatchExtension {
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class XmlReportParser {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XmlReportParser.class);
-	private static final String ATTR_DETECTED = "detected";
-	private static final String ATTR_STATUS = "status";
-	private static final String ATTR_CLASS = "mutatedClass";
-	private static final String ATTR_LINE = "lineNumber";
-	private static final String ATTR_MUTATOR = "mutator";
-	
+
 	public Collection<Mutant> parse(File report) {
-		boolean detected;
-		MutantStatus mutantStatus;
-		String localPart, statusName, mutatedClass, mutator;
-		int lineNumber;
-		SMInputCursor mutationDetailsCursor ;
-		final List<Mutant> mutants = new ArrayList<>();
-		final SMInputFactory inf = new SMInputFactory(XMLInputFactory.newInstance());
-		try {
-			SMHierarchicCursor rootCursor = inf.rootElementCursor(report);
-			rootCursor.advance();
-			SMInputCursor mutationCursor = rootCursor.childElementCursor();
-			while (mutationCursor.getNext() != null) {
-				detected = Boolean.parseBoolean(mutationCursor.getAttrValue(ATTR_DETECTED));
-				statusName = mutationCursor.getAttrValue(ATTR_STATUS);
-				mutantStatus = MutantStatus.parse(statusName);
-				if (mutantStatus.equals(MutantStatus.UNKNOWN)) {
-					LOG.warn("Unknown mutation status detected: {}", statusName);
-				}
-				mutatedClass = null;
-				mutator = null;
-				lineNumber = 0;
-				mutationDetailsCursor = mutationCursor.childElementCursor();
-				while (mutationDetailsCursor.getNext() != null) {
-					localPart = mutationDetailsCursor.getQName().getLocalPart();
-					if (ATTR_CLASS.equals(localPart)) {
-						mutatedClass = mutationDetailsCursor.collectDescendantText().trim();
-					}
-					else if (ATTR_LINE.equals(localPart)) {
-						lineNumber = Integer.parseInt(mutationDetailsCursor.collectDescendantText().trim());
-					}
-					else if (ATTR_MUTATOR.equals(localPart)) {
-						mutator = mutationDetailsCursor.collectDescendantText().trim();
-					}
-				}
-				mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator));
-			}
-		}
-		catch (XMLStreamException e) {
-			LOG.error("Error parsing XML report " + report, e);
-			throw MessageException.of("Error parsing XML report " + report);
-		}
-		return mutants;
+    return new Parser().parse(report);
 	}
+
+  private static class Parser {
+
+    private XMLStreamReader stream;
+    private final Collection<Mutant> mutants = new ArrayList<>();
+
+    private boolean detected;
+    private MutantStatus mutantStatus;
+    private String mutatedClass;
+    private int lineNumber;
+    private String mutator;
+
+    public Collection<Mutant> parse(File file) {
+
+      XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+
+      try (InputStream is = new FileInputStream(file);
+           InputStreamReader reader = new InputStreamReader(is, Charsets.UTF_8)) {
+        stream = xmlFactory.createXMLStreamReader(reader);
+
+        while (stream.hasNext()) {
+          if (stream.next() == XMLStreamConstants.START_ELEMENT) {
+            parseStartElement();
+          }
+        }
+      } catch (IOException | XMLStreamException e) {
+        throw Throwables.propagate(e);
+      } finally {
+        closeXmlStream();
+      }
+
+      return mutants;
+    }
+
+    private void parseStartElement() throws XMLStreamException {
+      String tagName = stream.getLocalName();
+
+      if ("mutation".equals(tagName)) {
+        handleMutationTag();
+      } else  if ("mutatedClass".equals(tagName)) {
+        handleMutatedClassTag();
+      } else  if ("lineNumber".equals(tagName)) {
+        handleLineNumber();
+      } else  if ("mutator".equals(tagName)) {
+        handleMutator();
+      } else {
+        LOG.debug("Ignoring tag {}", tagName);
+      }
+    }
+
+    private void handleMutationTag() {
+      detected = Boolean.parseBoolean(getAttribute("detected"));
+      mutantStatus = MutantStatus.parse(getAttribute("status"));
+    }
+
+    private void handleMutatedClassTag() {
+      try {
+        mutatedClass = stream.getElementText();
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    private void handleLineNumber() {
+      try {
+        lineNumber = Integer.parseInt(stream.getElementText().trim());
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    private void handleMutator() {
+      try {
+        mutator = stream.getElementText();
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e);
+      }
+      mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator));
+    }
+
+    private void closeXmlStream() {
+      if (stream != null) {
+        try {
+          stream.close();
+        } catch (XMLStreamException e) {
+          throw Throwables.propagate(e);
+        }
+      }
+    }
+
+    private String getAttribute(String name) {
+      for (int i = 0; i < stream.getAttributeCount(); i++) {
+        if (name.equals(stream.getAttributeLocalName(i))) {
+          return stream.getAttributeValue(i);
+        }
+      }
+
+      return null;
+    }
+
+
+  }
 }
