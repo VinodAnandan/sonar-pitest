@@ -22,6 +22,10 @@ package org.sonar.plugins.pitest;
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
+
 /**
  * Computer for calculating the mutation coverage of a component based on the detected vs total mutations.
  *
@@ -32,20 +36,20 @@ public class PitestCoverageComputer implements MeasureComputer {
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
-      .setInputMetrics(PitestMetricsKeys.MUTATIONS_DETECTED_KEY, PitestMetricsKeys.MUTATIONS_TOTAL_KEY)
-      .setOutputMetrics(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY)
+      .setInputMetrics(MUTATIONS_DETECTED_KEY, MUTATIONS_TOTAL_KEY)
+      .setOutputMetrics(MUTATIONS_COVERAGE_KEY)
       .build();
   }
 
   public void compute(final MeasureComputerContext context) {
-    final Measure mutationsTotal = context.getMeasure(PitestMetricsKeys.MUTATIONS_TOTAL_KEY);
+    final Measure mutationsTotal = context.getMeasure(MUTATIONS_TOTAL_KEY);
     if(mutationsTotal != null)  {
       final Integer elements = mutationsTotal.getIntValue();
-      final Measure detected = context.getMeasure(PitestMetricsKeys.MUTATIONS_DETECTED_KEY);
+      final Measure detected = context.getMeasure(MUTATIONS_DETECTED_KEY);
       if (elements > 0 && detected != null) {
         final Integer coveredElements = detected.getIntValue();
         final Double coverage = 100.0 * coveredElements / elements;
-        context.addMeasure(PitestMetricsKeys.MUTATIONS_COVERAGE_KEY, coverage);
+        context.addMeasure(MUTATIONS_COVERAGE_KEY, coverage);
       }
     }
   }
