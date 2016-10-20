@@ -23,6 +23,8 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.BatchSide;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -33,6 +35,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@BatchSide
+@ExtensionPoint
 public class XmlReportParser {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XmlReportParser.class);

@@ -44,8 +44,8 @@
   <properties>
     <license.owner>${project.organization.name}</license.owner>
     <license.mailto>dev@sonar.codehaus.org</license.mailto>
-    <sonar.buildVersion>5.3</sonar.buildVersion>
-    <sonar-java.version>3.4</sonar-java.version>
+    <sonar.buildVersion>5.6</sonar.buildVersion>
+    <sonar-java.version>3.6</sonar-java.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.min.version>1.7</jdk.min.version>
@@ -75,14 +75,13 @@
       <version>2.0.4</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.sonarsource.java</groupId>
       <artifactId>sonar-java-plugin</artifactId>
       <version>${sonar-java.version}</version>
       <scope>provided</scope>
     </dependency>
-
-
+-->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -129,7 +128,7 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.15</version>
+        <version>1.16</version>
         <extensions>true</extensions>
         <configuration>
           <pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
