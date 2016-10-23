@@ -121,26 +121,26 @@ public class SourceFileReport {
 		return mutants.size();
 	}
 
-	double getMutationsNoCoverage() {
+	int getMutationsNoCoverage() {
 		return mutationsNoCoverage;
 	}
-	double getMutationsKilled() {
+	int getMutationsKilled() {
 		return mutationsKilled;
 	}
-	double getMutationsSurvived() {
+	int getMutationsSurvived() {
 		return mutationsSurvived;
 	}
-	double getMutationsMemoryError() {
+	int getMutationsMemoryError() {
 		return mutationsMemoryError;
 	}
-	double getMutationsTimedOut() {
+	int getMutationsTimedOut() {
 		return mutationsTimedOut;
 	}
-	double getMutationsUnknown() {
+	int getMutationsUnknown() {
 		return mutationsUnknown;
 	}
 
-	double getMutationsDetected() {
+	int getMutationsDetected() {
 		return mutationsDetected;
 	}
 }

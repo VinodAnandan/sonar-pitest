@@ -19,21 +19,20 @@
  */
 package org.sonar.plugins.pitest;
 
+import com.google.common.base.Charsets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.batch.fs.internal.FileMetadata;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.test.TestUtils;
@@ -56,37 +55,35 @@ public class PitestSensorTest {
   @Mock
   private XmlReportParser parser;
   @Mock
-  private Settings settings;
-  @Mock
   private Project project;
   @Mock
   private XmlReportFinder xmlReportFinder;
 
   @Mock
-  private ResourcePerspectives perspectives;
-  @Mock
-  private SensorContext context;
-  @Mock
   private Issuable issuable;
-  @Mock
-  private Issuable.IssueBuilder issueBuilder;
   @Mock
   private InputFile javaFile;
 
-  private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
+  //private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
   private PitestSensor sensor;
   private Mutant survivedMutant;
+
+  private final File baseDir = new File("src/test/resources");
+  private final SensorContextTester context = SensorContextTester.create(baseDir);
+  private final Settings settings = new Settings();
+  private final DefaultFileSystem fileSystem = context.fileSystem();
+
 
   @Test
   public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
     // given
-    when(settings.getString(MODE_KEY)).thenReturn(MODE_SKIP);
+    settings.setProperty(MODE_KEY, MODE_SKIP);
     profileWithMutantRule();
     sensor = buildSensor();
     // when
-    boolean sensorExecuted = sensor.shouldExecuteOnProject(project);
+    sensor.execute(context);
     // then
-    assertThat(sensorExecuted).isFalse();
+    assertThat(context.allIssues()).isEmpty();
   }
 
   @Test
@@ -96,20 +93,20 @@ public class PitestSensorTest {
     profileWithMutantRule();
     sensor = buildSensor();
     // when
-    boolean sensorExecuted = sensor.shouldExecuteOnProject(project);
+    sensor.execute(context);
     // then
-    assertThat(sensorExecuted).isTrue();
+    assertThat(context.allIssues()).isNotEmpty();
   }
 
   @Test
-  public void should_not_skip_analysis_when_pitest_rule_not_activated() throws Exception {
+  public void should_save_measures_when_pitest_rule_not_activated() throws Exception {
     // given
     workingConfiguration();
     sensor = buildSensor();
     // when
-    sensor.analyse(project, context);
+    sensor.execute(context);
     // then
-    verifyMutationsSaved();
+    verifyMeasuresSaved();
   }
 
   @Test
@@ -119,11 +116,9 @@ public class PitestSensorTest {
     profileWithMutantRule();
     sensor = buildSensor();
     // when
-    sensor.analyse(project, context);
+    sensor.execute(context);
     // then
-    verifyMutationsSaved();
-    verifyIssueRaided();
-    verify(issueBuilder).message(survivedMutant.violationDescription());
+    assertThat(context.allIssues()).isNotEmpty();
   }
 
   @Test
@@ -133,11 +128,9 @@ public class PitestSensorTest {
     profileWithCoverageRule();
     sensor = buildSensor();
     // when
-    sensor.analyse(project, context);
+    sensor.execute(context);
     // then
-    verifyMutationsSaved();
-    verifyIssueRaided();
-    verify(issueBuilder).message(startsWith("4 more mutants need to be covered"));
+    assertThat(context.allIssues()).isNotEmpty();
   }
 
   @Test
@@ -147,25 +140,25 @@ public class PitestSensorTest {
     profileWithLowCoverageRule();
     sensor = buildSensor();
     // when
-    sensor.analyse(project, context);
+    sensor.execute(context);
     // then
-    verifyNoIssueRaided();
+    assertThat(context.allIssues()).isEmpty();
   }
 
   @Test
   public void should_not_fail_when_no_report_found() throws Exception {
     // given
     workingConfiguration();
-    when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn("");
+    settings.setProperty(REPORT_DIRECTORY_KEY, "");
     when(xmlReportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
-    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem, perspectives);
+    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
     // when
-    sensor.analyse(project, mock(SensorContext.class));
+    sensor.execute(context);
     // then no failure
   }
 
   private void workingConfiguration() {
-    when(settings.getString(MODE_KEY)).thenReturn(MODE_REUSE_REPORT);
+    settings.setProperty(MODE_KEY, MODE_REUSE_REPORT);
     fileSystem
       .add(
         createInputFile()
@@ -177,7 +170,11 @@ public class PitestSensorTest {
     return new DefaultInputFile("module.key", "com/foo/Bar.java")
       .setType(InputFile.Type.MAIN)
       .setModuleBaseDir(TestUtils.getResource(".").toPath())
-      .setLanguage("java");
+      .setLines(1000)
+      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
+      .setLastValidOffset(1)
+      .setLanguage("java")
+      .initMetadata(new FileMetadata().readMetadata(TestUtils.getResource("com/foo/Bar.java"), Charsets.UTF_8));
   }
 
   private void profileWithMutantRule() {
@@ -204,28 +201,24 @@ public class PitestSensorTest {
   }
 
   private PitestSensor buildSensor() {
-    when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn(REPORT_DIRECTORY_DEF);
+    settings.setProperty(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
+    //when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn(REPORT_DIRECTORY_DEF);
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
-    List<Mutant> mutants = new ArrayList<Mutant>();
+    List<Mutant> mutants = new ArrayList<>();
     survivedMutant = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
     mutants.add(survivedMutant);
     mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", -2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", 2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
-    when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
-    when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
-    when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
-    when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
-    when(perspectives.as(Issuable.class, createInputFile())).thenReturn(issuable);
 
-    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem, perspectives);
+    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
     return sensor;
   }
-
+/*
   private void verifyIssueRaided() {
     verify(perspectives).as(Issuable.class, createInputFile());
     verify(issuable).addIssue(any(Issue.class));
@@ -235,15 +228,16 @@ public class PitestSensorTest {
     verify(perspectives).as(Issuable.class, createInputFile());
     verify(issuable, never()).addIssue(any(Issue.class));
   }
-
-  private void verifyMutationsSaved() {
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_TOTAL), eq(5d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_DETECTED), eq(1d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_KILLED), eq(1d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_MEMORY_ERROR), eq(1d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_SURVIVED), eq(1d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_UNKNOWN), eq(1d));
-    verify(context).saveMeasure(any(InputFile.class), eq(PitestMetrics.MUTATIONS_NO_COVERAGE), eq(1d));
-
+*/
+  private void verifyMeasuresSaved() {
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_TOTAL).value()).isEqualTo(5);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_DETECTED).value()).isEqualTo(1);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_KILLED).value()).isEqualTo(1);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_SURVIVED).value()).isEqualTo(1);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_UNKNOWN).value()).isEqualTo(1);
+    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
   }
+
+
 }

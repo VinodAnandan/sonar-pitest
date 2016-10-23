@@ -21,23 +21,22 @@ package org.sonar.plugins.pitest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.batch.measure.Metric;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.Settings;
-import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
-import org.sonar.api.measures.Measure;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Project;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 
+import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 
 import static org.sonar.plugins.pitest.PitestConstants.*;
 
@@ -58,14 +57,12 @@ public class PitestSensor implements Sensor {
   private final RulesProfile rulesProfile;
   private final FileSystem fileSystem;
   private final FilePredicate mainFilePredicate;
-  private final ResourcePerspectives perspectives;
 
-  public PitestSensor(Settings settings, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem, ResourcePerspectives perspectives) {
+  public PitestSensor(Settings settings, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
     this.settings = settings;
     this.parser = parser;
     this.xmlReportFinder = xmlReportFinder;
     this.fileSystem = fileSystem;
-    this.perspectives = perspectives;
     this.executionMode = settings.getString(MODE_KEY);
     this.rulesProfile = rulesProfile;
 
@@ -74,11 +71,18 @@ public class PitestSensor implements Sensor {
       fileSystem.predicates().hasLanguage("java"));
   }
 
-  public boolean shouldExecuteOnProject(Project project) {
-    return fileSystem.hasFiles(mainFilePredicate) && !MODE_SKIP.equals(executionMode);
+  @Override
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.onlyOnLanguage("java");
+    descriptor.name("Pitest Sensor");
   }
 
-  public void analyse(Project project, SensorContext context) {
+  @Override
+  public void execute(SensorContext context) {
+    if (!fileSystem.hasFiles(mainFilePredicate) || MODE_SKIP.equals(executionMode)) {
+      return;
+    }
+
     java.io.File projectDirectory = fileSystem.baseDir();
     String reportDirectoryPath = settings.getString(REPORT_DIRECTORY_KEY);
 
@@ -92,7 +96,10 @@ public class PitestSensor implements Sensor {
       ProjectReport projectReport = ProjectReport.buildFromMutants(mutants);
       processProjectReport(projectReport, context);
     }
+
+
   }
+
 
   private void processProjectReport(ProjectReport projectReport, SensorContext context) {
     Collection<SourceFileReport> sourceFileReports = projectReport.getSourceFileReports();
@@ -108,43 +115,52 @@ public class PitestSensor implements Sensor {
         }
       }
       else {
-        generateViolations(inputFile, sourceFileReport, mutantRule, coverageRule);
+        generateViolations(context, inputFile, sourceFileReport, mutantRule, coverageRule);
         saveFileMeasures(context, inputFile, sourceFileReport);
       }
     }
   }
 
-  private void generateViolations(InputFile inputFile, SourceFileReport sourceFileReport, ActiveRule mutantRule, ActiveRule coverageRule) {
-    Issuable issuable = perspectives.as(Issuable.class, inputFile);
-    if (issuable != null) {
-      if (mutantRule != null) {
-        generateMutantViolations(issuable, sourceFileReport);
-      }
-      if (coverageRule != null) {
-        generateCoverageViolations(issuable, sourceFileReport, coverageRule);
-      }
+  private void generateViolations(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport, ActiveRule mutantRule, ActiveRule coverageRule) {
+
+    if (mutantRule != null) {
+      generateMutantViolations(context, inputFile, sourceFileReport);
     }
+    if (coverageRule != null) {
+      generateCoverageViolations(context, inputFile, sourceFileReport, coverageRule);
+    }
+
   }
 
   private void saveFileMeasures(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport) {
-    double detected = sourceFileReport.getMutationsDetected();
-    double total = sourceFileReport.getMutationsTotal();
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_TOTAL, total);
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_NO_COVERAGE, sourceFileReport.getMutationsNoCoverage());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_MEMORY_ERROR, sourceFileReport.getMutationsMemoryError());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_TIMED_OUT, sourceFileReport.getMutationsTimedOut());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
-    context.saveMeasure(inputFile, PitestMetrics.MUTATIONS_DETECTED, detected);
+    int  detected = sourceFileReport.getMutationsDetected();
+    int total = sourceFileReport.getMutationsTotal();
+
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_TOTAL, total);
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_NO_COVERAGE, sourceFileReport.getMutationsNoCoverage());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_MEMORY_ERROR, sourceFileReport.getMutationsMemoryError());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_TIMED_OUT, sourceFileReport.getMutationsTimedOut());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_DETECTED, detected);
+
 
     String json = sourceFileReport.toJSON();
-    Measure measure = new Measure(PitestMetrics.MUTATIONS_DATA, json);
-    context.saveMeasure(inputFile, measure);
+    saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, json);
+
   }
 
-  private void generateCoverageViolations(Issuable issuable, SourceFileReport sourceFileReport, ActiveRule coverageRule) {
-    int detected = new Double(sourceFileReport.getMutationsDetected()).intValue();
+  private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric metric, T value) {
+    context.<T>newMeasure()
+      .withValue(value)
+      .forMetric(metric)
+      .on(inputFile)
+      .save();
+  }
+
+  private void generateCoverageViolations(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport, ActiveRule coverageRule) {
+    int detected = sourceFileReport.getMutationsDetected();
     int total = sourceFileReport.getMutationsTotal();
     int threshold = Integer.parseInt(coverageRule.getParameter(COVERAGE_RATIO_PARAM));
     if (detected * 100d / total < threshold) {
@@ -152,26 +168,35 @@ public class PitestSensor implements Sensor {
       String issueMsg
         = missingMutants + " more mutants need to be covered by unit tests to reach the minimum threshold of "
         + threshold + "% mutant coverage";
-      Issue issue
-        = issuable.newIssueBuilder()
-        .ruleKey(RuleKey.of(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY))
-        .message(issueMsg)
-        .build();
-      issuable.addIssue(issue);
+
+      NewIssue newIssue = context.newIssue();
+
+      NewIssueLocation location = newIssue.newLocation()
+        .on(inputFile)
+        .message(issueMsg);
+
+      newIssue.at(location);
+
+      newIssue.forRule(RuleKey.of(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY));
+      newIssue.save();
     }
   }
 
-  private void generateMutantViolations(Issuable issuable, SourceFileReport sourceFileReport) {
+  private void generateMutantViolations(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport) {
     Collection<Mutant> mutants = sourceFileReport.getMutants();
     for (Mutant mutant : mutants) {
       if (MutantStatus.SURVIVED.equals(mutant.mutantStatus)) {
-        Issue issue
-          = issuable.newIssueBuilder()
-          .ruleKey(RuleKey.of(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY))
-          .line(mutant.lineNumber)
-          .message(mutant.violationDescription())
-          .build();
-        issuable.addIssue(issue);
+
+        NewIssue newIssue = context.newIssue();
+
+        NewIssueLocation location = newIssue.newLocation()
+          .on(inputFile)
+          .at(inputFile.selectLine(mutant.lineNumber))
+          .message(mutant.violationDescription());
+
+        newIssue.at(location);
+        newIssue.forRule(RuleKey.of(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY));
+        newIssue.save();
       }
     }
   }
@@ -189,5 +214,4 @@ public class PitestSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
-
 }
