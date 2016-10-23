@@ -17,8 +17,8 @@
   <inceptionYear>2009</inceptionYear>
 
   <organization>
-    <name>SonarQubeCommunity</name>
-    <url>https://github.com/SonarQubeCommunity</url>
+    <name>Alexandre Victoor</name>
+    <url>https://github.com/alexvictoor</url>
   </organization>
 
   <issueManagement>
@@ -43,7 +43,7 @@
 
   <properties>
     <license.owner>${project.organization.name}</license.owner>
-    <license.mailto>dev@sonar.codehaus.org</license.mailto>
+    <license.mailto>alexvictoor@gmail.com</license.mailto>
     <sonar.buildVersion>5.6</sonar.buildVersion>
     <sonar-java.version>3.6</sonar-java.version>
 

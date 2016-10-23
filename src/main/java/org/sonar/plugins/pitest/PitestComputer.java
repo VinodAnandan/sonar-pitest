@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2016 SonarQubeCommunity
- * dev@sonar.codehaus.org
+ * Copyright (C) 2009-2016 Alexandre Victoor
+ * alexvictoor@gmail.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.plugins.pitest;
 
 import java.util.ArrayList;

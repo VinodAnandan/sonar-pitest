@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2016 SonarQubeCommunity
- * dev@sonar.codehaus.org
+ * Copyright (C) 2009-2016 Alexandre Victoor
+ * alexvictoor@gmail.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,9 +30,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.FileMetadata;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Settings;
-import org.sonar.api.issue.Issuable;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Project;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.test.TestUtils;
@@ -43,28 +41,21 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestMetrics.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
 
   @Mock
   private RulesProfile rulesProfile;
-
   @Mock
   private XmlReportParser parser;
   @Mock
-  private Project project;
-  @Mock
   private XmlReportFinder xmlReportFinder;
 
-  @Mock
-  private Issuable issuable;
-  @Mock
-  private InputFile javaFile;
-
-  //private DefaultFileSystem fileSystem = new DefaultFileSystem(TestUtils.getResource("."));
   private PitestSensor sensor;
   private Mutant survivedMutant;
 
@@ -166,7 +157,6 @@ public class PitestSensorTest {
   }
 
   private DefaultInputFile createInputFile() {
-
     return new DefaultInputFile("module.key", "com/foo/Bar.java")
       .setType(InputFile.Type.MAIN)
       .setModuleBaseDir(TestUtils.getResource(".").toPath())
@@ -202,7 +192,6 @@ public class PitestSensorTest {
 
   private PitestSensor buildSensor() {
     settings.setProperty(REPORT_DIRECTORY_KEY, REPORT_DIRECTORY_DEF);
-    //when(settings.getString(REPORT_DIRECTORY_KEY)).thenReturn(REPORT_DIRECTORY_DEF);
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
     List<Mutant> mutants = new ArrayList<>();
@@ -218,25 +207,16 @@ public class PitestSensorTest {
     sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
     return sensor;
   }
-/*
-  private void verifyIssueRaided() {
-    verify(perspectives).as(Issuable.class, createInputFile());
-    verify(issuable).addIssue(any(Issue.class));
-  }
 
-  private void verifyNoIssueRaided() {
-    verify(perspectives).as(Issuable.class, createInputFile());
-    verify(issuable, never()).addIssue(any(Issue.class));
-  }
-*/
   private void verifyMeasuresSaved() {
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_TOTAL).value()).isEqualTo(5);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_DETECTED).value()).isEqualTo(1);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_KILLED).value()).isEqualTo(1);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_SURVIVED).value()).isEqualTo(1);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_UNKNOWN).value()).isEqualTo(1);
-    assertThat(context.measure("module.key:com/foo/Bar.java", PitestMetrics.MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
+    String componentKey = "module.key:com/foo/Bar.java";
+    assertThat(context.measure(componentKey, MUTATIONS_TOTAL).value()).isEqualTo(5);
+    assertThat(context.measure(componentKey, MUTATIONS_DETECTED).value()).isEqualTo(1);
+    assertThat(context.measure(componentKey, MUTATIONS_KILLED).value()).isEqualTo(1);
+    assertThat(context.measure(componentKey, MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
+    assertThat(context.measure(componentKey, MUTATIONS_SURVIVED).value()).isEqualTo(1);
+    assertThat(context.measure(componentKey, MUTATIONS_UNKNOWN).value()).isEqualTo(1);
+    assertThat(context.measure(componentKey, MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
   }
 
 
