@@ -19,41 +19,44 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
-import org.sonar.api.SonarPlugin;
-
-import java.util.Arrays;
-import java.util.List;
+import org.sonar.api.Plugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 
 import static org.sonar.plugins.pitest.PitestConstants.*;
 
 /**
  * This class is the entry point for all PIT extensions
  */
-@Properties({
-  @Property(key = MODE_KEY, defaultValue = MODE_SKIP,
-    name = "PIT activation mode", description = "Possible values:  empty (means skip) and 'reuseReport'", global = true,
-    project = true),
-  @Property(key = REPORT_DIRECTORY_KEY, defaultValue = REPORT_DIRECTORY_DEF,
-    name = "Output directory for the PIT reports", description = "This property is needed when the 'reuseReport' mode is activated and the reports are not located in the default directory (i.e. target/pit-reports)", global = true,
-    project = true)
-})
-public final class PitestPlugin extends SonarPlugin {
+public final class PitestPlugin implements Plugin {
 
-  // This is where you're going to declare all your Sonar extensions
-  @SuppressWarnings("unchecked")
-  public List<Class<?>> getExtensions() {
-    return Arrays.asList(
-        XmlReportParser.class,
-        XmlReportFinder.class,
-        PitestRulesDefinition.class,
-        PitestSensor.class,
-        PitestMetrics.class,
-        PitestComputer.class,
-        PitestCoverageComputer.class,
-        PitestDashboardWidget.class,
-        PitSourceTab.class
+  @Override
+  public void define(Context context) {
+
+    context.addExtensions(
+      PropertyDefinition.builder(MODE_KEY)
+        .defaultValue(MODE_SKIP)
+        .name("PIT activation mode")
+        .description("Possible values:  empty (means skip) and 'reuseReport'")
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+
+      PropertyDefinition.builder(REPORT_DIRECTORY_KEY)
+        .defaultValue(REPORT_DIRECTORY_DEF)
+        .name("Output directory for the PIT reports")
+        .description("This property is needed when the 'reuseReport' mode is activated and the reports are not " +
+          "located in the default directory (i.e. target/pit-reports)")
+        .onQualifiers(Qualifiers.PROJECT)
+        .build(),
+
+      XmlReportParser.class,
+      XmlReportFinder.class,
+      PitestRulesDefinition.class,
+      PitestSensor.class,
+      PitestMetrics.class,
+      PitestComputer.class,
+      PitestCoverageComputer.class,
+      PitestDashboardWidget.class
     );
   }
 }
