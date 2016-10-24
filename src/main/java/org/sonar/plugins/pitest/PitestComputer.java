@@ -19,12 +19,12 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 import org.sonar.api.measures.Metric;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Computer that processes the aggregated quantitative metric for a component from all the quantitative metrics

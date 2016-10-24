@@ -19,13 +19,13 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
 

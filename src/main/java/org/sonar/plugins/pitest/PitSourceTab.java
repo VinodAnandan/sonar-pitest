@@ -20,13 +20,7 @@
 package org.sonar.plugins.pitest;
 
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.web.AbstractRubyTemplate;
-import org.sonar.api.web.DefaultTab;
-import org.sonar.api.web.NavigationSection;
-import org.sonar.api.web.RequiredMeasures;
-import org.sonar.api.web.ResourceQualifier;
-import org.sonar.api.web.RubyRailsPage;
-import org.sonar.api.web.UserRole;
+import org.sonar.api.web.*;
 
 import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
 

@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.pitest;
 
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.BatchSide;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -27,9 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.sonar.api.ExtensionPoint;
-import org.sonar.api.batch.BatchSide;
 
 @BatchSide
 @ExtensionPoint

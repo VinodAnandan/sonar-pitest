@@ -19,17 +19,14 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
+import org.sonar.api.SonarPlugin;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
-import org.sonar.api.SonarPlugin;
+import static org.sonar.plugins.pitest.PitestConstants.*;
 
 /**
  * This class is the entry point for all PIT extensions

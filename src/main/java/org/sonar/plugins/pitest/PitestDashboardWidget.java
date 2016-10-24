@@ -19,12 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.sonar.api.web.AbstractRubyTemplate;
-import org.sonar.api.web.Description;
-import org.sonar.api.web.NavigationSection;
-import org.sonar.api.web.RubyRailsWidget;
-import org.sonar.api.web.UserRole;
-import org.sonar.api.web.WidgetCategory;
+import org.sonar.api.web.*;
 
 /**
  * Sonar user widget for pitest metrics.
