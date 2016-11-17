@@ -85,8 +85,12 @@ public class PitestSensor implements Sensor {
 
     java.io.File projectDirectory = fileSystem.baseDir();
     String reportDirectoryPath = settings.getString(REPORT_DIRECTORY_KEY);
-
-    java.io.File reportDirectory = new java.io.File(projectDirectory, reportDirectoryPath);
+    java.io.File reportDirectory = null;
+    if (reportDirectoryPath.startsWith("/")) {
+      reportDirectory = new java.io.File(reportDirectoryPath);
+    } else {
+      reportDirectory = new java.io.File(projectDirectory, reportDirectoryPath);
+    }
     java.io.File xmlReport = xmlReportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
       LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
