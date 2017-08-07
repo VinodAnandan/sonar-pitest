@@ -26,7 +26,7 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.test.TestUtils;
+import com.google.common.io.Resources;
 
 public class XmlReportParserTest {
 
@@ -40,8 +40,8 @@ public class XmlReportParserTest {
 	@Test
 	public void should_parse_report_and_find_mutants() {
 		// given
-		File report = TestUtils.getResource("mutations.xml");
-
+		File report = new File(Resources.getResource("mutations.xml").getFile());
+		
 		// when
 		Collection<Mutant> mutants = parser.parse(report);
 

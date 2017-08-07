@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 
 import org.junit.Test;
-import org.sonar.test.TestUtils;
+import com.google.common.io.Resources;
 
 public class XmlReportFinderTest {
 
@@ -32,7 +32,7 @@ public class XmlReportFinderTest {
   public void should_find_report_file() {
     // given
     XmlReportFinder finder = new XmlReportFinder();
-    File xmlFile = TestUtils.getResource("mutations.xml");
+    File xmlFile = new File(Resources.getResource("mutations.xml").getFile());
     File directory = xmlFile.getParentFile();
 
     // when
@@ -46,7 +46,7 @@ public class XmlReportFinderTest {
   public void should_return_null_if_no_report() {
     // given
     XmlReportFinder finder = new XmlReportFinder();
-    File directory = TestUtils.getResource("fake_libs");
+    File directory = new File(Resources.getResource("fake_libs").getFile());
 
     // when
     File report = finder.findReport(directory);
@@ -59,8 +59,8 @@ public class XmlReportFinderTest {
   public void should_return_null_if_directory_does_not_exist() {
     // given
     XmlReportFinder finder = new XmlReportFinder();
-    File directory = TestUtils.getResource("imaginary");
-
+    File directory = new File("imaginary");
+    
     // when
     File report = finder.findReport(directory);
 

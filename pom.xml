@@ -1,187 +1,208 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonarsource.parent</groupId>
-    <artifactId>parent</artifactId>
-    <version>31</version>
-  </parent>
+	<parent>
+		<groupId>org.sonarsource.parent</groupId>
+		<artifactId>parent</artifactId>
+		<version>31</version>
+	</parent>
 
-  <artifactId>sonar-pitest-plugin</artifactId>
-  <packaging>sonar-plugin</packaging>
-  <version>0.7-SNAPSHOT</version>
-  <name>Sonar Pitest Plugin</name>
-  <description>Plugin for the mutation testing tool Pitest</description>
-  <url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
-  <inceptionYear>2009</inceptionYear>
+	<artifactId>sonar-pitest-plugin</artifactId>
+	<packaging>sonar-plugin</packaging>
+	<version>0.7-SNAPSHOT</version>
+	<name>Sonar Pitest Plugin</name>
+	<description>Plugin for the mutation testing tool Pitest</description>
+	<url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
+	<inceptionYear>2009</inceptionYear>
 
-  <organization>
-    <name>Alexandre Victoor</name>
-    <url>https://github.com/alexvictoor</url>
-  </organization>
+	<organization>
+		<name>Alexandre Victoor</name>
+		<url>https://github.com/alexvictoor</url>
+	</organization>
 
-  <issueManagement>
-    <system>GitHub Issues</system>
-    <url>https://github.com/SonarQubeCommunity/sonar-pitest/issues</url>
-  </issueManagement>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/SonarQubeCommunity/sonar-pitest/issues</url>
+	</issueManagement>
 
-  <licenses>
-    <license>
-      <name>GNU LGPL 3</name>
-      <url>http://www.gnu.org/licenses/lgpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<licenses>
+		<license>
+			<name>GNU LGPL 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-  <scm>
-    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</developerConnection>
-    <url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
-    <tag>HEAD</tag>
-  </scm>
+	<scm>
+		<connection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</connection>
+		<developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-pitest.git</developerConnection>
+		<url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
+		<tag>HEAD</tag>
+	</scm>
 
-  <properties>
-    <license.owner>${project.organization.name}</license.owner>
-    <license.mailto>alexvictoor@gmail.com</license.mailto>
-    <sonar.buildVersion>5.6</sonar.buildVersion>
-    <sonar-java.version>3.6</sonar-java.version>
+	<properties>
+		<license.owner>${project.organization.name}</license.owner>
+		<license.mailto>alexvictoor@gmail.com</license.mailto>
+		<sonar.buildVersion>6.4</sonar.buildVersion>
+		<sonar-java.version>4.12</sonar-java.version>
 
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.min.version>1.7</jdk.min.version>
-    <junit.version>4.10</junit.version>
-    <powermock.version>1.4.10</powermock.version>
-    <fest.version>1.4</fest.version>
-    <guava.version>11.0.2</guava.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.min.version>1.7</jdk.min.version>
+		<junit.version>4.10</junit.version>
+		<powermock.version>1.4.10</powermock.version>
+		<fest.version>1.4</fest.version>
+		<guava.version>11.0.2</guava.version>
 
-    <!--  eat your own dog food -->
-    <sonar.pitest.mode>active</sonar.pitest.mode>
-    <sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
-    <sonar.cobertura.reportPath>target/site/cobertura/coverage.xml</sonar.cobertura.reportPath>
-  </properties>
+		<!-- eat your own dog food -->
+		<sonar.pitest.mode>active</sonar.pitest.mode>
+		<sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
+		<sonar.cobertura.reportPath>target/site/cobertura/coverage.xml</sonar.cobertura.reportPath>
+	</properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-  </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.sonarsource.sonarqube</groupId>
+			<artifactId>sonar-plugin-api</artifactId>
+			<version>${sonar.buildVersion}</version>
+			<scope>provided</scope>
+		</dependency>
 
-    <!-- logs -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>0.9.30</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.2</version>
-      <scope>provided</scope>
-    </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 
-    <!-- unit tests -->
-    <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-testing-harness</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+		<!-- logs -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.30</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.2</version>
+			<scope>provided</scope>
+		</dependency>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <testNGArtifactName>none:none</testNGArtifactName>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
-        <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.16</version>
-        <extensions>true</extensions>
-        <configuration>
-          <pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
-          <pluginName>Pitest</pluginName>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>${jdk.min.version}</source>
-          <target>${jdk.min.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- UTF-8 bundles are not supported by Java, so they must be converted during build -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>native2ascii-maven-plugin</artifactId>
-        <version>1.0-alpha-1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>native2ascii</goal>
-            </goals>
-            <configuration>
-              <encoding>UTF8</encoding>
-              <src>${basedir}/src/main/resources</src>
-              <dest>${project.build.outputDirectory}</dest>
-              <includes>**/*.properties</includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+		<!-- unit tests -->
+		<dependency>
+			<groupId>org.sonarsource.sonarqube</groupId>
+			<artifactId>sonar-testing-harness</artifactId>
+			<version>${sonar.buildVersion}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.4.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.10.19</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>hamcrest-core</artifactId>
+					<groupId>org.hamcrest</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-      <plugin>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-maven</artifactId>
-        <version>1.0.0</version>
-        <configuration>
-          <targetClasses>
-            <param>org.sonar.plugins.pitest*</param>
-          </targetClasses>
-          <targetTests>
-            <param>org.sonar.plugins.pitest*</param>
-          </targetTests>
-          <outputFormats>
-            <outputFormat>XML</outputFormat>
-            <outputFormat>HTML</outputFormat>
-          </outputFormats>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testNGArtifactName>none:none</testNGArtifactName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+				<artifactId>sonar-packaging-maven-plugin</artifactId>
+				<version>1.16</version>
+				<extensions>true</extensions>
+				<configuration>
+					<pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
+					<pluginName>Pitest</pluginName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>${jdk.min.version}</source>
+					<target>${jdk.min.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- UTF-8 bundles are not supported by Java, so they must be converted 
+					during build -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>native2ascii-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>native2ascii</goal>
+						</goals>
+						<configuration>
+							<encoding>UTF8</encoding>
+							<src>${basedir}/src/main/resources</src>
+							<dest>${project.build.outputDirectory}</dest>
+							<includes>**/*.properties</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>1.2.2</version>
+				<configuration>
+					<targetClasses>
+						<param>org.sonar.plugins.pitest*</param>
+					</targetClasses>
+					<targetTests>
+						<param>org.sonar.plugins.pitest*</param>
+					</targetTests>
+					<outputFormats>
+						<outputFormat>XML</outputFormat>
+						<outputFormat>HTML</outputFormat>
+					</outputFormats>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

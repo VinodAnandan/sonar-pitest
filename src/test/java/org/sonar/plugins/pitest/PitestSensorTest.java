@@ -19,7 +19,33 @@
  */
 package org.sonar.plugins.pitest;
 
-import com.google.common.base.Charsets;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
+import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_REUSE_REPORT;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_DETECTED;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_KILLED;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_MEMORY_ERROR;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_NO_COVERAGE;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_SURVIVED;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_TOTAL;
+import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_UNKNOWN;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,23 +54,17 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.FileMetadata;
+import org.sonar.api.batch.fs.internal.Metadata;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
-import org.sonar.test.TestUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.sonar.plugins.pitest.PitestConstants.*;
-import static org.sonar.plugins.pitest.PitestMetrics.*;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {
@@ -61,7 +81,7 @@ public class PitestSensorTest {
 
   private final File baseDir = new File("src/test/resources");
   private final SensorContextTester context = SensorContextTester.create(baseDir);
-  private final Settings settings = new Settings();
+  private final Settings settings = new MapSettings();
   private final DefaultFileSystem fileSystem = context.fileSystem();
 
 
@@ -141,7 +161,8 @@ public class PitestSensorTest {
     // given
     workingConfiguration();
     settings.setProperty(REPORT_DIRECTORY_KEY, "");
-    when(xmlReportFinder.findReport(TestUtils.getResource("."))).thenReturn(null);
+    
+    when(xmlReportFinder.findReport(new File(Resources.getResource(".").toURI()))).thenReturn(null);
     sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
     // when
     sensor.execute(context);
@@ -157,14 +178,25 @@ public class PitestSensorTest {
   }
 
   private DefaultInputFile createInputFile() {
-    return new DefaultInputFile("module.key", "com/foo/Bar.java")
-      .setType(InputFile.Type.MAIN)
-      .setModuleBaseDir(TestUtils.getResource(".").toPath())
-      .setLines(1000)
-      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
-      .setLastValidOffset(1)
-      .setLanguage("java")
-      .initMetadata(new FileMetadata().readMetadata(TestUtils.getResource("com/foo/Bar.java"), Charsets.UTF_8));
+	  
+	  // FIXME: revisit
+	  InputStream openStream;
+	try {
+		openStream = Resources.getResource("com/foo/Bar.java").openStream();
+		  Metadata fm = new FileMetadata().readMetadata(openStream, Charsets.UTF_8, "com/foo/Bar.java");
+	    return new TestInputFileBuilder("module.key", "com/foo/Bar.java")
+	      .setType(InputFile.Type.MAIN)
+	      .setLines(1000)
+	      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
+	      .setLastValidOffset(1)
+	      .setLanguage("java")
+	      .setCharset(Charsets.UTF_8)
+	      .setMetadata(fm)
+	    	  .build();
+	} catch (IOException e) {
+		throw new IllegalArgumentException("couldn't open resource");
+	}
+
   }
 
   private void profileWithMutantRule() {
