@@ -57,8 +57,10 @@ import org.sonar.api.batch.fs.internal.FileMetadata;
 import org.sonar.api.batch.fs.internal.Metadata;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.Settings;
-import org.sonar.api.config.MapSettings;
+import org.sonar.api.config.internal.ConfigurationBridge;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
@@ -81,14 +83,15 @@ public class PitestSensorTest {
 
   private final File baseDir = new File("src/test/resources");
   private final SensorContextTester context = SensorContextTester.create(baseDir);
-  private final Settings settings = new MapSettings();
+  private final Settings settings = new MapSettings() ;
   private final DefaultFileSystem fileSystem = context.fileSystem();
 
 
   @Test
   public void should_skip_analysis_if_no_specific_pit_configuration() throws Exception {
     // given
-    settings.setProperty(MODE_KEY, MODE_SKIP);
+	
+	settings.setProperty(MODE_KEY, MODE_SKIP);
     profileWithMutantRule();
     sensor = buildSensor();
     // when
@@ -163,7 +166,8 @@ public class PitestSensorTest {
     settings.setProperty(REPORT_DIRECTORY_KEY, "");
     
     when(xmlReportFinder.findReport(new File(Resources.getResource(".").toURI()))).thenReturn(null);
-    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
+    Configuration configuration = new ConfigurationBridge(settings);
+    sensor = new PitestSensor(configuration, parser, rulesProfile, xmlReportFinder, fileSystem);
     // when
     sensor.execute(context);
     // then no failure
@@ -235,8 +239,8 @@ public class PitestSensorTest {
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
-
-    sensor = new PitestSensor(settings, parser, rulesProfile, xmlReportFinder, fileSystem);
+    Configuration configuration = new ConfigurationBridge(settings);
+    sensor = new PitestSensor(configuration, parser, rulesProfile, xmlReportFinder, fileSystem);
     return sensor;
   }
 
