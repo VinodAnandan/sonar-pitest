@@ -58,7 +58,6 @@ import org.sonar.api.batch.fs.internal.Metadata;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.profiles.RulesProfile;
@@ -83,7 +82,7 @@ public class PitestSensorTest {
 
   private final File baseDir = new File("src/test/resources");
   private final SensorContextTester context = SensorContextTester.create(baseDir);
-  private final Settings settings = new MapSettings() ;
+  private final MapSettings settings = new MapSettings() ;
   private final DefaultFileSystem fileSystem = context.fileSystem();
 
 

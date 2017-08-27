@@ -6,12 +6,14 @@
 	<parent>
 		<groupId>org.sonarsource.parent</groupId>
 		<artifactId>parent</artifactId>
-		<version>33</version>
+		<version>40</version>
 	</parent>
 
+	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
+    <version>0.8-SNAPSHOT</version>	
 	<packaging>sonar-plugin</packaging>
-	<version>0.7-SNAPSHOT</version>
+	
 	<name>Sonar Pitest Plugin</name>
 	<description>Plugin for the mutation testing tool Pitest</description>
 	<url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
@@ -44,6 +46,8 @@
 
 	<properties>
 		<license.owner>${project.organization.name}</license.owner>
+        <license.title>Sonar Pitest Plugin</license.title>
+        <license.years>2009-2016</license.years>		
 		<license.mailto>alexvictoor@gmail.com</license.mailto>
 		<sonar.buildVersion>6.5</sonar.buildVersion>
 		<sonar-java.version>4.12</sonar-java.version>
@@ -134,7 +138,6 @@
 			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
-				<version>1.16</version>
 				<extensions>true</extensions>
 				<configuration>
 					<pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
@@ -144,7 +147,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
 				<configuration>
 					<source>${jdk.min.version}</source>
 					<target>${jdk.min.version}</target>
@@ -155,7 +157,6 @@
 					during build -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>native2ascii-maven-plugin</artifactId>
-				<version>1.0-alpha-1</version>
 				<executions>
 					<execution>
 						<goals>
