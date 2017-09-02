@@ -7,7 +7,7 @@ Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
 |-------------------|-----------------------|
-| Sonarqube 6.7  | sonar pitest 0.8 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.8)) |
+| Sonarqube 6.5  | sonar pitest 0.8 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.8)) |
 | Sonarqube 5.6.X  | sonar pitest 0.7 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.7)) |
 | Sonarqube 5.1.X  | sonar pitest 0.6  ([download](http://downloads.sonarsource.com/plugins/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.6/sonar-pitest-plugin-0.6.jar)) |
 | Sonarqube 4.5.X  | sonar pitest 0.4 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.4/sonar-pitest-plugin-0.4.jar)) |
