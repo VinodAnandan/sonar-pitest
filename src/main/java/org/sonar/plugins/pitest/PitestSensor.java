@@ -96,7 +96,7 @@ public class PitestSensor implements Sensor {
     java.io.File xmlReport = xmlReportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
       LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
-      LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
+      LOG.warn("Checkout plugin documentation for more detailed explanations: https://github.com/SonarQubeCommunity/sonar-pitest");
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
       ProjectReport projectReport = ProjectReport.buildFromMutants(mutants);
@@ -157,7 +157,7 @@ public class PitestSensor implements Sensor {
 
   }
 
-  private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric metric, T value) {
+  private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
     context.<T>newMeasure()
       .withValue(value)
       .forMetric(metric)

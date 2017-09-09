@@ -23,6 +23,7 @@ import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 import org.sonar.api.measures.Metric;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import java.util.List;
  */
 public class PitestComputer implements MeasureComputer {
 
+  @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
@@ -56,8 +58,8 @@ public class PitestComputer implements MeasureComputer {
   }
 
   public List<String> getQuantitativeKeys() {
-    final List<String> result = new ArrayList<String>();
-    for(Metric m : PitestMetrics.getQuantitativeMetrics()){
+    final List<String> result = new ArrayList<>();
+    for(Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()){
       result.add(m.getKey());
     }
     return result;

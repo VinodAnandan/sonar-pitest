@@ -19,23 +19,28 @@
  */
 package org.sonar.plugins.pitest;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.api.ExtensionPoint;
-import org.sonar.api.batch.BatchSide;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.ScannerSide;
 
-@BatchSide
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+
+@ScannerSide
 @ExtensionPoint
 public class XmlReportParser {
 
@@ -54,7 +59,6 @@ public class XmlReportParser {
     private MutantStatus mutantStatus;
     private String mutatedClass;
     private int lineNumber;
-    private String mutator;
 
     public Collection<Mutant> parse(File file) {
 
@@ -78,7 +82,7 @@ public class XmlReportParser {
       return mutants;
     }
 
-    private void parseStartElement() throws XMLStreamException {
+    private void parseStartElement()  {
       String tagName = stream.getLocalName();
 
       if ("mutation".equals(tagName)) {
@@ -116,6 +120,7 @@ public class XmlReportParser {
     }
 
     private void handleMutator() {
+      String mutator;
       try {
         mutator = stream.getElementText();
       } catch (XMLStreamException e) {

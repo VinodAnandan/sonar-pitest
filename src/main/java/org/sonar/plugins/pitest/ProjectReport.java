@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class ProjectReport {
 
-  private final Map<String, SourceFileReport> sourceFileReports = new HashMap<String, SourceFileReport>();
+  private final Map<String, SourceFileReport> sourceFileReports = new HashMap<>();
 
   private ProjectReport() {
   }
