@@ -1,8 +1,10 @@
 Sonar Pitest Plugin
 ===================
-[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-pitest.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-pitest) [![Nemo Quality Gate status](https://nemo.sonarqube.org/api/badges/gate?key=org.codehaus.sonar-plugins%3Asonar-pitest-plugin)](https://nemo.sonarqube.org/overview?id=org.codehaus.sonar-plugins%3Asonar-pitest-plugin)
 
- 
+[![Build Status](https://travis-ci.org/VinodAnandan/sonar-pitest.svg?branch=master)](https://travis-ci.org/VinodAnandan/sonar-pitest)  
+[![Quality Gate Status](https://sonarcloud.io/api/badges/gate?key=org.sonarsource.pitest%3Asonar-pitest-plugin)](https://sonarcloud.io/dashboard?id=org.sonarsource.pitest%3Asonar-pitest-plugin)
+
+
 Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
@@ -15,10 +17,10 @@ Compatibility Matrix
 
 Description / Features
 ----------------------
-PIT is a mutation testing tool for java. You can check out the official pitest web site for more details on mutation testing and PIT. 
-Long story short, mutation testing is a very smart way to check the relevance of unit tests. The main idea is to alter the tested code and check that at least one unit test fails. An alteration of the code is called a "mutant". A mutant has "survived" the tests if there is no test failure. 
+PIT is a mutation testing tool for java. You can check out the official pitest web site for more details on mutation testing and PIT.
+Long story short, mutation testing is a very smart way to check the relevance of unit tests. The main idea is to alter the tested code and check that at least one unit test fails. An alteration of the code is called a "mutant". A mutant has "survived" the tests if there is no test failure.
 The goal of this plugin is to bring PIT results to SonarQube. Right now the integration of these results is quite simple, "survived mutants" on code covered by tests are seen as SonarQube issues.  
-Even if PIT detects "survived mutants" on uncovered lines of code, these mutants are simply ignored by the plugin. 
+Even if PIT detects "survived mutants" on uncovered lines of code, these mutants are simply ignored by the plugin.
 
 Usage
 -----
@@ -32,15 +34,15 @@ Henri Coles, creator of PIT, gave very useful tips on the PIT mailing list to he
 * Target only specific portions of your codebase (using the class filters)
 * Limit the mutation operators used
 * Limit the number of mutations per class
-* Tweak the number of threads 
+* Tweak the number of threads
 * Check out the "Advanced configuration properties" at the bottom of this page to address the above points.
 
 ### Configuration
-Since mutation testing is not (yet) officially supported by SonarQube, this plugin acts as a "single rule" rule engine... This rule, named "Survived mutant", is disabled by default and hence needs to be activated when pitest is used. 
+Since mutation testing is not (yet) officially supported by SonarQube, this plugin acts as a "single rule" rule engine... This rule, named "Survived mutant", is disabled by default and hence needs to be activated when pitest is used.
 
 ### Project build setup
 **PIT needs to be launched before SonarQube**
-You can launch PIT using the PIT maven plugin or the command line runner. PIT execution must be done before SonarQube analysis. You also need to specify the "reuseReport" mode of the PIT SonarQube plugin. 
+You can launch PIT using the PIT maven plugin or the command line runner. PIT execution must be done before SonarQube analysis. You also need to specify the "reuseReport" mode of the PIT SonarQube plugin.
 Pit needs to be configured in order to generate XML reports. Be aware that PIT default behavior is to generate HTML reports.  Below a simple configuration example for maven :
 
     <!-- inside the build/plugins section -->
@@ -56,23 +58,23 @@ Pit needs to be configured in order to generate XML reports. Be aware that PIT d
           <param>com.acme.tools.commons*</param>
         </targetClasses>
         <outputFormats>
-          <outputFormat>XML</outputFormat>	
+          <outputFormat>XML</outputFormat>
         </outputFormats>
       </configuration>
     </plugin>
-    
+
 inScopeClasses and targetClasses parameters indicated the classes of the system under test where mutations can be performed. In the example above, all the classes from the com.acme.tools.commons package and sub packages may be altered.  
 Once configured in the maven pom file, you need to run PITusing the following command:  
 
     mvn org.pitest:pitest-maven:mutationCoverage
-    
-Note : Of course, all the configuration options are clearly explained in the official pitest documentation. 
+
+Note : Of course, all the configuration options are clearly explained in the official pitest documentation.
 Last but not least, you need to run a SonarQube analysis with the PIT plugin activated in "reuseReport" mode. The following command would do the job:
 
     mvn sonar:sonar -Dsonar.pitest.mode=reuseReport
 
-By default SonarQube will search the latest PIT report in "target/pit-reports". You can specify another location using property "sonar.pitest.reportsDirectory". 
-You will find below the list of all the available configuration parameters. 
+By default SonarQube will search the latest PIT report in "target/pit-reports". You can specify another location using property "sonar.pitest.reportsDirectory".
+You will find below the list of all the available configuration parameters.
 
 ### Basic configuration properties
 Below the exhaustive list of configuration properties of the SonarQube pitest plugin:
