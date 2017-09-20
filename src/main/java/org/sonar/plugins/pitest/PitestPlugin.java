@@ -55,8 +55,7 @@ public final class PitestPlugin implements Plugin {
       PitestSensor.class,
       PitestMetrics.class,
       PitestComputer.class,
-      PitestCoverageComputer.class,
-      PitestDashboardWidget.class
+      PitestCoverageComputer.class
     );
   }
 }

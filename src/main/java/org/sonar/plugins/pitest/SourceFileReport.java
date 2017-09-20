@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class SourceFileReport {
 	public final String sourceFileRelativePath;
-	private final List<Mutant> mutants = new ArrayList<Mutant>();
+	private final List<Mutant> mutants = new ArrayList<>();
 	private int mutationsNoCoverage = 0;
 	private int mutationsKilled = 0;
 	private int mutationsSurvived = 0;
@@ -43,7 +43,7 @@ public class SourceFileReport {
 		if (mutants.isEmpty()) {
 			return null;
 		}
-		Map<Integer,List<String>> mutantsByLine = new HashMap<Integer,List<String>>();
+		Map<Integer,List<String>> mutantsByLine = new HashMap<>();
 
 		for (Mutant mutant : mutants) {
 			if(!mutantsByLine.containsKey(mutant.lineNumber)){

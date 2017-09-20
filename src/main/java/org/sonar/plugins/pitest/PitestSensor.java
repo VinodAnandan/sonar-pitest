@@ -19,6 +19,17 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
+import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
+
+import java.io.Serializable;
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -30,15 +41,10 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
-
-import java.io.Serializable;
-import java.util.Collection;
-
-import static org.sonar.plugins.pitest.PitestConstants.*;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.
@@ -50,7 +56,7 @@ public class PitestSensor implements Sensor {
 
   private static final Logger LOG = LoggerFactory.getLogger(PitestSensor.class);
 
-  private final Settings settings;
+  private final Configuration configuration;
   private final XmlReportParser parser;
   private final XmlReportFinder xmlReportFinder;
   private final String executionMode;
@@ -58,12 +64,12 @@ public class PitestSensor implements Sensor {
   private final FileSystem fileSystem;
   private final FilePredicate mainFilePredicate;
 
-  public PitestSensor(Settings settings, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
-    this.settings = settings;
+  public PitestSensor(Configuration configuration, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
+    this.configuration = configuration;
     this.parser = parser;
     this.xmlReportFinder = xmlReportFinder;
     this.fileSystem = fileSystem;
-    this.executionMode = settings.getString(MODE_KEY);
+    this.executionMode = configuration.get(MODE_KEY).orElse(null);
     this.rulesProfile = rulesProfile;
 
     this.mainFilePredicate = fileSystem.predicates().and(
@@ -84,13 +90,13 @@ public class PitestSensor implements Sensor {
     }
 
     java.io.File projectDirectory = fileSystem.baseDir();
-    String reportDirectoryPath = settings.getString(REPORT_DIRECTORY_KEY);
+    String reportDirectoryPath = configuration.get(REPORT_DIRECTORY_KEY).orElse(null);
 
     java.io.File reportDirectory = new java.io.File(projectDirectory, reportDirectoryPath);
     java.io.File xmlReport = xmlReportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
       LOG.warn("No XML PIT report found in directory {} !", reportDirectory);
-      LOG.warn("Checkout plugin documentation for more detailed explanations: http://docs.codehaus.org/display/SONAR/Pitest");
+      LOG.warn("Checkout plugin documentation for more detailed explanations: https://github.com/SonarQubeCommunity/sonar-pitest");
     } else {
       Collection<Mutant> mutants = parser.parse(xmlReport);
       ProjectReport projectReport = ProjectReport.buildFromMutants(mutants);
@@ -151,7 +157,7 @@ public class PitestSensor implements Sensor {
 
   }
 
-  private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric metric, T value) {
+  private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
     context.<T>newMeasure()
       .withValue(value)
       .forMetric(metric)

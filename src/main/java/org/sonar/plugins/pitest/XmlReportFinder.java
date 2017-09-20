@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.sonar.api.ExtensionPoint;
-import org.sonar.api.batch.BatchSide;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -31,7 +28,10 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicReference;
 
-@BatchSide
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.ScannerSide;
+
+@ScannerSide
 @ExtensionPoint
 public class XmlReportFinder  {
 
@@ -51,7 +51,7 @@ public class XmlReportFinder  {
 
         @Override
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-          if(Files.isRegularFile(file)
+          if(file.toFile().isFile()
               && file.toString().endsWith(".xml")
               && (latestReport.get() == null
                   || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0)){
