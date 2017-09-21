@@ -166,7 +166,9 @@
 							<encoding>UTF8</encoding>
 							<src>${basedir}/src/main/resources</src>
 							<dest>${project.build.outputDirectory}</dest>
-							<includes>**/*.properties</includes>
+							<includes>
+								<include>**/*.properties</include>
+							</includes>
 						</configuration>
 					</execution>
 				</executions>
