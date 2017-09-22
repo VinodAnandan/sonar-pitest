@@ -192,7 +192,7 @@ public class PitestSensorTest {
 	      .setLines(1000)
 	      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
 	      .setLastValidOffset(1)
-	      .setLanguage("java")
+	      .setLanguage("kt")
 	      .setCharset(Charsets.UTF_8)
 	      .setMetadata(fm)
 	    	  .build();
@@ -230,12 +230,12 @@ public class PitestSensorTest {
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
 
     List<Mutant> mutants = new ArrayList<>();
-    survivedMutant = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator");
+    survivedMutant = new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 42, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "com/foo/Bar.java");
     mutants.add(survivedMutant);
-    mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", 2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
-    mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
+    mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "com/foo/Bar.java"));
+    mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", 2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "com/foo/Bar.java"));
+    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null, "com/foo/Bar.java"));
+    mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null, "com/foo/Bar.java"));
     when(parser.parse(any(File.class))).thenReturn(mutants);
 
     Configuration configuration = new ConfigurationBridge(settings);

@@ -31,9 +31,9 @@ public class SourceFileReportTest {
   @Test
   public void should_generate_a_json_string_with_all_data() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, INLINE_CONSTANT_MUTATOR);
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, RETURN_VALS_MUTATOR);
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 42, INLINE_CONSTANT_MUTATOR);
+    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, INLINE_CONSTANT_MUTATOR, "com/foo/bar/Qix.java");
+    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, RETURN_VALS_MUTATOR, "com/foo/bar/Qix.java");
+    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 42, INLINE_CONSTANT_MUTATOR, "com/foo/bar/Qix.java");
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
     fileMutants.addMutant(m1);
@@ -43,11 +43,11 @@ public class SourceFileReportTest {
     String result = fileMutants.toJSON();
     assertThat(result)
       .isEqualTo("{\"17\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\"  }," +
-        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\"  }" +
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }," +
+        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }" +
         "]," +
         "\"42\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\"  }" +
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }" +
         "]}");
   }
 
@@ -64,9 +64,9 @@ public class SourceFileReportTest {
   @Test
   public void should_collect_mutant_metrics() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, "key1");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, "key2");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 15, "key3");
+    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, "key1", "com/foo/bar/Qix.java");
+    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, "key2", "com/foo/bar/Qix.java");
+    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 15, "key3", "com/foo/bar/Qix.java");
     SourceFileReport sourceFileReport = new SourceFileReport("com/foo/bar/Qix.java");
 
     // when
