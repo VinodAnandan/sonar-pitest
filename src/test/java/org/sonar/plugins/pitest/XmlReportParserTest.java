@@ -49,13 +49,13 @@ public class XmlReportParserTest {
 		assertThat(mutants).hasSize(39);
 
 		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", 87,
-			"org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
+			"org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "GallioSensor.java"));
 		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.NO_COVERAGE, "org.sonar.plugins.csharp.gallio.GallioSensor", 162,
-				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
+				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
 		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", 166,
-				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator"));
+				"org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
 		assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
-				"org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator"));
+				"org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "GallioSensor.java"));
 		assertThat(mutants).extracting("lineNumber").contains(166);
 		assertThat(mutants).extracting("mutantStatus").doesNotContain(MutantStatus.UNKNOWN);
 	}
