@@ -32,9 +32,9 @@ public class ProjectReportTest {
   @Test
   public void should_collect_mutant_metrics() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 17, "key1");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.qix.Tata", 17, "key2");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 15, "key3");
+    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 17, "key1", "com/foo/bar/Toto.java");
+    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.qix.Tata", 17, "key2", "com/foo/bar/qix/Tata.java");
+    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 15, "key3", "com/foo/bar/Toto.java");
 
     // when
     ProjectReport report

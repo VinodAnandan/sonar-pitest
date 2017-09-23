@@ -74,12 +74,12 @@ public class PitestSensor implements Sensor {
 
     this.mainFilePredicate = fileSystem.predicates().and(
       fileSystem.predicates().hasType(InputFile.Type.MAIN),
-      fileSystem.predicates().hasLanguage("java"));
+      fileSystem.predicates().hasLanguages("java", "kt"));
   }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage("java");
+    descriptor.onlyOnLanguages("java", "kt");
     descriptor.name("Pitest Sensor");
   }
 

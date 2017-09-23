@@ -32,7 +32,7 @@ public class MutantTest {
   @Test
   public void should_get_path_to_source_file() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR);
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
     // when
     String path = mutant.sourceRelativePath();
     //then
@@ -42,7 +42,7 @@ public class MutantTest {
   @Test
   public void should_get_path_to_source_file_for_an_anonymous_inner_class() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", 17, INLINE_CONSTANT_MUTATOR);
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
     // when
     String path = mutant.sourceRelativePath();
     //then

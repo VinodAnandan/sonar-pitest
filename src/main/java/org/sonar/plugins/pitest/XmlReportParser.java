@@ -58,6 +58,7 @@ public class XmlReportParser {
     private boolean detected;
     private MutantStatus mutantStatus;
     private String mutatedClass;
+    private String sourceFile;
     private int lineNumber;
 
     public Collection<Mutant> parse(File file) {
@@ -91,6 +92,8 @@ public class XmlReportParser {
         handleMutatedClassTag();
       } else  if ("lineNumber".equals(tagName)) {
         handleLineNumber();
+      }else  if ("sourceFile".equals(tagName)) {
+        handleSourceFile();
       } else  if ("mutator".equals(tagName)) {
         handleMutator();
       } else {
@@ -111,6 +114,14 @@ public class XmlReportParser {
       }
     }
 
+    private void handleSourceFile() {
+      try {
+         sourceFile = stream.getElementText();
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     private void handleLineNumber() {
       try {
         lineNumber = Integer.parseInt(stream.getElementText().trim());
@@ -126,7 +137,7 @@ public class XmlReportParser {
       } catch (XMLStreamException e) {
         throw new RuntimeException(e);
       }
-      mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator));
+      mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));
     }
 
     private void closeXmlStream() {

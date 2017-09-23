@@ -31,23 +31,29 @@ public class Mutant {
   public final boolean detected;
   public final MutantStatus mutantStatus;
   public final String className;
+  public final String sourceFile;
   public final int lineNumber;
   public final Mutator mutator;
 
-  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey) {
+  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey, String sourceFile) {
     this.detected = detected;
     this.mutantStatus = mutantStatus;
     this.className = className;
+    this.sourceFile = sourceFile;
     this.lineNumber = lineNumber;
     this.mutator = Mutator.parse(mutatorKey);
   }
 
 
   public String sourceRelativePath() {
-
-    final StringTokenizer tok = new StringTokenizer(className, "$");
-    final String classNameFiltered = tok.nextToken();
-    return classNameFiltered.replace('.', '/') + ".java";
+      if(sourceFile!=null) {
+          return sourceFile;
+      }else{
+          // the old version of pitest mutate only .java file and don't have a sourceFile
+          final StringTokenizer tok = new StringTokenizer(className, "$");
+          final String classNameFiltered = tok.nextToken();
+          return classNameFiltered.replace('.', '/') + ".java";
+      }
   }
 
   public String violationDescription() {
@@ -56,7 +62,7 @@ public class Mutant {
 
   @Override
   public String toString() {
-    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\"  }";
+    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\", \"sourceFile\" : \"" + sourceFile + "\"  }";
   }
 
 }
