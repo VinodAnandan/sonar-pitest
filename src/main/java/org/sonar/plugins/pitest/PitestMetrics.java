@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2016 Alexandre Victoor
- * alexvictoor@gmail.com
+ * Copyright (C) 2009-2017 Vinod Anandan
+ * vinod@owasp.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,16 +34,26 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
+import org.sonar.api.server.ServerSide;
 
 /**
  * Metrics for the sonar pitest plugin.
  * 
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
+@ScannerSide
+@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+@ServerSide
+@ComputeEngineSide
+@ExtensionPoint
 public class PitestMetrics implements Metrics {
 
 	private static final List<Metric> METRICS = new ArrayList<>();

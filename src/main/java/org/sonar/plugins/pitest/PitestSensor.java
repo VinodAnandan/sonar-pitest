@@ -1,7 +1,7 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2016 Alexandre Victoor
- * alexvictoor@gmail.com
+ * Copyright (C) 2009-2017 Vinod Anandan
+ * vinod@owasp.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,7 +50,7 @@ import org.sonar.api.rules.ActiveRule;
  * Sonar sensor for pitest mutation coverage analysis.
  *
  * <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
- * <a href="mailto:alexvictoor@gmail.com">Alexandre Victoor</a>
+ * <a href="mailto:vinod@owasp.org">Alexandre Victoor</a>
  */
 public class PitestSensor implements Sensor {
 
