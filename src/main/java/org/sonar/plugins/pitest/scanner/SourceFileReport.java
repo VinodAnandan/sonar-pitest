@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.sonar.plugins.pitest.domain.Mutant;
 
 /**
@@ -59,15 +60,14 @@ public class SourceFileReport {
     StringBuilder builder = new StringBuilder();
     builder.append("{");
     boolean first = true;
-    for (int line : mutantsByLine.keySet()) {
+    for (Entry<Integer, List<String>> entry : mutantsByLine.entrySet()) {
       if (!first) {
         builder.append(",");
       }
       first = false;
-      builder.append("\"");
-      builder.append(line);
-      builder.append("\":[");
-      for (String mutant : mutantsByLine.get(line)) {
+      builder.append("\"").append(entry.getKey()).append("\":");
+      builder.append("[");
+      for (String mutant : entry.getValue()) {
         builder.append(mutant).append(',');
       }
       builder.deleteCharAt(builder.length() - 1); // remove last ','

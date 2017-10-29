@@ -147,21 +147,20 @@ public class PitestSensor implements Sensor {
     }
   }
 
-  private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
-    context.<T>newMeasure()
-      .withValue(value)
-      .forMetric(metric)
-      .on(inputFile)
-      .save();
-  }
+//  private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
+//    context.<T>newMeasure()
+//      .withValue(value)
+//      .forMetric(metric)
+//      .on(inputFile)
+//      .save();
+//  }
 
   private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
     int killed = sourceFileReport.getMutationsKilled();
     int total = sourceFileReport.getMutationsTotal();
     int threshold = Integer.parseInt(coverageRule.getParameter(COVERAGE_RATIO_PARAM));
 
-    int scaledKilledPercent = new Double(killed * 100d / total).intValue();
-    return scaledKilledPercent >= threshold;
+    return (killed * 100d / total) >= threshold;
   }
 
   private void addIssueForMutantKilledThresholdNotReached(SensorContext context, InputFile inputFile, String threshold) {
