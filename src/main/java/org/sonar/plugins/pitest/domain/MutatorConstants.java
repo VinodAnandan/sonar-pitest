@@ -18,16 +18,17 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest.domain;
+
 /**
  * 
- * Constants for Strings used multiple times in enum Mutator 
+ * Constants for Strings used multiple times in enum Mutator
  *
  */
 public class MutatorConstants {
-  private MutatorConstants() {}
+  private MutatorConstants() {
+  }
 
   public static final String REMOVE_COND_MUTATOR_KEY = "org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator";
   public static final String REMOVE_COND_MUTATOR_NAME = "Remove Conditional Mutator";
-  
-  
+
 }

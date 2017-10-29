@@ -50,6 +50,5 @@ public final class PitestConstants {
   public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reportsDirectory";
 
   public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
- 
 
 }

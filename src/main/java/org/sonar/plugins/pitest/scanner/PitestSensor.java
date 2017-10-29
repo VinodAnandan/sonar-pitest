@@ -19,12 +19,10 @@
  */
 package org.sonar.plugins.pitest.scanner;
 
-import java.io.Serializable;
 import java.util.Collection;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.measure.Metric;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -147,13 +145,13 @@ public class PitestSensor implements Sensor {
     }
   }
 
-//  private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
-//    context.<T>newMeasure()
-//      .withValue(value)
-//      .forMetric(metric)
-//      .on(inputFile)
-//      .save();
-//  }
+  // private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
+  // context.<T>newMeasure()
+  // .withValue(value)
+  // .forMetric(metric)
+  // .on(inputFile)
+  // .save();
+  // }
 
   private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
     int killed = sourceFileReport.getMutationsKilled();
