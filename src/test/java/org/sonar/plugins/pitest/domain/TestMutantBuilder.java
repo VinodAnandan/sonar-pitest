@@ -1,7 +1,6 @@
 package org.sonar.plugins.pitest.domain;
 
 import java.util.concurrent.ThreadLocalRandom;
-import javax.annotation.Nullable;
 
 /*
  * Sonar Pitest Plugin

@@ -21,9 +21,9 @@ package org.sonar.plugins.pitest.scanner;
 
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
-import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 import org.sonar.plugins.pitest.domain.MutantStatus;
 import org.sonar.plugins.pitest.domain.Mutator;
+import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -21,7 +21,6 @@ package org.sonar.plugins.pitest.scanner;
 
 import com.google.common.io.Resources;
 import java.io.File;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
