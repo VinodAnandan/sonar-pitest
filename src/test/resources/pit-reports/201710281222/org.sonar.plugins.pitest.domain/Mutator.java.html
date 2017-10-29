@@ -1,0 +1,1788 @@
+<html>
+<head>
+<style type='text/css'>
+html, body, div, span, p, blockquote, pre {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+body{
+	line-height: 1;
+	color: black;
+	background: white;
+	margin-left: 20px;
+}
+
+.src { 
+	border: 1px solid #dddddd;
+	padding-top: 10px;
+	padding-right: 5px;
+	padding-left: 5px;
+	font-family: Consolas, Courier, monospace;
+}
+
+
+.covered {background-color: #ddffdd}
+.uncovered {background-color: #ffdddd}
+.killed {background-color: #aaffaa}
+.survived {background-color: #ffaaaa}
+.uncertain {background-color: #dde7ef}
+.run_error {background-color: #dde7ef}
+.na {background-color: #eeeeee}
+.timed_out {background-color: #dde7ef}
+.non_viable {background-color: #aaffaa}
+.memory_error {background-color: #dde7ef}
+.not_started {background-color: #dde7ef; color : red}
+.no_coverage {background-color: #ffaaaa}
+
+
+.pop {outline:none; }
+.pop strong {line-height:30px;}
+.pop {text-decoration:none;}
+.pop span { z-index:10;display:none; padding:14px 20px; margin-top:-30px; margin-left:28px; width:800px; line-height:16px; word-wrap:break-word; }
+.pop:hover span{ display:inline; position:absolute; color:#111; border:1px solid #DCA; background:#fffAF0;}
+
+.pop span { border-radius:4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; -moz-box-shadow: 5px 5px 8px #CCC; -webkit-box-shadow: 5px 5px 8px #CCC; box-shadow: 5px 5px 8px #CCC; }
+</style>
+
+</head>
+<body>
+
+
+<h1>Mutator.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Sonar Pitest Plugin</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright (C) 2009-2017 Vinod Anandan</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * vinod@owasp.org</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * This program is free software; you can redistribute it and/or</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * modify it under the terms of the GNU Lesser General Public</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * License as published by the Free Software Foundation; either</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * version 3 of the License, or (at your option) any later version.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * This program is distributed in the hope that it will be useful,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Lesser General Public License for more details.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You should have received a copy of the GNU Lesser General Public License</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * along with this program; if not, write to the Free Software Foundation,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.sonar.plugins.pitest.domain;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * https://github.com/hcoles/pitest/blob/master/pitest/src/main/java/org/pitest/mutationtest/engine/gregor/config/Mutator.java</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   https://github.com/hcoles/pitest/tree/master/pitest/src/main/java/org/pitest/mutationtest/engine/gregor/mutators *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author bwflood</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_28'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>enum Mutator {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_29'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  INVERT_NEGS(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator&#34;, &#34;Invert Negatives Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A number has been replaced by its opposite&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_32'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  RETURN_VALS(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator&#34;, &#34;Return Values Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;The return value of a method call has been replaced&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_35'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  INLINE_CONS(&#34;org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;Inline Constant Mutator&#34;, &#34;An inline constant has been changed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_37'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  MATH(&#34;org.pitest.mutationtest.engine.gregor.mutators.MathMutator&#34;, &#34;Math Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A binary arithmetic operation has been replaced by another one&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_39'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  VOID_METHOD(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator&#34;, &#34;Void Method Calls Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_41'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A method call has been removed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_42'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  NEGATE_COND(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator&#34;, &#34;Negate Conditionals Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_44'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A conditional expression has been negated&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_45'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  COND_BOUNDARY(&#34;org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator&#34;, &#34;Conditionals Boundary Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_46'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A relational operator has been replaced by a boundary counterpart&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_47'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  INCREMENTS(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_48'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator&#34;, &#34;Increments Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A local variable increment/decrement has been replaced&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_50'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_REMOVE_INCREMENTS(&#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator&#34;, &#34;Experimental Remove Increments Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;An increment operation was removed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_52'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  NON_VOID_METHOD(&#34;org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;Non Void Method Calls Mutator&#34;, &#34;A method call has been removed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_54'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  CONSTRUCTOR(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_55'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator&#34;, &#34;Constructor Calls Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_56'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A constructor call has been removed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_57'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  REMOVE_COND_EQ_IF(&#34;org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator&#34;, &#34;Remove Conditional Mutator&#34;, &#34;A conditional statement has been removed - EQ IF&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_58'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  REMOVE_COND_EQ_ELSE(&#34;org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator&#34;, &#34;Remove Conditional Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A conditional statement has been removed - EQ ELSE&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_60'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  REMOVE_COND_ORD_IF(&#34;org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator&#34;, &#34;Remove Conditional Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A conditional statement has been removed - EQ ORD IF&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_62'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  REMOVE_COND_ORD_ELSE(&#34;org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator&#34;, &#34;Remove Conditional Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_63'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A conditional statement has been removed - EQ ORD ELSE&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_64'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_MEMBER_VAR(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_65'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator&#34;, &#34;Experimental Member Variable Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_66'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A member variable assignment has been replaced&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_67'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_SWITCH(&#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator&#34;, &#34;Experimental Switch Mutator&#34;, &#34;A switch label has been swapped with another&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_68'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_ARGUMENT_PROPAGATION(&#34;org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator&#34;, &#34;Experimental Argument Propagation Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_69'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A method return value was replaced with a method parameter&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_70'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_NAKED_RECEIVER(&#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.NakedReceiverMutator&#34;, &#34;Experimental Naked ReceiverMutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_71'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;A method return value was replaced with receiver&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_72'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_REMOVE_SWITCH(&#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator&#34;, &#34;Experimental Remove Switch Mutator&#34;, &#34;A switch statement was removed&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_73'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  EXP_RETURN_VALS(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;org.pitest.mutationtest.engine.gregor.mutators.experimental.ReturnValuesMutator&#34;, &#34;Experimental Return Values Mutator&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_75'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    &#34;The return value (possibly an object) of a method call has been replaced&#34;),</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_76'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_77'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  UNKNOWN(&#34;&#34;, &#34;Unknown mutator&#34;, &#34;An unknown mutator has been applied&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private String key;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_80'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private String name;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_81'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private String description;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_82'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_83'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  Mutator(String key, String name, String description) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_84'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    this.key = key;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_85'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    this.name = name;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_86'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    this.description = description;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_87'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_88'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_89'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  String getKey() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_90'/>
+90
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_90'>1</a>
+<span>
+1. getKey : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getKey to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return key;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_91'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_92'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_93'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  String getName() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_94'/>
+94
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_94'>1</a>
+<span>
+1. getName : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getName to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return name;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_95'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_96'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_97'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  String getDescription() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_98'/>
+98
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_98'>1</a>
+<span>
+1. getDescription : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getDescription to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return description;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_99'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_100'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_101'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  static Mutator parse(String mutatorKey) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_102'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_103'/>
+103
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_103'>3</a>
+<span>
+1. parse : changed conditional boundary &rarr; KILLED<br/>
+2. parse : Changed increment from 1 to -1 &rarr; KILLED<br/>
+3. parse : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    for (Mutator mutantStatus : Mutator.values()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_104'/>
+104
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_104'>1</a>
+<span>
+1. parse : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (mutantStatus.getKey().equals(mutatorKey)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_105'/>
+105
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_105'>1</a>
+<span>
+1. parse : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::parse to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return mutantStatus;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_106'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_107'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_108'/>
+108
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_108'>1</a>
+<span>
+1. parse : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::parse to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return unknown();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_109'/>
+109
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_109'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_110'/>
+110
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_110'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_111'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static Mutator unknown() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_112'/>
+112
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_112'>1</a>
+<span>
+1. unknown : mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::unknown to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return UNKNOWN;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_113'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_114'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_90'>90</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_90'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getKey<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_succeeds_if_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getKey to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_94'>94</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_94'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getName<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutantTest.verify_string_format_with_provided_source_file(org.sonar.plugins.pitest.domain.MutantTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getName to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_98'>98</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_98'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDescription<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutantTest.verify_description(org.sonar.plugins.pitest.domain.MutantTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::getDescription to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_103'>103</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_103'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_returns_unknown_if_not_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_returns_unknown_if_not_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> Changed increment from 1 to -1 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_succeeds_if_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_104'>104</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_104'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_succeeds_if_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_105'>105</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_105'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_succeeds_if_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::parse to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_108'>108</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_108'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>parse<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_returns_unknown_if_not_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::parse to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1b1e1f02_112'>112</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1b1e1f02_112'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unknown<br/><b>Killed by : </b>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_returns_unknown_if_not_exact_match(org.sonar.plugins.pitest.domain.MutatorTest)</span></span> mutated return of Object value for org/sonar/plugins/pitest/domain/Mutator::unknown to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_succeeds_if_exact_match(org.sonar.plugins.pitest.domain.MutatorTest) (0 ms)</li><li>org.sonar.plugins.pitest.domain.MutatorTest.parse_of_valid_keys_succeeds(org.sonar.plugins.pitest.domain.MutatorTest) (0 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.should_get_path_to_java_source_file(org.sonar.plugins.pitest.domain.MutantTest) (3 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.verify_description(org.sonar.plugins.pitest.domain.MutantTest) (1 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_create_issue_for_coverage_not_met(org.sonar.plugins.pitest.scanner.PitestSensorTest) (19 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_describe_execution_conditions(org.sonar.plugins.pitest.scanner.PitestSensorTest) (56 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_create_issue_for_survived_mutant(org.sonar.plugins.pitest.scanner.PitestSensorTest) (17 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.should_get_path_to_source_file_for_an_anonymous_inner_class(org.sonar.plugins.pitest.domain.MutantTest) (1 ms)</li><li>org.sonar.plugins.pitest.domain.MutatorTest.parse_invert_negs_returns_unknown_if_not_exact_match(org.sonar.plugins.pitest.domain.MutatorTest) (0 ms)</li><li>org.sonar.plugins.pitest.scanner.SourceFileReportTest.should_collect_mutant_metrics(org.sonar.plugins.pitest.scanner.SourceFileReportTest) (1 ms)</li><li>org.sonar.plugins.pitest.scanner.SourceFileReportTest.should_generate_a_json_string_with_all_data(org.sonar.plugins.pitest.scanner.SourceFileReportTest) (1 ms)</li><li>org.sonar.plugins.pitest.scanner.ProjectReportTest.should_collect_mutant_metrics(org.sonar.plugins.pitest.scanner.ProjectReportTest) (16 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_not_create_issue_for_survived_mutant_if_present_but_rule_not_active(org.sonar.plugins.pitest.scanner.PitestSensorTest) (8 ms)</li><li>org.sonar.plugins.pitest.scanner.XmlReportParserTest.should_parse_report_and_find_mutants(org.sonar.plugins.pitest.scanner.XmlReportParserTest) (158 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.verify_string_format_with_provided_source_file(org.sonar.plugins.pitest.domain.MutantTest) (1 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.should_get_path_to_kotlin_source_file(org.sonar.plugins.pitest.domain.MutantTest) (6 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_not_create_issue_for_coverage_not_met_if_rule_not_active(org.sonar.plugins.pitest.scanner.PitestSensorTest) (8 ms)</li><li>org.sonar.plugins.pitest.scanner.XmlReportParserTest.should_log_but_not_throw_exception_if_line_number_parsing_fails(org.sonar.plugins.pitest.scanner.XmlReportParserTest) (159 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.verifyMeasures(org.sonar.plugins.pitest.scanner.PitestSensorTest) (6 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_not_create_issue_for_coverage_not_met_if_coverage_below_threshold(org.sonar.plugins.pitest.scanner.PitestSensorTest) (7 ms)</li><li>org.sonar.plugins.pitest.scanner.PitestSensorTest.should_create_issue_for_both_java_and_kotlin_sources(org.sonar.plugins.pitest.scanner.PitestSensorTest) (720 ms)</li><li>org.sonar.plugins.pitest.domain.MutantTest.verify_string_format_with_derived_source_file(org.sonar.plugins.pitest.domain.MutantTest) (5 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.2.2
+
+</body>
+</html>

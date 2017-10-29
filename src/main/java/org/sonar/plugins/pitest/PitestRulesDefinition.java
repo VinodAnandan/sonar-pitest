@@ -19,24 +19,57 @@
  */
 package org.sonar.plugins.pitest;
 
+import org.sonar.api.rule.RuleStatus;
+import org.sonar.api.rule.Severity;
+import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
+import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_NAME;
+import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 public class PitestRulesDefinition implements RulesDefinition {
 
+  public static final String TAG_TEST_QUALITY = "test-quality";
+  public static final String TAG_TEST_COVERAGE = "test-coverage";
+
+  @Override
   public void define(Context context) {
     NewRepository repository = context
       .createRepository(REPOSITORY_KEY, "java")
       .setName(REPOSITORY_NAME);
 
+    /*
+     * Rule: Survived Mutant
+     * Current thinking is that a survived mutant is at least as severe as missing code coverage, probably more severe.
+     * Reason for more severe: a test covers this code, so there may be a false sense of security regarding test coverage
+     */
     repository.createRule(SURVIVED_MUTANT_RULE_KEY)
-      .setHtmlDescription("Survived mutant. For more information check out the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>")
-      .setName("Survived mutant");
+      .setName("Survived mutant")
+      .setHtmlDescription(
+        "An issue is created when an existing test fails to identify a mutation in the code. For more information, review the <a href=\"http://pitest.org/quickstart/mutators\">PIT documentation</a>")
+      .setStatus(RuleStatus.READY)
+      .setSeverity(Severity.MAJOR)
+      .setType(RuleType.BUG)
+      .setTags(TAG_TEST_QUALITY)
+      .setActivatedByDefault(true);
 
-    repository.createRule(INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)
-      .setHtmlDescription("An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
+    /*
+     * Rule: Insufficient Mutation coverage
+     */
+    NewRule insufficientMutationCoverageRule = repository.createRule(INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)
       .setName("Insufficient mutation coverage")
+      .setHtmlDescription(
+        "An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
+      .setStatus(RuleStatus.READY)
+      .setSeverity(Severity.MAJOR)
+      .setType(RuleType.BUG)
+      .setTags(TAG_TEST_QUALITY, TAG_TEST_COVERAGE)
+      .setActivatedByDefault(true);
+
+    insufficientMutationCoverageRule
       .createParam(COVERAGE_RATIO_PARAM)
       .setDefaultValue("65")
       .setDescription("The minimum required mutation coverage ratio");

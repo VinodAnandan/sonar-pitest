@@ -19,49 +19,66 @@
  */
 package org.sonar.plugins.pitest;
 
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
-import org.sonar.api.measures.Metric;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Computer that processes the aggregated quantitative metric for a component from all the quantitative metrics
+ * MeasureComputer that processes the aggregated quantitative metric for a component from all the quantitative metrics
  * of its children.
  *
  * @author <a href="mailto:gerald.muecke@devcon5.io">Gerald M&uuml;cke</a>
  */
+@ComputeEngineSide
+@ExtensionPoint
 public class PitestComputer implements MeasureComputer {
+
+  private static final String[] metricKeys = {PitestMetrics.MUTATIONS_NOT_COVERED_KEY,
+    PitestMetrics.MUTATIONS_GENERATED_KEY,
+    PitestMetrics.MUTATIONS_KILLED_KEY,
+    PitestMetrics.MUTATIONS_SURVIVED_KEY,
+    PitestMetrics.MUTATIONS_ERROR_KEY,
+    PitestMetrics.MUTATIONS_UNKNOWN_KEY,
+    PitestMetrics.MUTATIONS_DATA_KEY,
+    PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY};
 
   @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
-
     return defContext.newDefinitionBuilder()
-      .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
+      .setOutputMetrics(metricKeys)
       .build();
   }
 
+  @Override
   public void compute(final MeasureComputerContext context) {
-    for (String metricKey : getQuantitativeKeys()) {
+    for (String metricKey : metricKeys) {
       if (context.getMeasure(metricKey) == null) {
-        Integer sum = 0;
-        for( Measure m : context.getChildrenMeasures(metricKey)) {
-          sum += m.getIntValue();
-        }
-        if(sum > 0) {
+        Integer sum = compute(context, metricKey);
+        if (sum > 0) {
           context.addMeasure(metricKey, sum);
         }
       }
     }
+
+    final Measure mutationsTotal = context.getMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY);
+    if (mutationsTotal != null) {
+      final Integer elements = mutationsTotal.getIntValue();
+      final Measure killed = context.getMeasure(PitestMetrics.MUTATIONS_KILLED_KEY);
+      if (elements > 0 && killed != null) {
+        final Integer coveredElements = killed.getIntValue();
+        final Double coverage = 100.0 * coveredElements / elements;
+        context.addMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY, coverage);
+      }
+    }
   }
 
-  public List<String> getQuantitativeKeys() {
-    final List<String> result = new ArrayList<>();
-    for(Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()){
-      result.add(m.getKey());
+  private Integer compute(final MeasureComputerContext context, String metricKey) {
+    Integer sum = 0;
+    for (Measure m : context.getChildrenMeasures(metricKey)) {
+      sum += m.getIntValue();
     }
-    return result;
+    return sum;
   }
+
 }

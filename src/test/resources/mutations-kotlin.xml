@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mutations>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>Main.java</sourceFile>
+		<mutatedClass>some.Main</mutatedClass>
+		<mutatedMethod>main</mutatedMethod>
+		<methodDescription>([Ljava/lang/String;)V</methodDescription>
+		<lineNumber>12</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator
+		</mutator>
+		<index>14</index>
+		<killingTest />
+		<description>changed conditional boundary</description>
+	</mutation>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>Main.java</sourceFile>
+		<mutatedClass>some.Main</mutatedClass>
+		<mutatedMethod>main</mutatedMethod>
+		<methodDescription>([Ljava/lang/String;)V</methodDescription>
+		<lineNumber>13</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator
+		</mutator>
+		<index>17</index>
+		<killingTest />
+		<description>Changed increment from 1 to -1</description>
+	</mutation>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>Main.java</sourceFile>
+		<mutatedClass>some.Main</mutatedClass>
+		<mutatedMethod>main</mutatedMethod>
+		<methodDescription>([Ljava/lang/String;)V</methodDescription>
+		<lineNumber>12</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator
+		</mutator>
+		<index>14</index>
+		<killingTest />
+		<description>negated conditional</description>
+	</mutation>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>Main.java</sourceFile>
+		<mutatedClass>some.Main</mutatedClass>
+		<mutatedMethod>main</mutatedMethod>
+		<methodDescription>([Ljava/lang/String;)V</methodDescription>
+		<lineNumber>10</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator
+		</mutator>
+		<index>5</index>
+		<killingTest />
+		<description>removed call to java/io/PrintStream::println
+		</description>
+	</mutation>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>MainKotlin.kt</sourceFile>
+		<mutatedClass>some.Workd</mutatedClass>
+		<mutatedMethod>world</mutatedMethod>
+		<methodDescription>()V</methodDescription>
+		<lineNumber>17</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator
+		</mutator>
+		<index>7</index>
+		<killingTest />
+		<description>removed call to java/io/PrintStream::print</description>
+	</mutation>
+	<mutation detected='false' status='SURVIVED'>
+		<sourceFile>MainKotlin.kt</sourceFile>
+		<mutatedClass>some.World</mutatedClass>
+		<mutatedMethod>world</mutatedMethod>
+		<methodDescription>()V</methodDescription>
+		<lineNumber>17</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator
+		</mutator>
+		<index>7</index>
+		<killingTest />
+		<description>removed call to java/io/PrintStream::print</description>
+	</mutation>
+	<mutation detected='false' status='SURVIVED'>
+		<sourceFile>MainKotlin.kt</sourceFile>
+		<mutatedClass>some.Hello</mutatedClass>
+		<mutatedMethod>hello</mutatedMethod>
+		<methodDescription>()V</methodDescription>
+		<lineNumber>6</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator
+		</mutator>
+		<index>7</index>
+		<killingTest />
+		<description>removed call to java/io/PrintStream::print</description>
+	</mutation>
+</mutations>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mutations>
+	<mutation detected='false' status='NO_COVERAGE'>
+		<sourceFile>GallioSensor.java</sourceFile>
+		<mutatedClass>org.sonar.plugins.csharp.gallio.GallioSensor</mutatedClass>
+		<mutatedMethod>findTestAssemblies</mutatedMethod>
+		<lineNumber>127</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator</mutator>
+		<index>4</index>
+		<killingTest />
+	</mutation>
+	<mutation detected='false' status='SURVIVED'>
+		<sourceFile>MainKotlin.kt</sourceFile>
+		<mutatedClass>some.Hello</mutatedClass>
+		<mutatedMethod>hello</mutatedMethod>
+		<methodDescription>()V</methodDescription>
+		<lineNumber>6</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator</mutator>
+		<index>7</index>
+		<killingTest />
+		<description>removed call to java/io/PrintStream::print</description>
+	</mutation>
+</mutations>

@@ -11,7 +11,7 @@
 
 	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
 
 	<name>Sonar Pitest Plugin</name>
@@ -69,23 +69,24 @@
 	</ciManagement>
 
 	<properties>
+		<sonar.buildVersion>6.6</sonar.buildVersion>
+		<sonar-java.version>4.12</sonar-java.version>
+		<jacoco.version>0.7.9</jacoco.version>
+		<pitest.version>1.2.2</pitest.version>
+		<junit.version>4.10</junit.version>
+		<mockito-core.version>2.7.13</mockito-core.version>
+		<assertj-core.version>3.6.1</assertj-core.version>
+		<guava.version>11.0.2</guava.version>
+
+		<!-- eat your own dog food -->
+		<sonar.pitest.mode>reuseReport</sonar.pitest.mode>
+		<sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
+
+		<!-- license -->
 		<license.owner>${project.organization.name}</license.owner>
 		<license.title>Sonar Pitest Plugin</license.title>
 		<license.years>2009-2017</license.years>
 		<license.mailto>vinod@owasp.org</license.mailto>
-		<sonar.buildVersion>6.5</sonar.buildVersion>
-		<sonar-java.version>4.12</sonar-java.version>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.min.version>1.8</jdk.min.version>
-		<junit.version>4.10</junit.version>
-		<powermock.version>1.4.10</powermock.version>
-		<fest.version>1.4</fest.version>
-		<guava.version>11.0.2</guava.version>
-
-		<!-- eat your own dog food -->
-		<sonar.pitest.mode>active</sonar.pitest.mode>
-		<sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
 	</properties>
 
 	<dependencies>
@@ -102,20 +103,6 @@
 			<version>${guava.version}</version>
 		</dependency>
 
-		<!-- logs -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>0.9.30</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.2</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- unit tests -->
 		<dependency>
 			<groupId>org.sonarsource.sonarqube</groupId>
@@ -130,45 +117,39 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.4.1</version>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito-core.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.10.19</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>hamcrest-core</artifactId>
-					<groupId>org.hamcrest</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj-core.version}</version>
+			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
+				<!-- FIXME: analyze need and consider removing -->
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<testNGArtifactName>none:none</testNGArtifactName>
+					<argLine>@{argLine}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
+				<version>${jacoco.version}</version>
 				<configuration>
 					<excludes>
 						<exclude>*_javassist_*</exclude>
 					</excludes>
-					<includes>
-						<include>org.sonar.plugins.pitest</include>
-					</includes>
+<!-- 					<includes> -->
+<!-- 						<include>org.sonar.plugins.pitest</include> -->
+<!-- 					</includes> -->
 				</configuration>
 				<executions>
 					<execution>
@@ -186,14 +167,6 @@
 				<configuration>
 					<pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
 					<pluginName>Pitest</pluginName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${jdk.min.version}</source>
-					<target>${jdk.min.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -220,7 +193,7 @@
 			<plugin>
 				<groupId>org.pitest</groupId>
 				<artifactId>pitest-maven</artifactId>
-				<version>1.2.2</version>
+				<version>${pitest.version}</version>
 				<configuration>
 					<targetClasses>
 						<param>org.sonar.plugins.pitest*</param>
