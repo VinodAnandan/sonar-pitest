@@ -19,11 +19,19 @@
  */
 package org.sonar.plugins.pitest;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.plugins.pitest.scanner.PitestSensor;
+import org.sonar.plugins.pitest.scanner.ProjectReport;
+import org.sonar.plugins.pitest.scanner.XmlReportFinder;
+import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_REUSE_REPORT;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
 /**
  * This class is the entry point for all PIT extensions
@@ -33,14 +41,15 @@ public final class PitestPlugin implements Plugin {
   @Override
   public void define(Context context) {
 
-    context.addExtensions(
+    ImmutableList.Builder<Object> builder = ImmutableList.builder();
+
+    builder.add(
       PropertyDefinition.builder(MODE_KEY)
-        .defaultValue(MODE_SKIP)
+        .defaultValue(MODE_REUSE_REPORT)
         .name("PIT activation mode")
-        .description("Possible values:  empty (means skip) and 'reuseReport'")
+        .description("Possible values:  'reuseReport' and 'skip'")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-
       PropertyDefinition.builder(REPORT_DIRECTORY_KEY)
         .defaultValue(REPORT_DIRECTORY_DEF)
         .name("Output directory for the PIT reports")
@@ -49,13 +58,15 @@ public final class PitestPlugin implements Plugin {
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
 
-      XmlReportParser.class,
-      XmlReportFinder.class,
+      PitestComputer.class,
+      PitestMetrics.class,
+      ProjectReport.class,
       PitestRulesDefinition.class,
       PitestSensor.class,
-      PitestMetrics.class,
-      PitestComputer.class,
-      PitestCoverageComputer.class
-    );
+      XmlReportParser.class,
+      XmlReportFinder.class);
+
+    context.addExtensions(builder.build());
+
   }
 }

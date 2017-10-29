@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mutations>
+	<mutation detected='false' status='SURVIVED'>
+		<sourceFile>PitestSensor.java</sourceFile>
+		<mutatedClass>org.sonar.plugins.pitest.scanner.PitestSensor</mutatedClass>
+		<mutatedMethod>addCoverageForKilledMutants</mutatedMethod>
+		<methodDescription>(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V</methodDescription>
+		<lineNumber>212</lineNumber>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator</mutator>
+		<index>15</index>
+		<killingTest />
+		<description>negated conditional</description>
+	</mutation>
+
+</mutations>

@@ -10,7 +10,7 @@ addons:
 jdk:
   - oraclejdk8
 script: 
-  - mvn clean package sonar:sonar
+  - mvn clean package org.pitest:pitest-maven:mutationCoverage sonar:sonar
 
 cache:
   directories:

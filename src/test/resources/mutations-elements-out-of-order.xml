@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mutations>
+	<mutation detected='true' status='KILLED'>
+		<mutator>org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator</mutator>
+		<sourceFile>GallioSensor.java</sourceFile>
+		<mutatedClass>org.sonar.plugins.csharp.gallio.GallioSensor</mutatedClass>
+		<mutatedMethod>shouldExecuteOnProject</mutatedMethod>
+		<lineNumber>85</lineNumber>
+		<index>0</index>
+		<killingTest>org.sonar.plugins.csharp.gallio.GallioSensorTest.testShouldNotExecuteOnProjectIfReuseReports(org.sonar.plugins.csharp.gallio.GallioSensorTest)</killingTest>
+	</mutation>
+</mutations>
