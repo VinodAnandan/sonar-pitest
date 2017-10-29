@@ -32,11 +32,11 @@ public class ProjectReportTest {
   @Test
   public void should_organize_by_relative_path() {
     // given
-    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
-    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
-    Mutant m3 = new TestMutantBuilder().className("com.foo.bar.differentPackage.Toto").sourceFile("Toto.java").build(); 
-    Mutant m4 = new TestMutantBuilder().className("com.foo.bar.qix.Tata").sourceFile("Tata.java").build();  
-    Mutant m5 = new TestMutantBuilder().className("bar.Toto").sourceFile("Toto.kt").build(); 
+    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build();
+    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build();
+    Mutant m3 = new TestMutantBuilder().className("com.foo.bar.differentPackage.Toto").sourceFile("Toto.java").build();
+    Mutant m4 = new TestMutantBuilder().className("com.foo.bar.qix.Tata").sourceFile("Tata.java").build();
+    Mutant m5 = new TestMutantBuilder().className("bar.Toto").sourceFile("Toto.kt").build();
 
     // when
     ProjectReport report = new ProjectReport(Arrays.asList(m1, m2, m3, m4, m5));
@@ -52,12 +52,12 @@ public class ProjectReportTest {
         new SourceFileReport("com/foo/bar/qix/Tata.java"),
         new SourceFileReport("Toto.kt"));
   }
-  
+
   @Test
   public void should_collect_in_same_report_when_in_same_file() {
     // given
-    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
-    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
+    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build();
+    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build();
 
     // when
     ProjectReport report = new ProjectReport(Arrays.asList(m1, m2));
@@ -69,9 +69,9 @@ public class ProjectReportTest {
       .usingElementComparatorOnFields("sourceFileRelativePath")
       .containsOnly(
         new SourceFileReport("com/foo/bar/Toto.java"));
-    
+
     SourceFileReport sourceFileReport = sourceFileReports.iterator().next();
     assertThat(sourceFileReport.getMutationsTotal()).isEqualTo(2);
-    
-  }  
+
+  }
 }

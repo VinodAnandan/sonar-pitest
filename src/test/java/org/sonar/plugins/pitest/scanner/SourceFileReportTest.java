@@ -21,9 +21,9 @@ package org.sonar.plugins.pitest.scanner;
 
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
-import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 import org.sonar.plugins.pitest.domain.MutantStatus;
 import org.sonar.plugins.pitest.domain.Mutator;
+import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,11 +41,11 @@ public class SourceFileReportTest {
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
     fileMutants.addMutant(m1);
-    
+
     // then
     assertThat(fileMutants.getRelativePath()).isEqualTo("com/foo/bar/Qix.java");
   }
-  
+
   @Test
   public void should_generate_a_json_string_with_all_data_from_one_line() {
     // given

@@ -33,7 +33,6 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
@@ -57,13 +56,11 @@ import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 
 public class PitestSensorTest {
-  
-  private static final String MODULE_BASE_DIR = "src/test/resources/pitest-sensor-tests" ;
-  private static final String JAVA_RELATIVE_PATH = "com/foo/Bar.java" ;
-  private static final String JAVA_CLASS = "com.foo.Bar" ;
-  private static final String KOTLIN_RELATIVE_PATH = "Maze.kt" ;
-  
-  
+
+  private static final String MODULE_BASE_DIR = "src/test/resources/pitest-sensor-tests";
+  private static final String JAVA_RELATIVE_PATH = "com/foo/Bar.java";
+  private static final String JAVA_CLASS = "com.foo.Bar";
+  private static final String KOTLIN_RELATIVE_PATH = "Maze.kt";
 
   @Test
   public void should_describe_execution_conditions() throws Exception {
@@ -127,7 +124,7 @@ public class PitestSensorTest {
     // then
     assertThat(context.allIssues()).hasSize(2);
     assertThat(context.allIssues()).allMatch(i -> i.ruleKey().rule().equals(PitestConstants.SURVIVED_MUTANT_RULE_KEY));
-    
+
   }
 
   @Test
@@ -174,7 +171,7 @@ public class PitestSensorTest {
     // com/foo/Bar.java : coverage 60%
     // Maze.kt: : killedPercent 33%
     assertThat(context.allIssues()).hasSize(1);
-    assertThat(context.allIssues()).allMatch(i -> i.ruleKey().rule().equals(PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY));    
+    assertThat(context.allIssues()).allMatch(i -> i.ruleKey().rule().equals(PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY));
 
   }
 
@@ -195,10 +192,10 @@ public class PitestSensorTest {
     // com/foo/Bar.java : coverage 60%
     // Maze.kt: : killedPercent 33%
     assertThat(context.allIssues()).hasSize(2);
-    assertThat(context.allIssues()).allMatch(i -> i.ruleKey().rule().equals(PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY));    
+    assertThat(context.allIssues()).allMatch(i -> i.ruleKey().rule().equals(PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY));
 
   }
-  
+
   @Test
   public void should_not_create_issue_for_coverage_not_met_if_coverage_below_threshold() throws Exception {
     // given
@@ -282,7 +279,7 @@ public class PitestSensorTest {
   }
 
   private SensorContextTester createTestSensorContext() throws IOException {
-    
+
     SensorContextTester context = SensorContextTester.create(new File(MODULE_BASE_DIR));
     DefaultFileSystem fs = context.fileSystem();
 
@@ -307,12 +304,12 @@ public class PitestSensorTest {
       .setCharset(StandardCharsets.UTF_8)
       .build();
     fs.add(kotlinInputFile);
-    
+
     return context;
   }
 
   private List<Mutant> mutantsBackedByFileSystem() {
-    
+
     List<Mutant> mutants = new ArrayList<>();
     // 60% coverage
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
@@ -320,7 +317,7 @@ public class PitestSensorTest {
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.NO_COVERAGE).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
-    
+
     // 33% coverage
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile(KOTLIN_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).sourceFile(KOTLIN_RELATIVE_PATH).build());
@@ -329,14 +326,14 @@ public class PitestSensorTest {
     return mutants;
   }
 
-//  private void verifyMeasuresSaved() {
-//    String componentKey = "module.key:com/foo/Bar.java";
-//    assertThat(context.measure(componentKey, MUTATIONS_TOTAL).value()).isEqualTo(5);
-//    assertThat(context.measure(componentKey, MUTATIONS_DETECTED).value()).isEqualTo(1);
-//    assertThat(context.measure(componentKey, MUTATIONS_KILLED).value()).isEqualTo(1);
-//    assertThat(context.measure(componentKey, MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
-//    assertThat(context.measure(componentKey, MUTATIONS_SURVIVED).value()).isEqualTo(1);
-//    assertThat(context.measure(componentKey, MUTATIONS_UNKNOWN).value()).isEqualTo(1);
-//    assertThat(context.measure(componentKey, MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
-//  }
+  // private void verifyMeasuresSaved() {
+  // String componentKey = "module.key:com/foo/Bar.java";
+  // assertThat(context.measure(componentKey, MUTATIONS_TOTAL).value()).isEqualTo(5);
+  // assertThat(context.measure(componentKey, MUTATIONS_DETECTED).value()).isEqualTo(1);
+  // assertThat(context.measure(componentKey, MUTATIONS_KILLED).value()).isEqualTo(1);
+  // assertThat(context.measure(componentKey, MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
+  // assertThat(context.measure(componentKey, MUTATIONS_SURVIVED).value()).isEqualTo(1);
+  // assertThat(context.measure(componentKey, MUTATIONS_UNKNOWN).value()).isEqualTo(1);
+  // assertThat(context.measure(componentKey, MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
+  // }
 }

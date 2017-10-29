@@ -29,13 +29,18 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicReference;
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 @ScannerSide
 @ExtensionPoint
 public class XmlReportFinder {
 
+  private static final Logger LOG = Loggers.get(XmlReportFinder.class);
+
   public File findReport(File reportDirectory) {
     if (!reportDirectory.exists() || !reportDirectory.isDirectory()) {
+      LOG.error("reportDirectory does not exist or is not a Directory: " + reportDirectory.getAbsolutePath());
       return null;
     }
 
@@ -78,7 +83,8 @@ public class XmlReportFinder {
         }
       });
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      LOG.error("unable to find pitest report file in reportDirectory: " + reportDirectory.getAbsolutePath());
+      return null;
     }
     if (latestReport.get() != null) {
       return latestReport.get().toFile();

@@ -40,12 +40,11 @@ Mutation testing can be computationally expensive.  Henry Coles, creator of PIT,
 * Limit the number of mutations per class
 * Tweak the number of threads
 
-Check out the "Advanced configuration properties" at the bottom of this page to address the above points.
-
 ### Configuration
 The sonar-pitest plugin exposes two rules:
 * "Survived mutant", which creates an issue (of TYPE BUG and SEVERITY MAJOR) whenever Mutated code does not result in a test failure
 * "Insufficient Mutation Coverage", which creates an an issue (of TYPE BUG and SEVERITY MAJOR) whenever the percentage of Survived mutants exceeds a configurable threshold (default: 65%)
+
 Both rules are active by default 
 
 ### Project build setup

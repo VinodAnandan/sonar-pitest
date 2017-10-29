@@ -70,7 +70,7 @@
 
 	<properties>
 		<sonar.buildVersion>6.6</sonar.buildVersion>
-		<sonar-java.version>4.12</sonar-java.version>
+		<sonar-java.version>4.14</sonar-java.version>
 		<jacoco.version>0.7.9</jacoco.version>
 		<pitest.version>1.2.2</pitest.version>
 		<junit.version>4.10</junit.version>
@@ -147,9 +147,6 @@
 					<excludes>
 						<exclude>*_javassist_*</exclude>
 					</excludes>
-<!-- 					<includes> -->
-<!-- 						<include>org.sonar.plugins.pitest</include> -->
-<!-- 					</includes> -->
 				</configuration>
 				<executions>
 					<execution>

@@ -25,8 +25,8 @@ package org.sonar.plugins.pitest.domain;
  * @author bwflood
  *
  */
-//org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator
 public enum Mutator {
+
   INVERT_NEGS(
     "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", "Invert Negatives Mutator",
     "A number has been replaced by its opposite"),
@@ -55,12 +55,12 @@ public enum Mutator {
   CONSTRUCTOR(
     "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", "Constructor Calls Mutator",
     "A constructor call has been removed"),
-  REMOVE_COND_EQ_IF("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator", "A conditional statement has been removed - EQ IF"),
-  REMOVE_COND_EQ_ELSE("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator",
+  REMOVE_COND_EQ_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME, "A conditional statement has been removed - EQ IF"),
+  REMOVE_COND_EQ_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ELSE"),
-  REMOVE_COND_ORD_IF("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator",
+  REMOVE_COND_ORD_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ORD IF"),
-  REMOVE_COND_ORD_ELSE("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator",
+  REMOVE_COND_ORD_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ORD ELSE"),
   EXP_MEMBER_VAR(
     "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator", "Experimental Member Variable Mutator",

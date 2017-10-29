@@ -21,8 +21,8 @@ package org.sonar.plugins.pitest;
 
 import org.junit.Test;
 import org.sonar.api.ce.measure.Component;
-import org.sonar.api.ce.measure.Settings;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
+import org.sonar.api.ce.measure.Settings;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
 import org.sonar.api.ce.measure.test.TestMeasureComputerDefinitionContext;
 
