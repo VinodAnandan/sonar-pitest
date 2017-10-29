@@ -56,11 +56,12 @@ public class TestMutantBuilder {
     this.mutantLocationBuilder.mutatedMethod(mutatedMethod);
     return this;
   }
+
   public TestMutantBuilder methodDescription(String methodDescription) {
     this.mutantLocationBuilder.methodDescription(methodDescription);
     return this;
   }
-  
+
   public TestMutantBuilder lineNumber(int lineNumber) {
     this.mutantLocationBuilder.lineNumber(lineNumber);
     return this;
@@ -75,6 +76,7 @@ public class TestMutantBuilder {
     this.mutator = Mutator.parse(mutatorStr);
     return this;
   }
+
   public TestMutantBuilder index(int index) {
     this.index = index;
     return this;
@@ -91,11 +93,11 @@ public class TestMutantBuilder {
   }
 
   public Mutant build() {
-    if (mutantStatus.equals(MutantStatus.KILLED) ) {
+    if (mutantStatus.equals(MutantStatus.KILLED)) {
       if (killingTest == null) {
         killingTest = random("killingtest");
       }
-    } 
+    }
     return new Mutant(detected, mutantStatus, mutantLocationBuilder.build(), mutator.getKey(), index, description, killingTest);
   }
 

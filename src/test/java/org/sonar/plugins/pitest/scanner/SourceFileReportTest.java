@@ -41,11 +41,11 @@ public class SourceFileReportTest {
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
     fileMutants.addMutant(m1);
-    
+
     // then
     assertThat(fileMutants.getRelativePath()).isEqualTo("com/foo/bar/Qix.java");
   }
-  
+
   @Test
   public void should_generate_a_json_string_with_all_data_from_one_line() {
     // given

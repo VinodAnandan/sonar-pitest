@@ -25,7 +25,7 @@ package org.sonar.plugins.pitest.domain;
  * @author bwflood
  *
  */
-//org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator
+// org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator
 public enum Mutator {
   INVERT_NEGS(
     "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", "Invert Negatives Mutator",

@@ -40,7 +40,7 @@ public class XmlReportFinderTest {
     assertThat(report).isNotNull();
     report.getAbsolutePath().endsWith("123/mutations.xml");
   }
-  
+
   @Test
   public void should_find_latest_report_file_with_two_timestamped_folders() {
     // given
@@ -98,6 +98,7 @@ public class XmlReportFinderTest {
     // then
     assertThat(report).isNull();
   }
+
   @Test
   public void should_return_null_if_directory_does_not_exist() {
     // given

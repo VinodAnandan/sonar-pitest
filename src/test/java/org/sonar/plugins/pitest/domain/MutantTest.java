@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MutantTest {
 
-
   @Test
   public void should_get_path_to_java_source_file() {
     // given
@@ -59,7 +58,8 @@ public class MutantTest {
   @Test
   public void verify_json() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR).sourceFile("Bar.kt").build(); 
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR)
+      .sourceFile("Bar.kt").build();
     // when
     String string = mutant.toString();
     // then
@@ -70,7 +70,8 @@ public class MutantTest {
   @Test
   public void verify_json_with_killing_test() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR).sourceFile("Bar.kt").killingTest("killingTest").build(); 
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR)
+      .sourceFile("Bar.kt").killingTest("killingTest").build();
     // when
     String string = mutant.toString();
     // then

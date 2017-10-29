@@ -45,8 +45,10 @@ public class XmlReportParserTest {
   public void should_parse_report_and_find_mutants() {
     // given
     File report = new File(MODULE_BASE_DIR, "mutations.xml");
-    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java").className("org.sonar.plugins.pitest.scanner.PitestSensor")
-      .mutatedMethod("addCoverageForKilledMutants").methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
+    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java")
+      .className("org.sonar.plugins.pitest.scanner.PitestSensor")
+      .mutatedMethod("addCoverageForKilledMutants")
+      .methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
       .lineNumber(212).mutator("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator").index(15).killingTest("").description("negated conditional")
       .build();
 
@@ -63,11 +65,13 @@ public class XmlReportParserTest {
   public void should_parse_report_and_find_mutants_if_elements_are_unordered() {
     // given
     File report = new File(MODULE_BASE_DIR, "mutations-unordered.xml");
-    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java").className("org.sonar.plugins.pitest.scanner.PitestSensor")
-      .mutatedMethod("addCoverageForKilledMutants").methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
+    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java")
+      .className("org.sonar.plugins.pitest.scanner.PitestSensor")
+      .mutatedMethod("addCoverageForKilledMutants")
+      .methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
       .lineNumber(212).mutator("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator").index(15).killingTest("").description("negated conditional")
       .build();
-    
+
     // when
     Collection<Mutant> mutants = parser.parse(report);
 
