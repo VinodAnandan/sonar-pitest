@@ -54,7 +54,7 @@ public class PitestRulesDefinition implements RulesDefinition {
       .setSeverity(Severity.MAJOR)
       .setType(RuleType.BUG)
       .setTags(TAG_TEST_QUALITY)
-      .setActivatedByDefault(true);
+      .setActivatedByDefault(false);
 
     /*
      * Rule: Insufficient Mutation coverage
@@ -67,7 +67,7 @@ public class PitestRulesDefinition implements RulesDefinition {
       .setSeverity(Severity.MAJOR)
       .setType(RuleType.BUG)
       .setTags(TAG_TEST_QUALITY, TAG_TEST_COVERAGE)
-      .setActivatedByDefault(true);
+      .setActivatedByDefault(false);
 
     insufficientMutationCoverageRule
       .createParam(COVERAGE_RATIO_PARAM)
