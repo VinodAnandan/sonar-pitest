@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.sonarsource.parent</groupId>
 		<artifactId>parent</artifactId>
-		<version>40</version>
+		<version>41</version>
 	</parent>
 
 	<groupId>org.sonarsource.pitest</groupId>
@@ -69,10 +69,11 @@
 	</ciManagement>
 
 	<properties>
-		<sonar.buildVersion>6.6</sonar.buildVersion>
-		<sonar-java.version>4.14</sonar-java.version>
+		<sonar.buildVersion>6.7</sonar.buildVersion>
+		<sonar-java.version>4.15</sonar-java.version>
+		<pitest.version>1.2.4</pitest.version>
+		
 		<jacoco.version>0.7.9</jacoco.version>
-		<pitest.version>1.2.2</pitest.version>
 		<junit.version>4.10</junit.version>
 		<mockito-core.version>2.7.13</mockito-core.version>
 		<assertj-core.version>3.6.1</assertj-core.version>
@@ -133,7 +134,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- FIXME: analyze need and consider removing -->
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>@{argLine}</argLine>
