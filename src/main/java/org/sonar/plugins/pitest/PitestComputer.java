@@ -23,6 +23,8 @@ import org.sonar.api.ExtensionPoint;
 import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 /**
  * MeasureComputer that processes the aggregated quantitative metric for a component from all the quantitative metrics
@@ -33,6 +35,8 @@ import org.sonar.api.ce.measure.MeasureComputer;
 @ComputeEngineSide
 @ExtensionPoint
 public class PitestComputer implements MeasureComputer {
+	
+	private static final Logger log = Loggers.get(PitestComputer.class);
 
   private static final String[] metricKeys = {PitestMetrics.MUTATIONS_NOT_COVERED_KEY,
     PitestMetrics.MUTATIONS_GENERATED_KEY,
@@ -76,7 +80,11 @@ public class PitestComputer implements MeasureComputer {
   private Integer compute(final MeasureComputerContext context, String metricKey) {
     Integer sum = 0;
     for (Measure m : context.getChildrenMeasures(metricKey)) {
-      sum += m.getIntValue();
+    	try {
+        sum += m.getIntValue();
+    	} catch (IllegalStateException e) {
+    		log.error("Failed to compute value for {}.", metricKey, e);
+    	}
     }
     return sum;
   }
