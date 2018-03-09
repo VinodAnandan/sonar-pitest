@@ -74,9 +74,9 @@
 		<pitest.version>1.2.4</pitest.version>
 		
 		<jacoco.version>0.7.9</jacoco.version>
-		<junit.version>4.10</junit.version>
-		<mockito-core.version>2.7.13</mockito-core.version>
-		<assertj-core.version>3.6.1</assertj-core.version>
+		<junit.version>4.12</junit.version>
+		<mockito-core.version>2.15.0</mockito-core.version>
+		<assertj-core.version>3.9.1</assertj-core.version>
 		<guava.version>11.0.2</guava.version>
 
 		<!-- eat your own dog food -->
@@ -86,7 +86,7 @@
 		<!-- license -->
 		<license.owner>${project.organization.name}</license.owner>
 		<license.title>Sonar Pitest Plugin</license.title>
-		<license.years>2009-2017</license.years>
+		<license.years>2009-2018</license.years>
 		<license.mailto>vinod@owasp.org</license.mailto>
 	</properties>
 

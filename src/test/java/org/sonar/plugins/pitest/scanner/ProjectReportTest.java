@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2017 Vinod Anandan
+ * Copyright (C) 2009-2018 Vinod Anandan
  * vinod@owasp.org
  *
  * This program is free software; you can redistribute it and/or
