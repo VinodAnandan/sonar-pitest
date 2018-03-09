@@ -1,6 +1,6 @@
 /*
  * Sonar Pitest Plugin
- * Copyright (C) 2009-2017 Vinod Anandan
+ * Copyright (C) 2009-2018 Vinod Anandan
  * vinod@owasp.org
  *
  * This program is free software; you can redistribute it and/or
@@ -29,8 +29,6 @@ import org.sonar.api.utils.log.Loggers;
 /**
  * MeasureComputer that processes the aggregated quantitative metric for a component from all the quantitative metrics
  * of its children.
- *
- * @author <a href="mailto:gerald.muecke@devcon5.io">Gerald M&uuml;cke</a>
  */
 @ComputeEngineSide
 @ExtensionPoint
