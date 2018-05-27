@@ -33,47 +33,66 @@ public enum Mutator {
   RETURN_VALS(
     "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "Return Values Mutator",
     "The return value of a method call has been replaced"),
-  INLINE_CONS("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator",
+  INLINE_CONSTS("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator",
     "Inline Constant Mutator", "An inline constant has been changed"),
   MATH("org.pitest.mutationtest.engine.gregor.mutators.MathMutator", "Math Mutator",
     "A binary arithmetic operation has been replaced by another one"),
-  VOID_METHOD(
+  VOID_METHOD_CALLS(
     "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "Void Method Calls Mutator",
     "A method call has been removed"),
-  NEGATE_COND(
+  NEGATE_CONDITIONALS(
     "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "Negate Conditionals Mutator",
     "A conditional expression has been negated"),
-  COND_BOUNDARY("org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", "Conditionals Boundary Mutator",
+  CONDITIONALS_BOUNDARY("org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", "Conditionals Boundary Mutator",
     "A relational operator has been replaced by a boundary counterpart"),
   INCREMENTS(
     "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", "Increments Mutator",
     "A local variable increment/decrement has been replaced"),
-  EXP_REMOVE_INCREMENTS("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator", "Experimental Remove Increments Mutator",
+  // Note: the Key indicates it's NOT experimental, but the class resides in experimental package
+  REMOVE_INCREMENTS("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator", "Remove Increments Mutator",
     "An increment operation was removed"),
-  NON_VOID_METHOD("org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator",
+  NON_VOID_METHOD_CALLS("org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator",
     "Non Void Method Calls Mutator", "A method call has been removed"),
-  CONSTRUCTOR(
+  CONSTRUCTOR_CALLS(
     "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", "Constructor Calls Mutator",
     "A constructor call has been removed"),
-  REMOVE_COND_EQ_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME, "A conditional statement has been removed - EQ IF"),
-  REMOVE_COND_EQ_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
+  
+  REMOVE_CONDITIONALS_EQ_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME, "A conditional statement has been removed - EQ IF"),
+  REMOVE_CONDITIONALS_EQ_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ELSE"),
-  REMOVE_COND_ORD_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
+  REMOVE_CONDITIONALS_ORD_IF(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ORD IF"),
-  REMOVE_COND_ORD_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
+  REMOVE_CONDITIONALS_ORD_ELSE(MutatorConstants.REMOVE_COND_MUTATOR_KEY, MutatorConstants.REMOVE_COND_MUTATOR_NAME,
     "A conditional statement has been removed - EQ ORD ELSE"),
-  EXP_MEMBER_VAR(
+
+  TRUE_RETURNS(
+    "org.pitest.mutationtest.engine.gregor.mutators.BooleanTrueReturnValsMutator", "Boolean True ReturnVals Mutator",
+    "Replaced Boolean return with True"),
+  FALSE_RETURNS(
+    "org.pitest.mutationtest.engine.gregor.mutators.BooleanFalseReturnValsMutator", "Boolean False ReturnVals Mutator",
+    "Replaced Boolean return with False"),
+  PRIMITIVE_RETURNS(
+    "org.pitest.mutationtest.engine.gregor.mutators.PrimitiveReturnsMutator", "Primitive Returns Mutator",
+    "Replaced primitive return value with 0"),
+  EMPTY_RETURNS(
+    "org.pitest.mutationtest.engine.gregor.mutators.EmptyObjectReturnValsMutator", "Empty Object Returns Mutator",
+    "Replaced return value with empty object"),
+  NULL_RETURNS(
+    "org.pitest.mutationtest.engine.gregor.mutators.NullReturnValsMutator", "Null Returns Mutator",
+    "Replaced return value with null"),
+
+  EXPERIMENTAL_MEMBER_VARIABLE(
     "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator", "Experimental Member Variable Mutator",
     "A member variable assignment has been replaced"),
-  EXP_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator", "Experimental Switch Mutator", "A switch label has been swapped with another"),
-  EXP_ARGUMENT_PROPAGATION("org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator", "Experimental Argument Propagation Mutator",
+  EXPERIMENTAL_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator", "Experimental Switch Mutator", "A switch label has been swapped with another"),
+  // Note: the Key indicates it's experimental, but the class resides in mutators package
+  EXPERIMENTAL_ARGUMENT_PROPAGATION("org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator", "Experimental Argument Propagation Mutator",
     "A method return value was replaced with a method parameter"),
-  EXP_NAKED_RECEIVER("org.pitest.mutationtest.engine.gregor.mutators.experimental.NakedReceiverMutator", "Experimental Naked ReceiverMutator",
+  EXPERIMENTAL_NAKED_RECEIVER("org.pitest.mutationtest.engine.gregor.mutators.experimental.NakedReceiverMutator", "Experimental Naked ReceiverMutator",
     "A method return value was replaced with receiver"),
-  EXP_REMOVE_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator", "Experimental Remove Switch Mutator", "A switch statement was removed"),
-  EXP_RETURN_VALS(
-    "org.pitest.mutationtest.engine.gregor.mutators.experimental.ReturnValuesMutator", "Experimental Return Values Mutator",
-    "The return value (possibly an object) of a method call has been replaced"),
+
+  // Note: the Key indicates it's NOT experimental, but the class resides in experimental package
+  REMOVE_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator", "Experimental Remove Switch Mutator", "A switch statement was removed"),
 
   UNKNOWN("", "Unknown mutator", "An unknown mutator has been applied");
 

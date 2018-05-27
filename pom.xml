@@ -70,7 +70,7 @@
 
 	<properties>
 		<sonar.buildVersion>7.1</sonar.buildVersion>
-		<pitest.version>1.2.4</pitest.version>
+		<pitest.version>1.4.0</pitest.version>
 		
 		<jacoco.version>0.8.1</jacoco.version>
 		<junit.version>4.12</junit.version>
