@@ -11,7 +11,7 @@
 
 	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
 
 	<name>Sonar Pitest Plugin</name>
