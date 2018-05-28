@@ -65,7 +65,7 @@ public class PitestComputerTest {
   }
 
   @Test
-  public void children_measures_are_calculated() {
+  public void children_measures_are_calculated_for_integer_metrics() {
     // given
     PitestComputer sut = new PitestComputer();
     MeasureComputerDefinition measureComputerDefinition = sut.define(new TestMeasureComputerDefinitionContext());
@@ -80,6 +80,7 @@ public class PitestComputerTest {
 
   }
 
+  
   @Test
   public void calculateCoveragePercent() {
     // given

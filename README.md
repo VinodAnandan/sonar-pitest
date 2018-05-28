@@ -2,14 +2,16 @@ Sonar Pitest Plugin
 ===================
 
 [![Build Status](https://travis-ci.org/VinodAnandan/sonar-pitest.svg?branch=master)](https://travis-ci.org/VinodAnandan/sonar-pitest)  
-[![Quality Gate Status](https://sonarcloud.io/api/badges/gate?key=org.sonarsource.pitest%3Asonar-pitest-plugin)](https://sonarcloud.io/dashboard?id=org.sonarsource.pitest%3Asonar-pitest-plugin)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=org.sonarsource.pitest%3Asonar-pitest-plugin)](https://sonarcloud.io/api/project_badges/quality_gate?project=org.sonarsource.pitest%3Asonar-pitest-plugin)
 
 
 Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
 |-------------------|-----------------------|
-| Sonarqube 6.7 (LTS)  | sonar pitest 0.8 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.8)) |
+| Sonarqube 7.1  | sonar pitest 1.0-SNAPSHOT ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/1.0-SNAPSHOT)) |
+| Sonarqube 6.7 (LTS)  | sonar pitest 0.9 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.9)) |
+| Sonarqube 6.5  | sonar pitest 0.8 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.8)) |
 | Sonarqube 5.6.X  | sonar pitest 0.7 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.7)) |
 
 

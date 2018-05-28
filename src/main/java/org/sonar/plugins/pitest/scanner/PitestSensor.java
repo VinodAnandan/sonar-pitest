@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.pitest.scanner;
 
+import java.io.Serializable;
 import java.util.Collection;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
@@ -29,11 +30,13 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.Configuration;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.plugins.pitest.PitestMetrics;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
 
@@ -47,9 +50,6 @@ import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.
- *
- * <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
- * <a href="mailto:vinod@owasp.org">Alexandre Victoor</a>
  */
 public class PitestSensor implements Sensor {
 
@@ -121,37 +121,45 @@ public class PitestSensor implements Sensor {
         continue;
       }
 
-      if (isMutantRuleActive(rulesProfile)) {
-        addIssueForSurvivingMutants(context, inputFile, sourceFileReport);
-      }
-
-      ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
-      if (coverageRule != null && !isMutantCoverageThresholdReached(sourceFileReport, coverageRule)) {
-        addIssueForMutantKilledThresholdNotReached(context, inputFile, coverageRule.getParameter(COVERAGE_RATIO_PARAM));
-      }
-
+      /*
+       * report Coverage and Measures regardless of whether rules are active
+       * FIXME: investigate further whether anything should be reported if rules are inactive
+       */
       if (sourceFileReport.getMutationsKilled() > 0) {
         addCoverageForKilledMutants(context, inputFile, sourceFileReport);
       }
 
-      // FIXME: figure out why this causes analysis to fail
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NOT_COVERED, sourceFileReport.getMutationsNoCoverage());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_ERROR, sourceFileReport.getMutationsOther());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, sourceFileReport.toJSON());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NOT_COVERED, sourceFileReport.getMutationsNoCoverage());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_ERROR, sourceFileReport.getMutationsOther());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, sourceFileReport.toJSON());
+
+      /*
+       * Rules-sensitive reporting
+       */
+      if (isSurvivedMutantRuleActive(rulesProfile)) {
+        addIssueForSurvivingMutants(context, inputFile, sourceFileReport);
+      }
+
+      if (isInsufficientMutationCoverageRuleActive(rulesProfile)) {
+        ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
+        if (!isMutantCoverageThresholdReached(sourceFileReport, coverageRule)) {
+          addIssueForMutantKilledThresholdNotReached(context, inputFile, coverageRule.getParameter(COVERAGE_RATIO_PARAM));
+        }
+      }
     }
   }
 
-  // private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
-  // context.<T>newMeasure()
-  // .withValue(value)
-  // .forMetric(metric)
-  // .on(inputFile)
-  // .save();
-  // }
+  private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
+    context.<T>newMeasure()
+      .withValue(value)
+      .forMetric(metric)
+      .on(inputFile)
+      .save();
+  }
 
   private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
     int killed = sourceFileReport.getMutationsKilled();
@@ -214,8 +222,12 @@ public class PitestSensor implements Sensor {
     return fileSystem.inputFile(filePredicate);
   }
 
-  private boolean isMutantRuleActive(RulesProfile qualityProfile) {
+  private boolean isSurvivedMutantRuleActive(RulesProfile qualityProfile) {
     return (qualityProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null);
+  }
+
+  private boolean isInsufficientMutationCoverageRuleActive(RulesProfile qualityProfile) {
+    return (qualityProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null);
   }
 
   @Override

@@ -113,27 +113,27 @@ public class SourceFileReport {
     return Collections.unmodifiableList(mutants);
   }
 
-  public int getMutationsTotal() {
+  public Integer getMutationsTotal() {
     return mutants.size();
   }
 
-  int getMutationsNoCoverage() {
+  Integer getMutationsNoCoverage() {
     return mutationsNoCoverage;
   }
 
-  int getMutationsKilled() {
+  Integer getMutationsKilled() {
     return mutationsKilled;
   }
 
-  int getMutationsSurvived() {
+  Integer getMutationsSurvived() {
     return mutationsSurvived;
   }
 
-  int getMutationsOther() {
+  Integer getMutationsOther() {
     return mutationsOther;
   }
 
-  int getMutationsUnknown() {
+  Integer getMutationsUnknown() {
     return mutationsUnknown;
   }
 

@@ -58,11 +58,11 @@ public final class PitestPlugin implements Plugin {
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
 
-      PitestComputer.class,
-      PitestMetrics.class,
-      ProjectReport.class,
       PitestRulesDefinition.class,
+      PitestMetrics.class,
       PitestSensor.class,
+      PitestComputer.class,
+      ProjectReport.class,
       XmlReportParser.class,
       XmlReportFinder.class);
 

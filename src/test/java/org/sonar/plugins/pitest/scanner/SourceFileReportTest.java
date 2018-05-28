@@ -36,7 +36,7 @@ public class SourceFileReportTest {
   public void should_have_correct_relative_path() {
     // given
     Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
-      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+      .mutator(Mutator.INLINE_CONSTS).sourceFile("Qix.java").killingTest("killingtest93").build();
 
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
@@ -50,7 +50,7 @@ public class SourceFileReportTest {
   public void should_generate_a_json_string_with_all_data_from_one_line() {
     // given
     Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
-      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+      .mutator(Mutator.INLINE_CONSTS).sourceFile("Qix.java").killingTest("killingtest93").build();
     Mutant m2 = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).className("com.foo.bar.Qix").mutatedMethod("anotherMutatedMethod").lineNumber(17)
       .mutator(Mutator.RETURN_VALS).sourceFile("Qix.java").build();
 
@@ -73,7 +73,7 @@ public class SourceFileReportTest {
   public void should_generate_a_json_string_with_one_mutant() {
     // given
     Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
-      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+      .mutator(Mutator.INLINE_CONSTS).sourceFile("Qix.java").killingTest("killingtest93").build();
 
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
@@ -99,7 +99,7 @@ public class SourceFileReportTest {
   @Test(expected = IllegalArgumentException.class)
   public void fails_if_relative_paths_dont_match() {
     // given
-    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Foo").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Foo").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXPERIMENTAL_MEMBER_VARIABLE)
       .sourceFile("Foo.kt").build();
 
     // when
@@ -111,17 +111,17 @@ public class SourceFileReportTest {
   public void should_collect_mutant_metrics() {
     // given
 
-    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.INLINE_CONS)
+    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.INLINE_CONSTS)
       .sourceFile("Qix.java").build();
     Mutant m2 = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.RETURN_VALS)
       .sourceFile("Qix.java").build();
-    Mutant m3 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+    Mutant m3 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXPERIMENTAL_MEMBER_VARIABLE)
       .sourceFile("Qix.java").build();
     Mutant m4 = new TestMutantBuilder().mutantStatus(MutantStatus.NO_COVERAGE).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42)
-      .mutator(Mutator.EXP_MEMBER_VAR).sourceFile("Qix.java").build();
+      .mutator(Mutator.EXPERIMENTAL_MEMBER_VARIABLE).sourceFile("Qix.java").build();
     Mutant m5 = new TestMutantBuilder().mutantStatus(MutantStatus.UNKNOWN).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42)
-      .mutator(Mutator.EXP_MEMBER_VAR).sourceFile("Qix.java").build();
-    Mutant m6 = new TestMutantBuilder().mutantStatus(MutantStatus.OTHER).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+      .mutator(Mutator.EXPERIMENTAL_MEMBER_VARIABLE).sourceFile("Qix.java").build();
+    Mutant m6 = new TestMutantBuilder().mutantStatus(MutantStatus.OTHER).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXPERIMENTAL_MEMBER_VARIABLE)
       .sourceFile("Qix.java").build();
 
     SourceFileReport sourceFileReport = new SourceFileReport("com/foo/bar/Qix.java");

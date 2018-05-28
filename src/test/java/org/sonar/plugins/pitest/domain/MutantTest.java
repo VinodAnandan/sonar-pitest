@@ -48,7 +48,7 @@ public class MutantTest {
   @Test
   public void verify_description() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutator(Mutator.CONSTRUCTOR).description("description").build();
+    Mutant mutant = new TestMutantBuilder().mutator(Mutator.CONSTRUCTOR_CALLS).description("description").build();
     // when
     String path = mutant.violationDescription();
     // then
@@ -58,7 +58,7 @@ public class MutantTest {
   @Test
   public void verify_json() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR)
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR_CALLS)
       .sourceFile("Bar.kt").build();
     // when
     String string = mutant.toString();
@@ -70,7 +70,7 @@ public class MutantTest {
   @Test
   public void verify_json_with_killing_test() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR)
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR_CALLS)
       .sourceFile("Bar.kt").killingTest("killingTest").build();
     // when
     String string = mutant.toString();

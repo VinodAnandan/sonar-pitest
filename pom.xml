@@ -11,7 +11,7 @@
 
 	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
 
 	<name>Sonar Pitest Plugin</name>
@@ -69,14 +69,13 @@
 	</ciManagement>
 
 	<properties>
-		<sonar.buildVersion>6.7</sonar.buildVersion>
-		<sonar-java.version>4.15</sonar-java.version>
-		<pitest.version>1.2.4</pitest.version>
+		<sonar.buildVersion>7.1</sonar.buildVersion>
+		<pitest.version>1.4.0</pitest.version>
 		
-		<jacoco.version>0.7.9</jacoco.version>
+		<jacoco.version>0.8.1</jacoco.version>
 		<junit.version>4.12</junit.version>
-		<mockito-core.version>2.15.0</mockito-core.version>
-		<assertj-core.version>3.9.1</assertj-core.version>
+		<mockito-core.version>2.18.3</mockito-core.version>
+		<assertj-core.version>3.10.0</assertj-core.version>
 		<guava.version>11.0.2</guava.version>
 
 		<!-- eat your own dog food -->
@@ -162,6 +161,7 @@
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+					<sonarQubeMinVersion>6.0</sonarQubeMinVersion>
 					<pluginClass>org.sonar.plugins.pitest.PitestPlugin</pluginClass>
 					<pluginName>Pitest</pluginName>
 				</configuration>

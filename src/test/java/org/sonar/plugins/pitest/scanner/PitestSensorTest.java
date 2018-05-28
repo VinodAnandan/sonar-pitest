@@ -21,9 +21,11 @@ package org.sonar.plugins.pitest.scanner;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
@@ -33,11 +35,13 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.plugins.pitest.PitestConstants;
+import org.sonar.plugins.pitest.PitestMetrics;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
 import org.sonar.plugins.pitest.domain.TestMutantBuilder;
@@ -141,21 +145,7 @@ public class PitestSensorTest {
 
   }
 
-  // // FIXME: investigate API requirement here
-  // @Test
-  // public void should_create_measure_if_no_rules_active() throws Exception {
-  // // given
-  // SensorContextTester context = createContext();
-  // PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false),
-  // mockXmlReportFinder(), context.fileSystem());
-  //
-  // // when
-  // sensor.execute(context);
-  //
-  // // then
-  // //assertThat(context.measure(componentKey, metric)
-  //
-  // }
+
 
   @Test
   public void should_create_issue_for_coverage_not_met() throws Exception {
@@ -227,7 +217,7 @@ public class PitestSensorTest {
   }
 
   @Test
-  public void verifyMeasures() throws Exception {
+  public void should_create_measures_if_rules_are_disabled() throws Exception {
     // given
     SensorContextTester context = createTestSensorContext();
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
@@ -236,10 +226,84 @@ public class PitestSensorTest {
     sensor.execute(context);
 
     // then
-    assertThat(context.allIssues()).isEmpty();
-
+    String componentKey = "module.key:com/foo/Bar.java";  
+    assertThat(context.measures(componentKey)).hasSize(7);
   }
+  
+  @Test
+  public void should_create_measures_if_survive_mutant_rule_is_active() throws Exception {
+    // given
+    SensorContextTester context = createTestSensorContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
+    // when
+    sensor.execute(context);
+
+    // then
+    String componentKey = "module.key:com/foo/Bar.java";  
+    assertThat(context.measures(componentKey)).hasSize(7);
+  }
+  
+  
+  @Test
+  public void should_create_measures_if_insufficient_coverage_rule_is_active() throws Exception {
+    // given
+    SensorContextTester context = createTestSensorContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile(false, true), mockXmlReportFinder(), context.fileSystem());
+
+    // when
+    sensor.execute(context);
+
+    // then
+    String componentKey = "module.key:com/foo/Bar.java";  
+    assertThat(context.measures(componentKey)).hasSize(7);
+  }  
+
+  @Test
+  public void measures_for_mock_java_class_should_be_correct() throws Exception {
+    // given
+    SensorContextTester context = createTestSensorContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+
+    // when
+    sensor.execute(context);
+
+    // then
+    String componentKey = "module.key:com/foo/Bar.java";  
+    assertThat(context.measures(componentKey)).hasSize(7);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_NOT_COVERED_KEY, 1);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_GENERATED_KEY, 5);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_KILLED_KEY, 3);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_SURVIVED_KEY, 1);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_ERROR_KEY, 0);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_UNKNOWN_KEY, 0);  
+  }
+  
+  @Test
+  public void measures_for_mock_kotlin_class_should_be_correct() throws Exception {
+    // given
+    SensorContextTester context = createTestSensorContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+
+    // when
+    sensor.execute(context);
+
+    // then
+    String componentKey = "module.key:Maze.kt";  
+    assertThat(context.measures(componentKey)).hasSize(7);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_NOT_COVERED_KEY, 1);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_GENERATED_KEY, 3);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_KILLED_KEY, 1);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_SURVIVED_KEY, 1);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_ERROR_KEY, 0);
+    assertMeasure(context, componentKey, PitestMetrics.MUTATIONS_UNKNOWN_KEY, 0);  
+  }  
+  private void assertMeasure(SensorContextTester context, String componentKey, String metricKey, Integer expectedValue) {
+    Measure<Serializable> measure = context.measure(componentKey, metricKey);
+    Serializable value = measure.value();
+      assertThat(value).isEqualTo(expectedValue);
+  }
+  
   private Configuration mockConfiguration() {
     Configuration configuration = mock(Configuration.class);
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_REUSE_REPORT));
@@ -311,14 +375,30 @@ public class PitestSensorTest {
   private List<Mutant> mutantsBackedByFileSystem() {
 
     List<Mutant> mutants = new ArrayList<>();
-    // 60% coverage
+    // 60% coverage on Java class com.foo.Bar
+    /*
+     * MUTATIONS_NOT_COVERED = 1
+     * MUTATIONS_GENERATED = 5
+     * MUTATIONS_KILLED = 3
+     * MUTATIONS_SURVIVED = 1
+     * MUTATIONS_ERROR = 0 
+     * MUTATIONS_UNKNOWN = 0 
+     */
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.NO_COVERAGE).className(JAVA_CLASS).sourceFile(JAVA_RELATIVE_PATH).build());
 
-    // 33% coverage
+    // 33% coverage on Kotlin class Maze.kt
+    /*
+     * MUTATIONS_NOT_COVERED = 1
+     * MUTATIONS_GENERATED = 3
+     * MUTATIONS_KILLED = 1
+     * MUTATIONS_SURVIVED = 1
+     * MUTATIONS_ERROR = 0 
+     * MUTATIONS_UNKNOWN = 0 
+     */    
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile(KOTLIN_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).sourceFile(KOTLIN_RELATIVE_PATH).build());
     mutants.add(new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.NO_COVERAGE).sourceFile(KOTLIN_RELATIVE_PATH).build());
@@ -326,14 +406,7 @@ public class PitestSensorTest {
     return mutants;
   }
 
-  // private void verifyMeasuresSaved() {
-  // String componentKey = "module.key:com/foo/Bar.java";
-  // assertThat(context.measure(componentKey, MUTATIONS_TOTAL).value()).isEqualTo(5);
-  // assertThat(context.measure(componentKey, MUTATIONS_DETECTED).value()).isEqualTo(1);
-  // assertThat(context.measure(componentKey, MUTATIONS_KILLED).value()).isEqualTo(1);
-  // assertThat(context.measure(componentKey, MUTATIONS_MEMORY_ERROR).value()).isEqualTo(1);
-  // assertThat(context.measure(componentKey, MUTATIONS_SURVIVED).value()).isEqualTo(1);
-  // assertThat(context.measure(componentKey, MUTATIONS_UNKNOWN).value()).isEqualTo(1);
-  // assertThat(context.measure(componentKey, MUTATIONS_NO_COVERAGE).value()).isEqualTo(1);
-  // }
+
+
+  
 }
