@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.ce.ComputeEngineSide;
