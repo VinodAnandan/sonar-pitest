@@ -9,10 +9,10 @@ Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
 |-------------------|-----------------------|
-| Sonarqube 7.1  | sonar pitest 1.0-SNAPSHOT ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/1.0-SNAPSHOT)) |
-| Sonarqube 6.7 (LTS)  | sonar pitest 0.9 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.9)) |
-| Sonarqube 6.5  | sonar pitest 0.8 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.8)) |
-| Sonarqube 5.6.X  | sonar pitest 0.7 ([download](https://github.com/SonarQubeCommunity/sonar-pitest/releases/tag/0.7)) |
+| Sonarqube 7.1  | sonar pitest 1.0-SNAPSHOT  |
+| Sonarqube 6.7 (LTS)  | sonar pitest 0.9 ([download](https://github.com/VinodAnandan/sonar-pitest/releases/download/v0.9/sonar-pitest-plugin-0.9.jar)) |
+| Sonarqube 6.5  | sonar pitest 0.8 ([download](https://github.com/VinodAnandan/sonar-pitest/releases/download/0.8/sonar-pitest-plugin-0.8.jar)) |
+| Sonarqube 5.6.X  | sonar pitest 0.7 ([download](https://github.com/VinodAnandan/sonar-pitest/releases/download/0.7/sonar-pitest-plugin-0.7.jar)) |
 
 
 
