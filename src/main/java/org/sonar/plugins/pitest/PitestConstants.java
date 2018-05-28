@@ -25,7 +25,6 @@ package org.sonar.plugins.pitest;
  * Most of these configuration keys, and the javadoc comments are
  * strongly inspired by the maven PIT plugin
  *
- * @author Alexandre Victoor
  */
 public final class PitestConstants {
 

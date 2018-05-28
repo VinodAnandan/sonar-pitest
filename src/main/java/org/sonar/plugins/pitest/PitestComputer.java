@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.pitest;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.ce.measure.Measure;
@@ -33,36 +35,52 @@ import org.sonar.api.utils.log.Loggers;
 @ComputeEngineSide
 @ExtensionPoint
 public class PitestComputer implements MeasureComputer {
-	
-	private static final Logger log = Loggers.get(PitestComputer.class);
 
-  private static final String[] metricKeys = {PitestMetrics.MUTATIONS_NOT_COVERED_KEY,
+  private static final Logger log = Loggers.get(PitestComputer.class);
+
+  private static final String[] measureKeys = {PitestMetrics.MUTATIONS_NOT_COVERED_KEY,
     PitestMetrics.MUTATIONS_GENERATED_KEY,
     PitestMetrics.MUTATIONS_KILLED_KEY,
     PitestMetrics.MUTATIONS_SURVIVED_KEY,
     PitestMetrics.MUTATIONS_ERROR_KEY,
-    PitestMetrics.MUTATIONS_UNKNOWN_KEY,
-    PitestMetrics.MUTATIONS_DATA_KEY,
+    PitestMetrics.MUTATIONS_UNKNOWN_KEY
+  };
+  
+  private static final String[] derivedKeys = {PitestMetrics.MUTATIONS_DATA_KEY,
     PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY};
 
   @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
     return defContext.newDefinitionBuilder()
-      .setOutputMetrics(metricKeys)
+      .setOutputMetrics(Stream.of(measureKeys, derivedKeys).flatMap(Stream::of).toArray(String[]::new))
       .build();
   }
 
   @Override
   public void compute(final MeasureComputerContext context) {
-    for (String metricKey : metricKeys) {
+    for (String metricKey : measureKeys) {
       if (context.getMeasure(metricKey) == null) {
-        Integer sum = compute(context, metricKey);
-        if (sum > 0) {
-          context.addMeasure(metricKey, sum);
-        }
+        computeChildrenMeasurements(context, metricKey);
       }
     }
+    computeDerived(context) ;
+  }
 
+  private void computeChildrenMeasurements(final MeasureComputerContext context, String key) {
+    if (context.getMeasure(key) == null) {
+      int sum = 0;
+      for (Measure m : context.getChildrenMeasures(key)) {
+        try {
+          sum += m.getIntValue();
+        } catch (IllegalStateException e) {
+          log.error("Failed to compute value for {}.", key, e);
+        }
+      }
+      context.addMeasure(key, sum);
+    }
+
+  }
+  private void computeDerived(final MeasureComputerContext context) {
     final Measure mutationsTotal = context.getMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY);
     if (mutationsTotal != null) {
       final Integer elements = mutationsTotal.getIntValue();
@@ -74,17 +92,4 @@ public class PitestComputer implements MeasureComputer {
       }
     }
   }
-
-  private Integer compute(final MeasureComputerContext context, String metricKey) {
-    Integer sum = 0;
-    for (Measure m : context.getChildrenMeasures(metricKey)) {
-    	try {
-        sum += m.getIntValue();
-    	} catch (IllegalStateException e) {
-    		log.error("Failed to compute value for {}.", metricKey, e);
-    	}
-    }
-    return sum;
-  }
-
 }
