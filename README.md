@@ -2,7 +2,7 @@ Sonar Pitest Plugin
 ===================
 
 [![Build Status](https://travis-ci.org/VinodAnandan/sonar-pitest.svg?branch=master)](https://travis-ci.org/VinodAnandan/sonar-pitest)  
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=org.sonarsource.pitest%3Asonar-pitest-plugin)](https://sonarcloud.io/api/project_badges/quality_gate?project=org.sonarsource.pitest%3Asonar-pitest-plugin)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=org.sonarsource.pitest%3Asonar-pitest-plugin)](https://sonarcloud.io/dashboard?id=org.sonarsource.pitest%3Asonar-pitest-plugin)
 
 
 Compatibility Matrix
