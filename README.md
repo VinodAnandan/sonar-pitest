@@ -43,7 +43,7 @@ Mutation testing can be computationally expensive.  Henry Coles, creator of PIT,
 ### Configuration
 The sonar-pitest plugin exposes two rules:
 * "Survived mutant", which creates an issue (of TYPE BUG and SEVERITY MAJOR) whenever Mutated code does not result in a test failure
-* "Insufficient Mutation Coverage", which creates an an issue (of TYPE BUG and SEVERITY MAJOR) whenever the percentage of Survived mutants exceeds a configurable threshold (default: 65%)
+* "Insufficient Mutation Coverage", which creates an issue (of TYPE BUG and SEVERITY MAJOR) whenever the percentage of Survived mutants exceeds a configurable threshold (default: 65%)
 
 Both rules are inactive by default 
 
