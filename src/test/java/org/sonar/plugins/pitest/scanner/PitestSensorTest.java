@@ -32,6 +32,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
@@ -90,7 +91,7 @@ public class PitestSensorTest {
     Configuration configuration = mock(Configuration.class);
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_SKIP));
     SensorContextTester context = createTestSensorContext();
-    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(ActiveRules.class), mock(XmlReportFinder.class), context.fileSystem());
 
     // when
     sensor.execute(context);
@@ -106,7 +107,7 @@ public class PitestSensorTest {
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_REUSE_REPORT));
     when(configuration.get(REPORT_DIRECTORY_KEY)).thenReturn(Optional.of("nonexistant-directory"));
     SensorContextTester context = createTestSensorContext();
-    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(ActiveRules.class), mock(XmlReportFinder.class), context.fileSystem());
 
     // when
     sensor.execute(context);
@@ -168,9 +169,9 @@ public class PitestSensorTest {
   public void should_create_issue_for_coverage_not_met_high_threshold() throws Exception {
     // given
     SensorContextTester context = createTestSensorContext();
-    RulesProfile mockRulesProfile = mockRulesProfile(false, true);
-    ActiveRule mockCoverageRule = mockRulesProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
-    when(mockCoverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("70");
+    ActiveRules mockRulesProfile = mockRulesProfile(false, true);
+    org.sonar.api.batch.rule.ActiveRule mockCoverageRule = mockRulesProfile.findByInternalKey(REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
+    when(mockCoverageRule.param(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("70");
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile, mockXmlReportFinder(), context.fileSystem());
 
     // when
@@ -189,9 +190,9 @@ public class PitestSensorTest {
   public void should_not_create_issue_for_coverage_not_met_if_coverage_below_threshold() throws Exception {
     // given
     SensorContextTester context = createTestSensorContext();
-    RulesProfile mockRulesProfile = mockRulesProfile(false, true);
-    ActiveRule mockCoverageRule = mockRulesProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
-    when(mockCoverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("10");
+    ActiveRules mockRulesProfile = mockRulesProfile(false, true);
+    org.sonar.api.batch.rule.ActiveRule mockCoverageRule = mockRulesProfile.findByInternalKey(REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
+    when(mockCoverageRule.param(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("10");
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParser(), mockRulesProfile, mockXmlReportFinder(), context.fileSystem());
 
     // when
@@ -322,20 +323,19 @@ public class PitestSensorTest {
     return xmlReportFinder;
   }
 
-  private RulesProfile mockRulesProfile(boolean survivedMutantRuleActive, boolean coverageRuleActive) {
-    RulesProfile qualityProfile = mock(RulesProfile.class);
-    when(qualityProfile.getName()).thenReturn("fake pit profile");
+  private ActiveRules mockRulesProfile(boolean survivedMutantRuleActive, boolean coverageRuleActive) {
+    ActiveRules qualityProfile = mock(ActiveRules.class);
 
     if (survivedMutantRuleActive) {
-      ActiveRule survivedMutantRule = mock(ActiveRule.class);
-      when(survivedMutantRule.getRule()).thenReturn(Rule.create());
-      when(qualityProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.SURVIVED_MUTANT_RULE_KEY)).thenReturn(survivedMutantRule);
+      org.sonar.api.batch.rule.ActiveRule survivedMutantRule = mock(org.sonar.api.batch.rule.ActiveRule.class);
+      //when(survivedMutantRule.ruleKey()).thenReturn(Rule.create());
+      when(qualityProfile.findByInternalKey(PitestConstants.REPOSITORY_KEY, PitestConstants.SURVIVED_MUTANT_RULE_KEY)).thenReturn(survivedMutantRule);
     }
     if (coverageRuleActive) {
-      ActiveRule coverageRule = mock(ActiveRule.class);
-      when(coverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("50");
-      when(coverageRule.getRule()).thenReturn(Rule.create());
-      when(qualityProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)).thenReturn(coverageRule);
+      org.sonar.api.batch.rule.ActiveRule coverageRule = mock(org.sonar.api.batch.rule.ActiveRule.class);
+      when(coverageRule.param(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("50");
+   //   when(coverageRule.getRule()).thenReturn(Rule.create());
+      when(qualityProfile.findByInternalKey(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)).thenReturn(coverageRule);
 
     }
     return qualityProfile;
@@ -350,7 +350,7 @@ public class PitestSensorTest {
     DefaultInputFile javaInputFile = new TestInputFileBuilder("module.key", JAVA_RELATIVE_PATH).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
       .setType(InputFile.Type.MAIN)
       .setLines(1000)
-      .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
+     // .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
       .setLastValidOffset(1)
       .initMetadata(new String(Files.readAllBytes(javaFile.toPath()), StandardCharsets.UTF_8))
       .setCharset(StandardCharsets.UTF_8)
@@ -361,7 +361,7 @@ public class PitestSensorTest {
     DefaultInputFile kotlinInputFile = new TestInputFileBuilder("module.key", KOTLIN_RELATIVE_PATH).setModuleBaseDir(fs.baseDirPath())
       .setType(InputFile.Type.MAIN)
       .setLines(1000)
-      .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
+   //   .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
       .setLastValidOffset(1)
       .initMetadata(new String(Files.readAllBytes(kotlinFile.toPath()), StandardCharsets.UTF_8))
       .setCharset(StandardCharsets.UTF_8)

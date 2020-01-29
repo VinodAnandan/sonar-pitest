@@ -19,8 +19,10 @@
  */
 package org.sonar.plugins.pitest;
 
+
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -34,7 +36,7 @@ public class PitestPluginTest {
   public void test_scanner_side_plugin_extensions_compatible_with_6_7() {
 
     PitestPlugin underTest = new PitestPlugin();
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
     assertThat(context.getExtensions()).hasSize(9);
@@ -44,9 +46,10 @@ public class PitestPluginTest {
   public void test_compute_engine_side_plugin_extensions_compatible_with_6_7() {
 
     PitestPlugin underTest = new PitestPlugin();
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.COMPUTE_ENGINE);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.COMPUTE_ENGINE, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
     assertThat(context.getExtensions()).hasSize(9);
   }
 }
+

@@ -9,6 +9,7 @@ Compatibility Matrix
 --------------------
 | Sonarqube version | Pitest plugin version |
 |-------------------|-----------------------|
+| Sonarqube 8.1  | sonar pitest 1.1-SNAPSHOT  | 
 | Sonarqube 7.1  | sonar pitest 1.0-SNAPSHOT  |
 | Sonarqube 6.7 (LTS)  | sonar pitest 0.9 ([download](https://github.com/VinodAnandan/sonar-pitest/releases/download/v0.9/sonar-pitest-plugin-0.9.jar)) |
 | Sonarqube 6.5  | sonar pitest 0.8 ([download](https://github.com/VinodAnandan/sonar-pitest/releases/download/0.8/sonar-pitest-plugin-0.8.jar)) |

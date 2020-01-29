@@ -31,9 +31,8 @@ import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.pitest.PitestMetrics;
@@ -58,13 +57,13 @@ public class PitestSensor implements Sensor {
 
   private final Configuration configuration;
   private final XmlReportParser parser;
-  private final RulesProfile rulesProfile;
+  private final ActiveRules rulesProfile;
   private final XmlReportFinder xmlReportFinder;
   private final FileSystem fileSystem;
   private final String executionMode;
   private final FilePredicate fileSystemExecutionPredicate;
 
-  public PitestSensor(Configuration configuration, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
+  public PitestSensor(Configuration configuration, XmlReportParser parser, ActiveRules rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
     this.configuration = configuration;
     this.parser = parser;
     this.rulesProfile = rulesProfile;
@@ -145,9 +144,9 @@ public class PitestSensor implements Sensor {
       }
 
       if (isInsufficientMutationCoverageRuleActive(rulesProfile)) {
-        ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
+        org.sonar.api.batch.rule.ActiveRule coverageRule = rulesProfile.findByInternalKey(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
         if (!isMutantCoverageThresholdReached(sourceFileReport, coverageRule)) {
-          addIssueForMutantKilledThresholdNotReached(context, inputFile, coverageRule.getParameter(COVERAGE_RATIO_PARAM));
+          addIssueForMutantKilledThresholdNotReached(context, inputFile, coverageRule.param(COVERAGE_RATIO_PARAM));
         }
       }
     }
@@ -161,10 +160,10 @@ public class PitestSensor implements Sensor {
       .save();
   }
 
-  private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
+  private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport,  org.sonar.api.batch.rule.ActiveRule coverageRule) {
     int killed = sourceFileReport.getMutationsKilled();
     int total = sourceFileReport.getMutationsTotal();
-    int threshold = Integer.parseInt(coverageRule.getParameter(COVERAGE_RATIO_PARAM));
+    int threshold = Integer.parseInt(coverageRule.param(COVERAGE_RATIO_PARAM));
 
     return (killed * 100d / total) >= threshold;
   }
@@ -222,12 +221,12 @@ public class PitestSensor implements Sensor {
     return fileSystem.inputFile(filePredicate);
   }
 
-  private boolean isSurvivedMutantRuleActive(RulesProfile qualityProfile) {
-    return (qualityProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null);
+  private boolean isSurvivedMutantRuleActive(ActiveRules qualityProfile) {
+    return (qualityProfile.findByInternalKey(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null);
   }
 
-  private boolean isInsufficientMutationCoverageRuleActive(RulesProfile qualityProfile) {
-    return (qualityProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null);
+  private boolean isInsufficientMutationCoverageRuleActive(ActiveRules qualityProfile) {
+    return (qualityProfile.findByInternalKey(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null);
   }
 
   @Override
